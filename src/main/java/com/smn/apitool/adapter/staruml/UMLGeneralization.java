@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class UMLGeneralization {
+public class UMLGeneralization extends OwnedElement {
 
 	@JsonProperty
 	private String _id;
