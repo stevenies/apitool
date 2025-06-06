@@ -1,4 +1,4 @@
-package com.smn.apitool.adapter.staruml;
+package com.smn.apitool.service.adapter.staruml;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -7,32 +7,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class UMLAssociation extends OwnedElement {
 
 	@JsonProperty
-	private String _id;
-
-	@JsonProperty
-	private Reference _parent;
-
-	@JsonProperty
 	private UMLAssociationEnd end1;
 
 	@JsonProperty
 	private UMLAssociationEnd end2;
-
-	public String get_id() {
-		return _id;
-	}
-
-	public void set_id(String _id) {
-		this._id = _id;
-	}
-
-	public Reference get_parent() {
-		return _parent;
-	}
-
-	public void set_parent(Reference _parent) {
-		this._parent = _parent;
-	}
 
 	public UMLAssociationEnd getEnd1() {
 		return end1;

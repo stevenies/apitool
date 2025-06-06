@@ -1,6 +1,5 @@
 package com.smn.apitool;
 
-import com.smn.apitool.dto.HelloDTO;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -9,6 +8,8 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
+
+import com.smn.apitool.dto.HelloDTO;
 
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 class ApplicationTest {

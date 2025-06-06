@@ -1,16 +1,8 @@
-package com.smn.apitool.adapter.staruml;
+package com.smn.apitool.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
-public class UMLAttribute {
-
-	@JsonProperty
-	private String _id;
-
-	@JsonProperty
-	private Reference _parent;
+public class Attribute {
 
 	@JsonProperty
 	private String name;
@@ -24,28 +16,12 @@ public class UMLAttribute {
 	@JsonProperty
 	private String defaultValue;
 
-	public String get_id() {
-		return _id;
-	}
-
-	public void set_id(String _id) {
-		this._id = _id;
-	}
-
-	public Reference get_parent() {
-		return _parent;
-	}
-
-	public void set_parent(Reference _parent) {
-		this._parent = _parent;
+	public Attribute(String name) {
+		this.name = name;
 	}
 
 	public String getName() {
 		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
 	}
 
 	public String getType() {

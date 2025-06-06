@@ -1,4 +1,4 @@
-package com.smn.apitool.adapter.staruml;
+package com.smn.apitool.service.adapter.staruml;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
