@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.smn.apitool.model.Attribute;
 import com.smn.apitool.model.Entity;
+import com.smn.apitool.model.Relation;
 import com.smn.apitool.service.adapter.staruml.OwnedElement;
 import com.smn.apitool.service.adapter.staruml.Project;
 import com.smn.apitool.service.adapter.staruml.Reference;
@@ -29,6 +30,10 @@ public class Service {
 		private List<String> errors = new ArrayList<>();
 
 		public DtoReadUMLFile() {
+		}
+
+		public DtoReadUMLFile(String error) {
+			this.errors.add(error);
 		}
 
 		public DtoReadUMLFile(List<String> errorList) {
@@ -117,18 +122,54 @@ public class Service {
 								UMLAssociation umlAssociation = (UMLAssociation) umlElement;
 
 								UMLAssociationEnd umlEnd1 = umlAssociation.getEnd1();
+								String end1Ref = umlEnd1.getReference().get$ref();
+								String end1Name = umlEnd1.getName();
+								String end1Multiplicity = umlEnd1.getMultiplicity();
+								String end1Aggregation = umlEnd1.getAggregation();
+								Entity end1Entity = classMap.get(end1Ref);
 
 								UMLAssociationEnd umlEnd2 = umlAssociation.getEnd2();
+								String end2Ref = umlEnd2.getReference().get$ref();
+								String end2Name = umlEnd2.getName();
+								String end2Multiplicity = umlEnd2.getMultiplicity();
+								String end2Aggregation = umlEnd2.getAggregation();
+								Entity end2Entity = classMap.get(end2Ref);
 
+								Relation relation = new Relation();
+								relation.setEnd1Entity(end1Entity);
+								relation.setEnd1Name(end1Name);
+								relation.setEnd1Cardinality(end1Multiplicity);
+								relation.setEnd1Aggregation("shared".equalsIgnoreCase(end1Aggregation));
+								relation.setEnd1Composite("composite".equalsIgnoreCase(end1Aggregation));
+								relation.setEnd2Entity(end2Entity);
+								relation.setEnd2Name(end2Name);
+								relation.setEnd2Cardinality(end2Multiplicity);
+								relation.setEnd2Aggregation("shared".equalsIgnoreCase(end2Aggregation));
+								relation.setEnd2Composite("composite".equalsIgnoreCase(end2Aggregation));
+
+								end1Entity.addRelation(relation);
+								end2Entity.addRelation(relation);
 							}
 						}
 					}
 				}
 			}
+			
+			ArrayList<Entity> entityList = new ArrayList<>(classMap.values());
+			for (Entity entity : entityList) {
+				System.out.println(entity);
+			}
+			
+			DtoReadUMLFile status = new DtoReadUMLFile();
+			status.addEntities(entityList);
+			return status;
 
 		} catch (Throwable t) {
 			t.printStackTrace();
+
+			String error = t.getMessage();
+			DtoReadUMLFile status = new DtoReadUMLFile(error);
+			return status;
 		}
-		return null;
 	}
 }

@@ -1,19 +1,12 @@
 package com.smn.apitool.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.smn.apitool.util.StringUtil;
 
 public class Attribute {
 
-	@JsonProperty
 	private String name;
-
-	@JsonProperty
 	private String type;
-
-	@JsonProperty
 	private boolean isReadOnly;
-
-	@JsonProperty
 	private String defaultValue;
 
 	public Attribute(String name) {
@@ -46,6 +39,20 @@ public class Attribute {
 
 	public void setDefaultValue(String defaultValue) {
 		this.defaultValue = defaultValue;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder buffer = new StringBuilder();
+		buffer.append(type).append(" ").append(name);
+		if (!StringUtil.isEmpty(defaultValue)) {
+			buffer.append(" = ").append(defaultValue);
+		}
+		if (isReadOnly) {
+			buffer.append(" (Read Only)");
+		}
+		buffer.append("\n");
+		return buffer.toString();
 	}
 
 }

@@ -6,12 +6,9 @@ import java.util.List;
 public class Entity {
 
 	private String name;
-
 	private Entity supertype;
-
-	private List<Relation> relations = new ArrayList<>();
-
 	private List<Attribute> attributes = new ArrayList<>();
+	private List<Relation> relations = new ArrayList<>();
 
 	public Entity(String name) {
 		this.name = name;
@@ -29,6 +26,14 @@ public class Entity {
 		this.supertype = supertype;
 	}
 
+	public List<Attribute> getAttributes() {
+		return attributes;
+	}
+
+	public void addAttribute(Attribute attribute) {
+		this.attributes.add(attribute);
+	}
+
 	public List<Relation> getRelations() {
 		return relations;
 	}
@@ -37,12 +42,27 @@ public class Entity {
 		this.relations.add(relation);
 	}
 
-	public List<Attribute> getAttributes() {
-		return attributes;
-	}
+	@Override
+	public String toString() {
+		StringBuilder buffer = new StringBuilder();
 
-	public void addAttribute(Attribute attribute) {
-		this.attributes.add(attribute);
+		buffer.append("class ").append(name);
+		if (supertype != null) {
+			String superTypeName = supertype.getName();
+			buffer.append(" extends ").append(superTypeName);
+		}
+		buffer.append(" {\n");
+
+		for (Attribute attribute : attributes) {
+			buffer.append("  ").append(attribute).append("\n");
+		}
+
+		for (Relation relation : relations) {
+			buffer.append("  ").append(relation).append("\n");
+		}
+
+		buffer.append("}\n");
+		return buffer.toString();
 	}
 
 }
