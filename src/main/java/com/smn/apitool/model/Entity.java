@@ -1,5 +1,6 @@
 package com.smn.apitool.model;
 
+import com.smn.apitool.util.StringUtil;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,9 +9,12 @@ public class Entity {
 	private String name;
 	private Entity supertype;
 	private List<Attribute> attributes = new ArrayList<>();
-	private List<Relation> relations = new ArrayList<>();
+	private List<MVA> relations = new ArrayList<>();
 
 	public Entity(String name) {
+		if (!StringUtil.isEmpty(name)) {
+			name = name.replace(" ", "_");
+		}
 		this.name = name;
 	}
 
@@ -34,11 +38,11 @@ public class Entity {
 		this.attributes.add(attribute);
 	}
 
-	public List<Relation> getRelations() {
+	public List<MVA> getRelations() {
 		return relations;
 	}
 
-	public void addRelation(Relation relation) {
+	public void addRelation(MVA relation) {
 		this.relations.add(relation);
 	}
 
@@ -54,11 +58,11 @@ public class Entity {
 		buffer.append(" {\n");
 
 		for (Attribute attribute : attributes) {
-			buffer.append("  ").append(attribute).append("\n");
+			buffer.append("  ").append(attribute);
 		}
 
-		for (Relation relation : relations) {
-			buffer.append("  ").append(relation).append("\n");
+		for (MVA relation : relations) {
+			buffer.append("  ").append(relation);
 		}
 
 		buffer.append("}\n");

@@ -10,6 +10,9 @@ public class Attribute {
 	private String defaultValue;
 
 	public Attribute(String name) {
+		if (!StringUtil.isEmpty(name)) {
+			name = name.replace(" ", "_");
+		}
 		this.name = name;
 	}
 

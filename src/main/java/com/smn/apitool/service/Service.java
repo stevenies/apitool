@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.smn.apitool.model.Attribute;
 import com.smn.apitool.model.Entity;
-import com.smn.apitool.model.Relation;
+import com.smn.apitool.model.MVA;
 import com.smn.apitool.service.adapter.staruml.OwnedElement;
 import com.smn.apitool.service.adapter.staruml.Project;
 import com.smn.apitool.service.adapter.staruml.Reference;
@@ -62,10 +62,10 @@ public class Service {
 
 	}
 
-	public DtoReadUMLFile readUMLFile(String filename, String file) {
+	public DtoReadUMLFile readUMLFile(String filename, byte[] fileContent) {
 		try {
 			ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-			Project infoModel = mapper.readValue(file, Project.class);
+			Project infoModel = mapper.readValue(new String(fileContent), Project.class);
 
 			Map<String, Entity> classMap = new HashMap<>();
 
@@ -90,6 +90,8 @@ public class Service {
 
 							String type = umlAttribute.getType();
 							attribute.setType(type);
+							
+							// TODO Verify type is a supported OpenAPI type
 
 							boolean isReadOnly = umlAttribute.isReadOnly();
 							attribute.setReadOnly(isReadOnly);
@@ -135,20 +137,15 @@ public class Service {
 								String end2Aggregation = umlEnd2.getAggregation();
 								Entity end2Entity = classMap.get(end2Ref);
 
-								Relation relation = new Relation();
-								relation.setEnd1Entity(end1Entity);
-								relation.setEnd1Name(end1Name);
-								relation.setEnd1Cardinality(end1Multiplicity);
-								relation.setEnd1Aggregation("shared".equalsIgnoreCase(end1Aggregation));
-								relation.setEnd1Composite("composite".equalsIgnoreCase(end1Aggregation));
-								relation.setEnd2Entity(end2Entity);
-								relation.setEnd2Name(end2Name);
-								relation.setEnd2Cardinality(end2Multiplicity);
-								relation.setEnd2Aggregation("shared".equalsIgnoreCase(end2Aggregation));
-								relation.setEnd2Composite("composite".equalsIgnoreCase(end2Aggregation));
+								MVA mva1 = new MVA(end2Entity, end2Name, end2Multiplicity);
+								mva1.setTargetIsAggregation("shared".equalsIgnoreCase(end2Aggregation));
+								mva1.setTargetIsComposite("composite".equalsIgnoreCase(end2Aggregation));
+								end1Entity.addRelation(mva1);
 
-								end1Entity.addRelation(relation);
-								end2Entity.addRelation(relation);
+								MVA mva2 = new MVA(end1Entity, end1Name, end1Multiplicity);
+								mva2.setTargetIsAggregation("shared".equalsIgnoreCase(end1Aggregation));
+								mva2.setTargetIsComposite("composite".equalsIgnoreCase(end1Aggregation));
+								end2Entity.addRelation(mva2);
 							}
 						}
 					}
