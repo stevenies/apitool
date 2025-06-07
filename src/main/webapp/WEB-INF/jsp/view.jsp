@@ -1,50 +1,22 @@
 <!DOCTYPE html>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
 <meta charset="ISO-8859-1">
 <title>StarUML API Generation</title>
 <script src="https://code.jquery.com/jquery-3.7.1.js"
 	integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
-	crossorigin="anonymous"></script>
+	crossorigin="anonymous">
+</script>
 </head>
 <script type="text/javascript">
-	$(document)
-			.ready(
-					function() {
-						$("#buttonSubmit")
-								.click(
-										function() {
-											var fd = new FormData();
-											var files = $('#file')[0].files[0];
-											fd.append('file', files);
-
-											$
-													.ajax({
-														url : '/ui/uploadInfoModel',
-														type : 'post',
-														data : fd,
-														contentType : false,
-														processData : false,
-														success : function(
-																response) {
-															if (response != 0) {
-																alert('file uploaded');
-															} else {
-																alert('file not uploaded');
-															}
-														},
-														error : function(jqXHR,
-																textStatus,
-																errorThrown) {
-															alert('error uploading - textStatus:'
-																	+ textStatus
-																	+ " errorThrown:"
-																	+ errorThrown);
-														}
-													});
-											return false;
-										});
-					});
+	$(function() {
+		$("#buttonSubmit").click(function(event) {
+			event.preventDefault(); // Prevent default form submission
+			$("#formUploadInfoModel").submit();
+			return false;
+		});
+	});
 </script>
 <body>
 	<p>REST APIs</p>
@@ -61,54 +33,53 @@
 		the following tool generates an REST API interface (expressed using
 		the OpenAPI (Swagger) format) containing endpoints for accessing and
 		manipulating the corresponding data resources.</p>
-	<form action="/ui/uploadInfoModel" enctype="multipart/form-data">
+	<form id="formUploadInfoModel" action="/uploadInfoModel" enctype="multipart/form-data" method="post">
 		<table>
 			<tr>
 				<td>Title:</td>
-				<td><input type="text" /></td>
+				<td><input id="title" name="title" type="text" /></td>
 			</tr>
 			<tr>
 				<td>Description:</td>
-				<td><input type="text" /></td>
+				<td><input id="description" name="description" type="text" /></td>
 			</tr>
 			<tr>
 				<td>Version:</td>
-				<td><input type="text" /></td>
+				<td><input id="version" name="version" type="text" /></td>
 			</tr>
 			<tr>
 				<td>Information Model:</td>
-				<td><input id="file" type="file" /></td>
+				<td><input id="file" name="file" type="file" /></td>
 			</tr>
 			<tr>
 				<td colspan="2">Settings</td>
 			</tr>
 			<tr>
 				<td>Generate POST (resource creation) endpoints:</td>
-				<td><input id="genPOST" type="checkbox" /></td>
+				<td><input id="genPOST" name="genPOST" type="checkbox" /></td>
 			</tr>
 			<tr>
 				<td>Generate GET (resource query) endpoints:</td>
-				<td><input id="genGET" type="checkbox" /></td>
+				<td><input id="genGET" name="genGET" type="checkbox" /></td>
 			</tr>
 			<tr>
 				<td>Generate PUT (full resource update) endpoints:</td>
-				<td><input id=genPUT type="checkbox" /></td>
+				<td><input id="genPUT" name="genPUT" type="checkbox" /></td>
 			</tr>
 			<tr>
 				<td>Generate PATCH (partial resource update) endpoints:</td>
-				<td><input id="genPATCH" type="checkbox" /></td>
+				<td><input id="genPATCH" name="genPATCH" type="checkbox" /></td>
 			</tr>
 			<tr>
 				<td>Generate DELETE (resource deletion) endpoints:</td>
-				<td><input id="genDELETE" type="checkbox" /></td>
+				<td><input id="genDELETE" name="genDELETE" type="checkbox" /></td>
 			</tr>
 			<tr>
 				<td>Generate SEARCH (query by example) endpoints:</td>
-				<td><input id="genDELETE" type="checkbox" /></td>
+				<td><input id="genSEARCH" name="genSEARCH" type="checkbox" /></td>
 			</tr>
 			<tr>
-				<td colspan="2"><button id="buttonSubmit">Generate API
-						Interface</button></td>
+				<td colspan="2"><button id="buttonSubmit">Generate API Interface</button></td>
 			</tr>
 		</table>
 	</form>
