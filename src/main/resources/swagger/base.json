@@ -1,0 +1,41 @@
+﻿{
+	"openapi": "3.0.4",
+	"info": {
+		"title": ">>>title",
+		"description": ">>>description",
+		"version": ">>>version"
+	},
+	"servers": [
+		{
+">>>servers": ""
+		}
+	],
+	"tags": [
+		{
+">>>tags": ""
+		}
+	],
+	"paths": {
+">>>paths": ""
+	},
+	"components": {
+		"schemas": {
+">>>schemas": "",
+			"Error": {
+				"type": "object",
+				"properties": {
+					"code": {
+						"type": "string"
+					},
+					"message": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"code",
+					"message"
+				]
+			}
+		}
+	}
+}
