@@ -13,11 +13,11 @@ public class UMLAssociationEnd {
 	private Reference reference;
 
 	@JsonProperty
-	private String multiplicity;
+	private String multiplicity = "1";
 
 	@JsonProperty
-	private String aggregation;
-
+	private boolean navigable = true;
+	
 	public String getName() {
 		return name;
 	}
@@ -42,12 +42,12 @@ public class UMLAssociationEnd {
 		this.multiplicity = multiplicity;
 	}
 
-	public String getAggregation() {
-		return aggregation;
+	public boolean isNavigable() {
+		return navigable;
 	}
 
-	public void setAggregation(String aggregation) {
-		this.aggregation = aggregation;
+	public void setNavigable(boolean navigable) {
+		this.navigable = navigable;
 	}
 
 }

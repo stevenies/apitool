@@ -10,8 +10,6 @@ public class MVA {
 	private Entity targetEntity;
 	private String name;
 	private String cardinality;
-	private boolean targetIsAggregation;
-	private boolean targetIsComposite;
 	
 	public MVA(Entity targetEntity, String name, String cardinality) {
 		String targetEntityName = targetEntity.getName();
@@ -40,22 +38,6 @@ public class MVA {
 
 	public String getCardinality() {
 		return cardinality;
-	}
-
-	public boolean isTargetIsAggregation() {
-		return targetIsAggregation;
-	}
-
-	public void setTargetIsAggregation(boolean targetIsAggregation) {
-		this.targetIsAggregation = targetIsAggregation;
-	}
-
-	public boolean isTargetIsComposite() {
-		return targetIsComposite;
-	}
-
-	public void setTargetIsComposite(boolean targetIsComposite) {
-		this.targetIsComposite = targetIsComposite;
 	}
 
 	@Override

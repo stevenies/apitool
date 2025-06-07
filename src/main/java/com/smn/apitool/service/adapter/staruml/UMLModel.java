@@ -14,7 +14,7 @@ public class UMLModel {
 	private String name;
 
 	@JsonProperty
-	private List<UMLClass> ownedElements;
+	private List<OwnedElement> ownedElements;
 
 	public String get_id() {
 		return _id;
@@ -32,11 +32,11 @@ public class UMLModel {
 		this.name = name;
 	}
 
-	public List<UMLClass> getOwnedElements() {
+	public List<OwnedElement> getOwnedElements() {
 		return ownedElements;
 	}
 
-	public void setOwnedElements(List<UMLClass> ownedElements) {
+	public void setOwnedElements(List<OwnedElement> ownedElements) {
 		this.ownedElements = ownedElements;
 	}
 

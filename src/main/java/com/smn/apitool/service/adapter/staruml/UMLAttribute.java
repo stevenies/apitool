@@ -13,6 +13,9 @@ public class UMLAttribute {
 	private String type;
 
 	@JsonProperty
+	private boolean isID;
+
+	@JsonProperty
 	private boolean isReadOnly;
 
 	@JsonProperty
@@ -32,6 +35,14 @@ public class UMLAttribute {
 
 	public void setType(String type) {
 		this.type = type;
+	}
+
+	public boolean isID() {
+		return isID;
+	}
+
+	public void setID(boolean isID) {
+		this.isID = isID;
 	}
 
 	public boolean isReadOnly() {

@@ -8,6 +8,7 @@ public class Entity {
 
 	private String name;
 	private Entity supertype;
+	private Attribute explicitId;
 	private List<Attribute> attributes = new ArrayList<>();
 	private List<MVA> relations = new ArrayList<>();
 
@@ -34,8 +35,19 @@ public class Entity {
 		return attributes;
 	}
 
+	public Attribute getExplicitId() {
+		return explicitId;
+	}
+
 	public void addAttribute(Attribute attribute) {
 		this.attributes.add(attribute);
+	}
+
+	public void addAttribute(Attribute attribute, boolean isID) {
+		this.addAttribute(attribute);
+		if (isID) {
+			this.explicitId = attribute;
+		}
 	}
 
 	public List<MVA> getRelations() {

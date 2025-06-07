@@ -6,14 +6,19 @@ public class Attribute {
 
 	private String name;
 	private String type;
+	private boolean isId;
 	private boolean isReadOnly;
 	private String defaultValue;
 
-	public Attribute(String name) {
+	public Attribute(String name, String type, String defaultValue, boolean isId, boolean isReadOnly) {
 		if (!StringUtil.isEmpty(name)) {
 			name = name.replace(" ", "_");
 		}
 		this.name = name;
+		this.type = type;
+		this.defaultValue = defaultValue;
+		this.isId = isId;
+		this.isReadOnly = isReadOnly;
 	}
 
 	public String getName() {
@@ -24,24 +29,16 @@ public class Attribute {
 		return type;
 	}
 
-	public void setType(String type) {
-		this.type = type;
+	public boolean isId() {
+		return isId;
 	}
 
 	public boolean isReadOnly() {
 		return isReadOnly;
 	}
 
-	public void setReadOnly(boolean isReadOnly) {
-		this.isReadOnly = isReadOnly;
-	}
-
 	public String getDefaultValue() {
 		return defaultValue;
-	}
-
-	public void setDefaultValue(String defaultValue) {
-		this.defaultValue = defaultValue;
 	}
 
 	@Override
@@ -50,6 +47,9 @@ public class Attribute {
 		buffer.append(type).append(" ").append(name);
 		if (!StringUtil.isEmpty(defaultValue)) {
 			buffer.append(" = ").append(defaultValue);
+		}
+		if (isId) {
+			buffer.append(" (ID)");
 		}
 		if (isReadOnly) {
 			buffer.append(" (Read Only)");

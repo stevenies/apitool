@@ -5,13 +5,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class UMLClass {
+public class UMLClass extends OwnedElement {
 
 	@JsonProperty
 	private String _id;
-
-	@JsonProperty
-	private Reference _parent;
 
 	@JsonProperty
 	private String name;
@@ -28,14 +25,6 @@ public class UMLClass {
 
 	public void set_id(String _id) {
 		this._id = _id;
-	}
-
-	public Reference get_parent() {
-		return _parent;
-	}
-
-	public void set_parent(Reference _parent) {
-		this._parent = _parent;
 	}
 
 	public String getName() {
