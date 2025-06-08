@@ -1,14 +1,17 @@
 package com.smn.apitool.ui;
 
+import com.smn.apitool.model.API;
+import com.smn.apitool.model.Entity;
 import com.smn.apitool.service.Service;
 import com.smn.apitool.service.Service.DtoReadUMLFile;
+import com.smn.apitool.util.StringUtil;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,26 +31,50 @@ public class UIController {
 	}
 
 	@RequestMapping(value = "/uploadInfoModel", method = RequestMethod.POST)
-	public String uploadFile(@RequestParam MultipartFile file, HttpServletResponse response) {
+	public String uploadFile(
+		@RequestParam String title,
+		@RequestParam String description,
+		@RequestParam String version,
+		@RequestParam MultipartFile file,
+		@RequestParam String serverDomain,
+		@RequestParam String contextRoot,
+		HttpServletResponse response,
+		Model model) {
 
-		if (file == null || StringUtils.isEmpty(file.getOriginalFilename())) {
+		String filename = file.getOriginalFilename();
+		if (file == null || StringUtils.isEmpty(filename)) {
+			model.addAttribute("errors", "You must specify the filename of the API's information model diagram");
 			return "view";
 		}
 
-		String filename = file.getOriginalFilename();
+		if (StringUtil.isEmpty(title)) {
+			title = "Title TBD";
+		}
+		if (StringUtil.isEmpty(description)) {
+			description = "Description TBD";
+		}
+		if (StringUtil.isEmpty(version)) {
+			version = "1.0";
+		}
+
 		try {
 
-			// Creating an object of FileOutputStream class
+			// Read the information model into memory.
 			DtoReadUMLFile status = this.service.readUMLFile(filename, file.getBytes());
 
-			// Load file as Resource
-			Resource resource = new ClassPathResource("/swagger/swagger.json");
+			// Create a new API instance.
+			List<Entity> entities = status.getEntities();
+			API api = new API(title, description, version, entities);
 
-			try (InputStream inputStream = resource.getInputStream(); OutputStream outputStream = response.getOutputStream()) {
+			// Generate the API's swagger.
+			String swagger = this.service.generateSwagger(api, serverDomain, contextRoot);
+
+			// Download the swagger to the client's browser.
+			try (InputStream inputStream = new ByteArrayInputStream(swagger.getBytes()); OutputStream outputStream = response.getOutputStream()) {
 
 				// Set response headers
 				response.setContentType("application/json");
-				response.setHeader("Content-Disposition", "attachment; filename=" + resource.getFilename());
+				response.setHeader("Content-Disposition", "attachment; filename=apiSwagger.json");
 
 				// Copy input stream to output stream
 				byte[] buffer = new byte[1024];

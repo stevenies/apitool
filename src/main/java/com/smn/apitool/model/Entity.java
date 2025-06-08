@@ -20,11 +20,11 @@ public class Entity {
 	}
 
 	public String getName() {
-		return name;
+		return this.name;
 	}
 
 	public Entity getSupertype() {
-		return supertype;
+		return this.supertype;
 	}
 
 	public void setSupertype(Entity supertype) {
@@ -32,11 +32,11 @@ public class Entity {
 	}
 
 	public List<Attribute> getAttributes() {
-		return attributes;
+		return this.attributes;
 	}
 
 	public Attribute getExplicitId() {
-		return explicitId;
+		return this.explicitId;
 	}
 
 	public void addAttribute(Attribute attribute) {
@@ -51,7 +51,7 @@ public class Entity {
 	}
 
 	public List<MVA> getRelations() {
-		return relations;
+		return this.relations;
 	}
 
 	public void addRelation(MVA relation) {
@@ -62,18 +62,18 @@ public class Entity {
 	public String toString() {
 		StringBuilder buffer = new StringBuilder();
 
-		buffer.append("class ").append(name);
-		if (supertype != null) {
-			String superTypeName = supertype.getName();
+		buffer.append("class ").append(this.name);
+		if (this.supertype != null) {
+			String superTypeName = this.supertype.getName();
 			buffer.append(" extends ").append(superTypeName);
 		}
 		buffer.append(" {\n");
 
-		for (Attribute attribute : attributes) {
+		for (Attribute attribute : this.attributes) {
 			buffer.append("  ").append(attribute);
 		}
 
-		for (MVA relation : relations) {
+		for (MVA relation : this.relations) {
 			buffer.append("  ").append(relation);
 		}
 

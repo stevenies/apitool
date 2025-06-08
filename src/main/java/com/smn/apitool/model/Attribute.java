@@ -22,36 +22,36 @@ public class Attribute {
 	}
 
 	public String getName() {
-		return name;
+		return this.name;
 	}
 
 	public String getType() {
-		return type;
+		return this.type;
 	}
 
 	public boolean isId() {
-		return isId;
+		return this.isId;
 	}
 
 	public boolean isReadOnly() {
-		return isReadOnly;
+		return this.isReadOnly;
 	}
 
 	public String getDefaultValue() {
-		return defaultValue;
+		return this.defaultValue;
 	}
 
 	@Override
 	public String toString() {
 		StringBuilder buffer = new StringBuilder();
-		buffer.append(type).append(" ").append(name);
-		if (!StringUtil.isEmpty(defaultValue)) {
-			buffer.append(" = ").append(defaultValue);
+		buffer.append(this.type).append(" ").append(this.name);
+		if (!StringUtil.isEmpty(this.defaultValue)) {
+			buffer.append(" = ").append(this.defaultValue);
 		}
-		if (isId) {
+		if (this.isId) {
 			buffer.append(" (ID)");
 		}
-		if (isReadOnly) {
+		if (this.isReadOnly) {
 			buffer.append(" (Read Only)");
 		}
 		buffer.append("\n");

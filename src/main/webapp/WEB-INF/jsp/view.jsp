@@ -13,6 +13,7 @@
 	$(function() {
 		$("#buttonSubmit").click(function(event) {
 			event.preventDefault(); // Prevent default form submission
+			$("#errors").html("");
 			$("#formUploadInfoModel").submit();
 			return false;
 		});
@@ -55,6 +56,14 @@
 				<td colspan="2">Settings</td>
 			</tr>
 			<tr>
+				<td>Server Domain:</td>
+				<td><input id="serverDomain" name="serverDomain" type="text" /></td>
+			</tr>
+			<tr>
+				<td>API Context Root:</td>
+				<td><input id="contextRoot" name="contextRoot" type="text" /></td>
+			</tr>
+			<tr>
 				<td>Generate POST (resource creation) endpoints:</td>
 				<td><input id="genPOST" name="genPOST" type="checkbox" /></td>
 			</tr>
@@ -83,5 +92,6 @@
 			</tr>
 		</table>
 	</form>
+	<p id="errors">${errors}</p>
 </body>
 </html>

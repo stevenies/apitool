@@ -1,7 +1,10 @@
 package com.smn.apitool.service;
 
+import com.smn.apitool.model.API;
 import com.smn.apitool.model.Entity;
 import com.smn.apitool.service.adapter.staruml.AdaptorStarUML;
+import com.smn.apitool.service.swagger.Swagger;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +13,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class Service {
 
-	public class DtoReadUMLFile {
+	public static class DtoReadUMLFile {
 
 		private List<Entity> entities = new ArrayList<>();
 		private List<String> errors = new ArrayList<>();
@@ -25,29 +28,34 @@ public class Service {
 		}
 
 		public List<Entity> getEntities() {
-			return entities;
+			return this.entities;
 		}
 
 		public boolean hasErrors() {
-			return errors != null && errors.size() > 0;
+			return this.errors != null && this.errors.size() > 0;
 		}
 
 		public List<String> getErrors() {
-			return errors;
+			return this.errors;
 		}
 	}
 
 	@Autowired
 	private AdaptorStarUML adaptorStarUML;
 
-	public DtoReadUMLFile readUMLFile(String filename, byte[] fileContent) {
+	@Autowired
+	private Swagger swagger;
 
+	public DtoReadUMLFile readUMLFile(String filename, byte[] fileContent) {
 		boolean starUMLFile = true; // TODO Check file extension
 		if (starUMLFile) {
-			AdaptorStarUML.DtoReadUMLFile status = adaptorStarUML.readUMLFile(fileContent);
+			AdaptorStarUML.DtoReadUMLFile status = this.adaptorStarUML.readUMLFile(fileContent);
 			return new DtoReadUMLFile(status.getEntities(), status.getErrors());
-		} else {
-			return new DtoReadUMLFile("Invalid File Type");
 		}
+		return new DtoReadUMLFile("Invalid File Type");
+	}
+
+	public String generateSwagger(API api, String serverDomain, String contextRoot) throws IOException {
+		return this.swagger.generate(api, serverDomain, contextRoot);
 	}
 }
