@@ -1,6 +1,7 @@
 package com.smn.apitool.service.swagger;
 
 import com.smn.apitool.model.API;
+import com.smn.apitool.model.Attribute;
 import com.smn.apitool.model.Entity;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -40,6 +41,8 @@ public class Swagger {
 		}
 
 		// Update the template with the various substitution sections.
+		int indentation = 2;
+
 		String title = api.getTitle();
 		swagger = swagger.replace(Swagger.MARKER_TITLE, title);
 
@@ -49,26 +52,36 @@ public class Swagger {
 		String version = api.getVersion();
 		swagger = swagger.replace(Swagger.MARKER_VERSION, version);
 
-		String servers = this.makeServers(serverDomain, contextRoot);
+		String servers = this.makeServers(indentation + 1, serverDomain, contextRoot);
 		swagger = swagger.replace(Swagger.MARKER_SERVERS, servers);
 
-		String tags = this.makeTags(api);
+		String tags = this.makeTags(indentation, api);
 		swagger = swagger.replace(Swagger.MARKER_TAGS, tags);
 
-		String paths = ""; // TODO Implement
+		String paths = this.makePaths(indentation++, api);
 		swagger = swagger.replace(Swagger.MARKER_PATHS, paths);
 
-		String schemas = ""; // TODO Implement
-		return swagger.replace(Swagger.MARKER_SCHEMAS, schemas);
+		String schemas = this.makeSchema(indentation--, api);
+		swagger = swagger.replace(Swagger.MARKER_SCHEMAS, schemas);
+
+		return swagger;
 	}
 
-	private String makeServers(String serverDomain, String contextRoot) {
+	private String indent(int indentation) {
 		StringBuilder buffer = new StringBuilder();
-		buffer.append("\t\t\t\"url\": \"https://").append(serverDomain).append("/").append(contextRoot).append("\"");
+		for (int i = 0; i < indentation; i++) {
+			buffer.append("\t");
+		}
 		return buffer.toString();
 	}
 
-	private String makeTags(API api) {
+	private String makeServers(int identation, String serverDomain, String contextRoot) {
+		StringBuilder buffer = new StringBuilder();
+		buffer.append(this.indent(identation)).append("\"url\": \"https://").append(serverDomain).append("/").append(contextRoot).append("\"");
+		return buffer.toString();
+	}
+
+	private String makeTags(int identation, API api) {
 		StringBuilder buffer = new StringBuilder();
 		List<Entity> entities = api.getEntities();
 		for (Entity entity : entities) {
@@ -76,11 +89,54 @@ public class Swagger {
 			if (buffer.length() > 0) {
 				buffer.append(",\n");
 			}
-			buffer.append("\t\t").append("{\n");
-			buffer.append("\t\t\t\"name\": \"").append(entityName).append("\"\n");
-			buffer.append("\t\t").append("}");
+			buffer.append(this.indent(identation++)).append("{\n");
+			buffer.append(this.indent(identation--)).append("\"name\": \"").append(entityName).append("\"\n");
+			buffer.append(this.indent(identation)).append("}");
 		}
 		buffer.append("\n");
+		return buffer.toString();
+	}
+
+	private String makeSchema(int indentation, API api) {
+		StringBuilder buffer = new StringBuilder();
+		List<Entity> entities = api.getEntities();
+		for (Entity entity : entities) {
+			String entityName = entity.getName();
+			List<Attribute> attributes = entity.getAttributes();
+
+			// Create the shallow Entity containing only attributes
+			buffer.append(this.indent(indentation++)).append("\"").append(entityName).append("-shallow\": {\n");
+			buffer.append(this.indent(indentation)).append("\"type\": \"object\",\n");
+			buffer.append(this.indent(indentation++)).append("\"properties\": {\n");
+
+			boolean firstAttribute = true;
+			for (Attribute attribute : attributes) {
+				String name = attribute.getName();
+				String type = attribute.getType();
+				String defaultValue = attribute.getDefaultValue();
+				boolean readOnly = attribute.isReadOnly();
+
+				if (!firstAttribute) {
+					buffer.append(",\n");
+				}
+				buffer.append(this.indent(indentation++)).append("\"").append(name).append("\": {\n");
+				buffer.append(this.indent(indentation--)).append("\"type\": \"").append(type).append("\"\n");
+				buffer.append(this.indent(indentation)).append("}");
+				firstAttribute = false;
+			}
+			buffer.append("\n");
+			indentation--;
+			
+			buffer.append(this.indent(indentation--)).append("}\n");
+			buffer.append(this.indent(indentation)).append("},\n");
+		}
+		buffer.append("\n");
+		return buffer.toString();
+	}
+
+	private String makePaths(int identation, API api) {
+		StringBuilder buffer = new StringBuilder();
+		// TODO Implement
 		return buffer.toString();
 	}
 }
