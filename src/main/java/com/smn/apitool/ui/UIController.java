@@ -38,6 +38,12 @@ public class UIController {
 		@RequestParam MultipartFile file,
 		@RequestParam String serverDomain,
 		@RequestParam String contextRoot,
+		@RequestParam boolean makePOST,
+		@RequestParam boolean makeGET,
+		@RequestParam boolean makePUT,
+		@RequestParam boolean makePATCH,
+		@RequestParam boolean makeDELETE,
+		@RequestParam boolean makeSEARCH,
 		HttpServletResponse response,
 		Model model) {
 
@@ -56,6 +62,12 @@ public class UIController {
 		if (StringUtil.isEmpty(version)) {
 			version = "1.0";
 		}
+		if (StringUtil.isEmpty(serverDomain)) {
+			serverDomain = "<domain>";
+		}
+		if (StringUtil.isEmpty(contextRoot)) {
+			contextRoot = "<contextRoot>";
+		}
 
 		try {
 
@@ -67,7 +79,7 @@ public class UIController {
 			API api = new API(title, description, version, entities);
 
 			// Generate the API's swagger.
-			String swagger = this.service.generateSwagger(api, serverDomain, contextRoot);
+			String swagger = this.service.generateSwagger(api, serverDomain, contextRoot, makePOST, makeGET, makePUT, makePATCH, makeDELETE, makeSEARCH);
 
 			// Download the swagger to the client's browser.
 			try (InputStream inputStream = new ByteArrayInputStream(swagger.getBytes()); OutputStream outputStream = response.getOutputStream()) {

@@ -22,7 +22,8 @@ public class Swagger {
 	final static String MARKER_PATHS = "\">>>paths\": \"\"";
 	final static String MARKER_SCHEMAS = "\">>>schemas\": \"\",";
 
-	public String generate(API api, String serverDomain, String contextRoot) throws IOException {
+	public String generate(API api, String serverDomain, String contextRoot, boolean makePOST, boolean makeGET, boolean makePUT, boolean makePATCH, boolean makeDELETE, boolean makeSEARCH)
+		throws IOException {
 
 		// Read the Swagger template into memory
 		String swagger = null;
@@ -40,27 +41,25 @@ public class Swagger {
 
 		// Update the template with the various substitution sections.
 		String title = api.getTitle();
-		swagger = swagger.replace(MARKER_TITLE, title);
-		
+		swagger = swagger.replace(Swagger.MARKER_TITLE, title);
+
 		String description = api.getDescription();
-		swagger = swagger.replace(MARKER_DESCRIPTION, description);
+		swagger = swagger.replace(Swagger.MARKER_DESCRIPTION, description);
 
 		String version = api.getVersion();
-		swagger = swagger.replace(MARKER_VERSION, version);
+		swagger = swagger.replace(Swagger.MARKER_VERSION, version);
 
 		String servers = this.makeServers(serverDomain, contextRoot);
-		swagger = swagger.replace(MARKER_SERVERS, servers);
+		swagger = swagger.replace(Swagger.MARKER_SERVERS, servers);
 
 		String tags = this.makeTags(api);
-		swagger = swagger.replace(MARKER_TAGS, tags);
+		swagger = swagger.replace(Swagger.MARKER_TAGS, tags);
 
-		String paths = "";  // TODO Implement
-		swagger = swagger.replace(MARKER_PATHS, paths);
+		String paths = ""; // TODO Implement
+		swagger = swagger.replace(Swagger.MARKER_PATHS, paths);
 
-		String schemas = "";  // TODO Implement
-		swagger = swagger.replace(MARKER_SCHEMAS, schemas);
-
-		return swagger;
+		String schemas = ""; // TODO Implement
+		return swagger.replace(Swagger.MARKER_SCHEMAS, schemas);
 	}
 
 	private String makeServers(String serverDomain, String contextRoot) {
@@ -77,9 +76,9 @@ public class Swagger {
 			if (buffer.length() > 0) {
 				buffer.append(",\n");
 			}
-		    buffer.append("\t\t").append("{\n");
-		    buffer.append("\t\t\t\"name\": \"").append(entityName).append("\"\n");
-		    buffer.append("\t\t").append("}");
+			buffer.append("\t\t").append("{\n");
+			buffer.append("\t\t\t\"name\": \"").append(entityName).append("\"\n");
+			buffer.append("\t\t").append("}");
 		}
 		buffer.append("\n");
 		return buffer.toString();

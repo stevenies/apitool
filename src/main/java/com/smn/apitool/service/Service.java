@@ -55,7 +55,8 @@ public class Service {
 		return new DtoReadUMLFile("Invalid File Type");
 	}
 
-	public String generateSwagger(API api, String serverDomain, String contextRoot) throws IOException {
-		return this.swagger.generate(api, serverDomain, contextRoot);
+	public String generateSwagger(API api, String serverDomain, String contextRoot, boolean makePOST, boolean makeGET, boolean makePUT, boolean makePATCH, boolean makeDELETE, boolean makeSEARCH)
+		throws IOException {
+		return this.swagger.generate(api, serverDomain, contextRoot, makePOST, makeGET, makePUT, makePATCH, makeDELETE, makeSEARCH);
 	}
 }
