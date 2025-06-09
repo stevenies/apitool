@@ -3,6 +3,7 @@ package com.smn.apitool.service.swagger;
 import com.smn.apitool.model.API;
 import com.smn.apitool.model.Attribute;
 import com.smn.apitool.model.Entity;
+import com.smn.apitool.util.StringUtil;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -121,6 +122,14 @@ public class Swagger {
 				}
 				buffer.append(this.indent(tabs++)).append("\"").append(name).append("\": {\n");
 				buffer.append(this.indent(tabs--)).append("\"type\": \"").append(type).append("\"\n");
+				if (readOnly) {
+					tabs++;
+					buffer.append(this.indent(tabs--)).append("\"readonly\": \"true\"\n");
+				}
+				if (!StringUtil.isEmpty(defaultValue)) {
+					tabs++;
+					buffer.append(this.indent(tabs--)).append("\"example\": \"").append(defaultValue).append("\"\n");
+				}
 				buffer.append(this.indent(tabs)).append("}");
 				firstAttribute = false;
 			}
