@@ -176,16 +176,17 @@ public class Swagger {
 
 		StringBuilder buffer = new StringBuilder();
 		buffer.append(this.indent(tabs++)).append("\"").append(name).append("\": {\n");
-		buffer.append(this.indent(tabs--)).append("\"type\": \"").append(type).append("\"\n");
+		buffer.append(this.indent(tabs)).append("\"type\": \"").append(type).append("\"");
 		if (readOnly) {
-			tabs++;
-			buffer.append(this.indent(tabs--)).append("\"readonly\": \"true\"\n");
+			buffer.append(",\n");
+			buffer.append(this.indent(tabs)).append("\"readonly\": \"true\"");
 		}
 		if (!StringUtil.isEmpty(defaultValue)) {
-			tabs++;
-			buffer.append(this.indent(tabs--)).append("\"example\": \"").append(defaultValue).append("\"\n");
+			buffer.append(",\n");
+			buffer.append(this.indent(tabs)).append("\"example\": \"").append(defaultValue).append("\"");
 		}
-		buffer.append(this.indent(tabs)).append("}");
+		buffer.append("\n");
+		buffer.append(this.indent(--tabs)).append("}");
 		return buffer.toString();
 	}
 
