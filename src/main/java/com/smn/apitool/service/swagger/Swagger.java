@@ -41,7 +41,7 @@ public class Swagger {
 		}
 
 		// Update the template with the various substitution sections.
-		int indentation = 2;
+		int tabs = 2;
 
 		String title = api.getTitle();
 		swagger = swagger.replace(Swagger.MARKER_TITLE, title);
@@ -52,36 +52,36 @@ public class Swagger {
 		String version = api.getVersion();
 		swagger = swagger.replace(Swagger.MARKER_VERSION, version);
 
-		String servers = this.makeServers(indentation + 1, serverDomain, contextRoot);
+		String servers = this.makeServers(tabs + 1, serverDomain, contextRoot);
 		swagger = swagger.replace(Swagger.MARKER_SERVERS, servers);
 
-		String tags = this.makeTags(indentation, api);
+		String tags = this.makeTags(tabs, api);
 		swagger = swagger.replace(Swagger.MARKER_TAGS, tags);
 
-		String paths = this.makePaths(indentation++, api);
+		String paths = this.makePaths(tabs++, api);
 		swagger = swagger.replace(Swagger.MARKER_PATHS, paths);
 
-		String schemas = this.makeSchema(indentation--, api);
+		String schemas = this.makeSchema(tabs--, api);
 		swagger = swagger.replace(Swagger.MARKER_SCHEMAS, schemas);
 
 		return swagger;
 	}
 
-	private String indent(int indentation) {
+	private String indent(int tabs) {
 		StringBuilder buffer = new StringBuilder();
-		for (int i = 0; i < indentation; i++) {
+		for (int i = 0; i < tabs; i++) {
 			buffer.append("\t");
 		}
 		return buffer.toString();
 	}
 
-	private String makeServers(int identation, String serverDomain, String contextRoot) {
+	private String makeServers(int tabs, String serverDomain, String contextRoot) {
 		StringBuilder buffer = new StringBuilder();
-		buffer.append(this.indent(identation)).append("\"url\": \"https://").append(serverDomain).append("/").append(contextRoot).append("\"");
+		buffer.append(this.indent(tabs)).append("\"url\": \"https://").append(serverDomain).append("/").append(contextRoot).append("\"");
 		return buffer.toString();
 	}
 
-	private String makeTags(int identation, API api) {
+	private String makeTags(int tabs, API api) {
 		StringBuilder buffer = new StringBuilder();
 		List<Entity> entities = api.getEntities();
 		for (Entity entity : entities) {
@@ -89,15 +89,15 @@ public class Swagger {
 			if (buffer.length() > 0) {
 				buffer.append(",\n");
 			}
-			buffer.append(this.indent(identation++)).append("{\n");
-			buffer.append(this.indent(identation--)).append("\"name\": \"").append(entityName).append("\"\n");
-			buffer.append(this.indent(identation)).append("}");
+			buffer.append(this.indent(tabs++)).append("{\n");
+			buffer.append(this.indent(tabs--)).append("\"name\": \"").append(entityName).append("\"\n");
+			buffer.append(this.indent(tabs)).append("}");
 		}
 		buffer.append("\n");
 		return buffer.toString();
 	}
 
-	private String makeSchema(int indentation, API api) {
+	private String makeSchema(int tabs, API api) {
 		StringBuilder buffer = new StringBuilder();
 		List<Entity> entities = api.getEntities();
 		for (Entity entity : entities) {
@@ -105,9 +105,9 @@ public class Swagger {
 			List<Attribute> attributes = entity.getAttributes();
 
 			// Create the shallow Entity containing only attributes
-			buffer.append(this.indent(indentation++)).append("\"").append(entityName).append("-shallow\": {\n");
-			buffer.append(this.indent(indentation)).append("\"type\": \"object\",\n");
-			buffer.append(this.indent(indentation++)).append("\"properties\": {\n");
+			buffer.append(this.indent(tabs++)).append("\"").append(entityName).append("-shallow\": {\n");
+			buffer.append(this.indent(tabs)).append("\"type\": \"object\",\n");
+			buffer.append(this.indent(tabs++)).append("\"properties\": {\n");
 
 			boolean firstAttribute = true;
 			for (Attribute attribute : attributes) {
@@ -119,22 +119,30 @@ public class Swagger {
 				if (!firstAttribute) {
 					buffer.append(",\n");
 				}
-				buffer.append(this.indent(indentation++)).append("\"").append(name).append("\": {\n");
-				buffer.append(this.indent(indentation--)).append("\"type\": \"").append(type).append("\"\n");
-				buffer.append(this.indent(indentation)).append("}");
+				buffer.append(this.indent(tabs++)).append("\"").append(name).append("\": {\n");
+				buffer.append(this.indent(tabs--)).append("\"type\": \"").append(type).append("\"\n");
+				buffer.append(this.indent(tabs)).append("}");
 				firstAttribute = false;
 			}
 			buffer.append("\n");
-			indentation--;
-			
-			buffer.append(this.indent(indentation--)).append("}\n");
-			buffer.append(this.indent(indentation)).append("},\n");
+			tabs--;
+
+			buffer.append(this.indent(tabs--)).append("}\n");
+			buffer.append(this.indent(tabs)).append("},\n");
+
+			// Create a set of shallow Entities
+			buffer.append(this.indent(tabs++)).append("\"").append(entityName).append("-set\": {\n");
+			buffer.append(this.indent(tabs)).append("\"type\": \"array\",\n");
+			buffer.append(this.indent(tabs++)).append("\"items\": {\n");
+			buffer.append(this.indent(tabs--)).append("\"$ref\": \"#/components/schemas/").append(entityName).append("-shallow\"\n");
+			buffer.append(this.indent(tabs--)).append("}\n");
+			buffer.append(this.indent(tabs)).append("},\n");
 		}
 		buffer.append("\n");
 		return buffer.toString();
 	}
 
-	private String makePaths(int identation, API api) {
+	private String makePaths(int tabs, API api) {
 		StringBuilder buffer = new StringBuilder();
 		// TODO Implement
 		return buffer.toString();
