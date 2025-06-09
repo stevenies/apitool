@@ -106,14 +106,15 @@ public class Swagger {
 		List<Entity> entities = api.getEntities();
 		for (Entity entity : entities) {
 			String entityName = entity.getName();
+			boolean hasShallowRelations = entity.hasShallowRelations();
 			boolean hasDeepRelations = entity.hasDeepRelations();
 
 			if (!firstEntity) {
 				buffer.append("\n");
 			}
 
-			// Create a shallow Entity containing only attributes
-			buffer.append(this.indent(tabs++)).append("\"").append(entityName).append(hasDeepRelations ? "-shallow" : "").append("\": {\n");
+			// Create an Entity containing only attributes
+			buffer.append(this.indent(tabs++)).append("\"").append(entityName).append("\": {\n");
 			buffer.append(this.indent(tabs)).append("\"type\": \"object\",\n");
 			buffer.append(this.indent(tabs++)).append("\"properties\": {\n");
 			buffer.append(this.makeEntityProperties(tabs, entity)).append("\n");
@@ -121,18 +122,24 @@ public class Swagger {
 			buffer.append(this.indent(tabs--)).append("}\n");
 			buffer.append(this.indent(tabs)).append("},\n");
 
-			// Create a set of shallow Entities
-			buffer.append(this.indent(tabs++)).append("\"").append(entityName).append(hasDeepRelations ? "-shallowSet" : "-set").append("\": {\n");
+			// Create a set of Entities
+			buffer.append(this.indent(tabs++)).append("\"").append(entityName).append("-set").append("\": {\n");
 			buffer.append(this.indent(tabs)).append("\"type\": \"array\",\n");
 			buffer.append(this.indent(tabs++)).append("\"items\": {\n");
-			buffer.append(this.indent(tabs--)).append("\"$ref\": \"#/components/schemas/").append(entityName).append(hasDeepRelations ? "-shallow" : "").append("\"\n");
+			buffer.append(this.indent(tabs--)).append("\"$ref\": \"#/components/schemas/").append(entityName).append("\"\n");
 			buffer.append(this.indent(tabs--)).append("}\n");
 			buffer.append(this.indent(tabs)).append("},");
 
+			if (hasShallowRelations) {
+				List<MVA> relations = entity.getRelations();
+
+				// Create a shallow Entity containing attributes and shallow related Entity(s)
+				// TODO Implement
+			}
 			if (hasDeepRelations) {
 				List<MVA> relations = entity.getRelations();
 
-				// Create a deep Entity containing attributes and deeply related Entity(s)
+				// Create a deep Entity containing attributes and deep related Entity(s)
 				// TODO Implement
 			}
 			firstEntity = false;
@@ -155,13 +162,13 @@ public class Swagger {
 			if (!firstAttribute) {
 				buffer.append(",\n");
 			}
-			buffer.append(this.makeAttribute(tabs, attribute));
+			buffer.append(this.makeProperty(tabs, attribute));
 			firstAttribute = false;
 		}
 		return buffer.toString();
 	}
 
-	private String makeAttribute(int tabs, Attribute attribute) {
+	private String makeProperty(int tabs, Attribute attribute) {
 		String name = attribute.getName();
 		String type = attribute.getType();
 		boolean readOnly = attribute.isReadOnly();

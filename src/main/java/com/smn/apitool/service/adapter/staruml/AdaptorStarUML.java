@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.smn.apitool.model.Attribute;
 import com.smn.apitool.model.Entity;
 import com.smn.apitool.model.MVA;
+import com.smn.apitool.model.MVA.TRelationDepth;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -14,7 +15,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class AdaptorStarUML {
 
-	public class DtoReadUMLFile {
+	public static class DtoReadUMLFile {
 
 		private List<Entity> entities = new ArrayList<>();
 		private List<String> errors = new ArrayList<>();
@@ -33,15 +34,15 @@ public class AdaptorStarUML {
 		}
 
 		public List<Entity> getEntities() {
-			return entities;
+			return this.entities;
 		}
 
 		public boolean hasErrors() {
-			return errors != null && errors.size() > 0;
+			return this.errors != null && this.errors.size() > 0;
 		}
 
 		public List<String> getErrors() {
-			return errors;
+			return this.errors;
 		}
 
 	}
@@ -58,17 +59,20 @@ public class AdaptorStarUML {
 			for (UMLModel model : models) {
 				List<OwnedElement> elementList = model.getOwnedElements();
 				for (OwnedElement element : elementList) {
+
+					// Ignore elements that are not Class definitions
 					if (!(element instanceof UMLClass)) {
 						continue;
 					}
 
+					// Define a new class Entity
 					UMLClass umlClass = (UMLClass) element;
 					String className = umlClass.getName();
 					Entity entity = new Entity(className);
-
 					String classId = umlClass.get_id();
 					classMap.put(classId, entity);
 
+					// Attach the class's attributes
 					List<UMLAttribute> umlAttributes = umlClass.getAttributes();
 					if (umlAttributes != null) {
 						for (UMLAttribute umlAttribute : umlAttributes) {
@@ -82,7 +86,13 @@ public class AdaptorStarUML {
 							Attribute attribute = new Attribute(name, type, defaultValue, isId, isReadOnly);
 							entity.addAttribute(attribute, isId);
 
-							// TODO Verify type is a supported OpenAPI type
+							// Verify that the attribute's type is a type supported by OpenAPI
+							if ("string".equalsIgnoreCase(type) || "number".equalsIgnoreCase(type) || "integer".equalsIgnoreCase(type) || "boolean".equalsIgnoreCase(type)) {
+								type = type.toLowerCase();
+							} else {
+								String message = "Type " + type + " of attribute " + name + " in class " + className + " is not supported by OpenAPI";
+								errors.add(message);
+							}
 						}
 					}
 				}
@@ -90,10 +100,13 @@ public class AdaptorStarUML {
 			for (UMLModel model : models) {
 				List<OwnedElement> elementList = model.getOwnedElements();
 				for (OwnedElement element : elementList) {
+
+					// Ignore elements that are not Class definitions
 					if (!(element instanceof UMLClass)) {
 						continue;
 					}
 
+					// Process the class's relations to other classes
 					UMLClass umlClass = (UMLClass) element;
 					List<OwnedElement> umlRelations = umlClass.getOwnedElements();
 					if (umlRelations != null) {
@@ -102,6 +115,7 @@ public class AdaptorStarUML {
 							if (umlElement instanceof UMLGeneralization) {
 								UMLGeneralization umlGeneralization = (UMLGeneralization) umlElement;
 
+								// Link the class to its superclass
 								Reference source = umlGeneralization.getSource();
 								Entity sourceEntity = classMap.get(source.get$ref());
 
@@ -113,13 +127,16 @@ public class AdaptorStarUML {
 							} else if (umlElement instanceof UMLAssociation) {
 								UMLAssociation umlAssociation = (UMLAssociation) umlElement;
 
+								// Define Multi-Valued Attributes representing the class's relations to other classes
 								UMLAssociationEnd umlEnd1 = umlAssociation.getEnd1();
 								Entity end1Entity = classMap.get(umlEnd1.getReference().get$ref());
 								String end1Name = umlEnd1.getName();
 								String end1Multiplicity = umlEnd1.getMultiplicity();
 								boolean end1Navigable = umlEnd1.isNavigable();
 								boolean end1Composite = "composite".equalsIgnoreCase(umlEnd1.getAggregation());
-								boolean end1DeepRelation = "deep".equalsIgnoreCase(umlEnd1.getStereotype());
+								String end1Stereotype = umlEnd1.getStereotype();
+								TRelationDepth end1RelationDepth = "deep".equalsIgnoreCase(end1Stereotype) ? //
+									TRelationDepth.DEEP : "shallow".equalsIgnoreCase(end1Stereotype) ? TRelationDepth.SHALLOW : TRelationDepth.NONE;
 
 								UMLAssociationEnd umlEnd2 = umlAssociation.getEnd2();
 								Entity end2Entity = classMap.get(umlEnd2.getReference().get$ref());
@@ -127,19 +144,21 @@ public class AdaptorStarUML {
 								String end2Multiplicity = umlEnd2.getMultiplicity();
 								boolean end2Navigable = umlEnd2.isNavigable();
 								boolean end2Composite = "composite".equalsIgnoreCase(umlEnd2.getAggregation());
-								boolean end2DeepRelation = "deep".equalsIgnoreCase(umlEnd2.getStereotype());
+								String end2Stereotype = umlEnd2.getStereotype();
+								TRelationDepth end2RelationDepth = "deep".equalsIgnoreCase(end2Stereotype) ? //
+									TRelationDepth.DEEP : "shallow".equalsIgnoreCase(end2Stereotype) ? TRelationDepth.SHALLOW : TRelationDepth.NONE;
 
 								if (end2Navigable) {
 									MVA mva1 = new MVA(end2Entity, end2Name, end2Multiplicity);
 									mva1.setComposite(end1Composite);
-									mva1.setDeepRelation(end2DeepRelation);
+									mva1.setRelationDepth(end2RelationDepth);
 									end1Entity.addRelation(mva1);
 								}
 
 								if (end1Navigable) {
 									MVA mva2 = new MVA(end1Entity, end1Name, end1Multiplicity);
 									mva2.setComposite(end2Composite);
-									mva2.setDeepRelation(end1DeepRelation);
+									mva2.setRelationDepth(end1RelationDepth);
 									end2Entity.addRelation(mva2);
 								}
 							}
@@ -153,15 +172,13 @@ public class AdaptorStarUML {
 				System.out.println(entity);
 			}
 
-			DtoReadUMLFile status = new DtoReadUMLFile(entityList, errors);
-			return status;
+			return new DtoReadUMLFile(entityList, errors);
 
 		} catch (Throwable t) {
 			t.printStackTrace();
 
 			String error = t.getMessage();
-			DtoReadUMLFile status = new DtoReadUMLFile(error);
-			return status;
+			return new DtoReadUMLFile(error);
 		}
 	}
 }

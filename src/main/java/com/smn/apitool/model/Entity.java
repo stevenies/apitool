@@ -1,5 +1,6 @@
 package com.smn.apitool.model;
 
+import com.smn.apitool.model.MVA.TRelationDepth;
 import com.smn.apitool.util.StringUtil;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,6 +12,7 @@ public class Entity {
 	private List<Attribute> attributes = new ArrayList<>();
 	private Attribute explicitId;
 	private List<MVA> relations = new ArrayList<>();
+	private boolean hasShallowRelations;
 	private boolean hasDeepRelations;
 
 	public Entity(String name) {
@@ -55,10 +57,18 @@ public class Entity {
 		this.relations.add(relation);
 
 		boolean isComposite = relation.isComposite();
-		boolean isDeepRelation = relation.isDeepRelation();
+		boolean isShallowRelation = relation.getRelationDepth() == TRelationDepth.SHALLOW;
+		if (isShallowRelation) {
+			this.hasShallowRelations = true;
+		}
+		boolean isDeepRelation = relation.getRelationDepth() == TRelationDepth.DEEP;
 		if (isComposite || isDeepRelation) {
 			this.hasDeepRelations = true;
 		}
+	}
+
+	public boolean hasShallowRelations() {
+		return this.hasShallowRelations;
 	}
 
 	public boolean hasDeepRelations() {
@@ -75,7 +85,7 @@ public class Entity {
 			buffer.append(" extends ").append(superTypeName);
 		}
 		buffer.append(" {\n");
-		
+
 		buffer.append("  hasDeepRelations: " + hasDeepRelations + "\n");
 		buffer.append("  explicitAttribute: " + (explicitId == null ? "none" : explicitId.getName()) + "\n");
 

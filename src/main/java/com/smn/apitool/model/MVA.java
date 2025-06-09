@@ -7,11 +7,17 @@ import com.smn.apitool.util.StringUtil;
  */
 public class MVA {
 
+	public enum TRelationDepth {
+		NONE, // Relation will not be included in the Entity's schema definition
+		SHALLOW, // Relation will be represented in the Entity's schema definition as the primary ID of the target class
+		DEEP // Relation will be represented in the Entity's schema definition by embedding the target class's schema definition
+	}
+
 	private Entity targetEntity;
 	private String name;
 	private String cardinality;
-	private boolean isComposite;
-	private boolean isDeepRelation;
+	private boolean isComposite = false;
+	private TRelationDepth relationDepth = TRelationDepth.NONE;
 
 	public MVA(Entity targetEntity, String name, String cardinality) {
 		String targetEntityName = targetEntity.getName();
@@ -50,12 +56,12 @@ public class MVA {
 		this.isComposite = isComposite;
 	}
 
-	public boolean isDeepRelation() {
-		return this.isDeepRelation;
+	public TRelationDepth getRelationDepth() {
+		return this.relationDepth;
 	}
 
-	public void setDeepRelation(boolean isDeepRelation) {
-		this.isDeepRelation = isDeepRelation;
+	public void setRelationDepth(TRelationDepth relationDepth) {
+		this.relationDepth = relationDepth;
 	}
 
 	@Override
@@ -67,7 +73,7 @@ public class MVA {
 		if (StringUtil.isEmpty(this.cardinality)) {
 			this.cardinality = "1";
 		}
-		buffer.append(" (cardinality:").append(this.cardinality).append(", isComposite:").append(this.isComposite).append(", isDeepRelation:").append(this.isDeepRelation).append(")\n");
+		buffer.append(" (cardinality:").append(this.cardinality).append(", isComposite:").append(this.isComposite).append(", relationDepth:").append(this.relationDepth).append(")\n");
 
 		return buffer.toString();
 	}
