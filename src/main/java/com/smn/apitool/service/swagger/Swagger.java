@@ -3,6 +3,7 @@ package com.smn.apitool.service.swagger;
 import com.smn.apitool.model.API;
 import com.smn.apitool.model.Attribute;
 import com.smn.apitool.model.Entity;
+import com.smn.apitool.model.MVA;
 import com.smn.apitool.util.StringUtil;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -100,54 +101,84 @@ public class Swagger {
 
 	private String makeSchema(int tabs, API api) {
 		StringBuilder buffer = new StringBuilder();
+		
+		boolean firstEntity = true;
 		List<Entity> entities = api.getEntities();
 		for (Entity entity : entities) {
 			String entityName = entity.getName();
-			List<Attribute> attributes = entity.getAttributes();
+			boolean hasDeepRelations = entity.hasDeepRelations();
 
-			// Create the shallow Entity containing only attributes
-			buffer.append(this.indent(tabs++)).append("\"").append(entityName).append("-shallow\": {\n");
+			if (!firstEntity) {
+				buffer.append("\n");
+			}
+
+			// Create a shallow Entity containing only attributes
+			buffer.append(this.indent(tabs++)).append("\"").append(entityName).append(hasDeepRelations ? "-shallow" : "").append("\": {\n");
 			buffer.append(this.indent(tabs)).append("\"type\": \"object\",\n");
 			buffer.append(this.indent(tabs++)).append("\"properties\": {\n");
-
-			boolean firstAttribute = true;
-			for (Attribute attribute : attributes) {
-				String name = attribute.getName();
-				String type = attribute.getType();
-				String defaultValue = attribute.getDefaultValue();
-				boolean readOnly = attribute.isReadOnly();
-
-				if (!firstAttribute) {
-					buffer.append(",\n");
-				}
-				buffer.append(this.indent(tabs++)).append("\"").append(name).append("\": {\n");
-				buffer.append(this.indent(tabs--)).append("\"type\": \"").append(type).append("\"\n");
-				if (readOnly) {
-					tabs++;
-					buffer.append(this.indent(tabs--)).append("\"readonly\": \"true\"\n");
-				}
-				if (!StringUtil.isEmpty(defaultValue)) {
-					tabs++;
-					buffer.append(this.indent(tabs--)).append("\"example\": \"").append(defaultValue).append("\"\n");
-				}
-				buffer.append(this.indent(tabs)).append("}");
-				firstAttribute = false;
-			}
-			buffer.append("\n");
+			buffer.append(this.makeEntityProperties(tabs, entity)).append("\n");
 			tabs--;
-
 			buffer.append(this.indent(tabs--)).append("}\n");
 			buffer.append(this.indent(tabs)).append("},\n");
 
 			// Create a set of shallow Entities
-			buffer.append(this.indent(tabs++)).append("\"").append(entityName).append("-set\": {\n");
+			buffer.append(this.indent(tabs++)).append("\"").append(entityName).append(hasDeepRelations ? "-shallowSet" : "-set").append("\": {\n");
 			buffer.append(this.indent(tabs)).append("\"type\": \"array\",\n");
 			buffer.append(this.indent(tabs++)).append("\"items\": {\n");
-			buffer.append(this.indent(tabs--)).append("\"$ref\": \"#/components/schemas/").append(entityName).append("-shallow\"\n");
+			buffer.append(this.indent(tabs--)).append("\"$ref\": \"#/components/schemas/").append(entityName).append(hasDeepRelations ? "-shallow" : "").append("\"\n");
 			buffer.append(this.indent(tabs--)).append("}\n");
-			buffer.append(this.indent(tabs)).append("},\n");
+			buffer.append(this.indent(tabs)).append("},");
+
+			if (hasDeepRelations) {
+				List<MVA> relations = entity.getRelations();
+
+				// Create a deep Entity containing attributes and deeply related Entity(s)
+				// TODO Implement
+			}
+			firstEntity = false;
 		}
-		buffer.append("\n");
+		return buffer.toString();
+	}
+
+	private String makeEntityProperties(int tabs, Entity entity) {
+		StringBuilder buffer = new StringBuilder();
+
+		Entity superType = entity.getSupertype();
+		if (superType != null) {
+			buffer.append(this.makeEntityProperties(tabs, superType));
+		}
+
+		boolean firstAttribute = buffer.length() == 0;
+		List<Attribute> attributes = entity.getAttributes();
+		for (Attribute attribute : attributes) {
+
+			if (!firstAttribute) {
+				buffer.append(",\n");
+			}
+			buffer.append(this.makeAttribute(tabs, attribute));
+			firstAttribute = false;
+		}
+		return buffer.toString();
+	}
+
+	private String makeAttribute(int tabs, Attribute attribute) {
+		String name = attribute.getName();
+		String type = attribute.getType();
+		boolean readOnly = attribute.isReadOnly();
+		String defaultValue = attribute.getDefaultValue();
+
+		StringBuilder buffer = new StringBuilder();
+		buffer.append(this.indent(tabs++)).append("\"").append(name).append("\": {\n");
+		buffer.append(this.indent(tabs--)).append("\"type\": \"").append(type).append("\"\n");
+		if (readOnly) {
+			tabs++;
+			buffer.append(this.indent(tabs--)).append("\"readonly\": \"true\"\n");
+		}
+		if (!StringUtil.isEmpty(defaultValue)) {
+			tabs++;
+			buffer.append(this.indent(tabs--)).append("\"example\": \"").append(defaultValue).append("\"\n");
+		}
+		buffer.append(this.indent(tabs)).append("}");
 		return buffer.toString();
 	}
 

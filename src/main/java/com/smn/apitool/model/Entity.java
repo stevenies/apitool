@@ -8,9 +8,10 @@ public class Entity {
 
 	private String name;
 	private Entity supertype;
-	private Attribute explicitId;
 	private List<Attribute> attributes = new ArrayList<>();
+	private Attribute explicitId;
 	private List<MVA> relations = new ArrayList<>();
+	private boolean hasDeepRelations;
 
 	public Entity(String name) {
 		if (!StringUtil.isEmpty(name)) {
@@ -35,19 +36,15 @@ public class Entity {
 		return this.attributes;
 	}
 
-	public Attribute getExplicitId() {
-		return this.explicitId;
-	}
-
-	public void addAttribute(Attribute attribute) {
-		this.attributes.add(attribute);
-	}
-
 	public void addAttribute(Attribute attribute, boolean isID) {
-		this.addAttribute(attribute);
+		this.attributes.add(isID ? 0 : this.attributes.size(), attribute);
 		if (isID) {
 			this.explicitId = attribute;
 		}
+	}
+
+	public Attribute getExplicitId() {
+		return this.explicitId;
 	}
 
 	public List<MVA> getRelations() {
@@ -56,6 +53,16 @@ public class Entity {
 
 	public void addRelation(MVA relation) {
 		this.relations.add(relation);
+
+		boolean isComposite = relation.isComposite();
+		boolean isDeepRelation = relation.isDeepRelation();
+		if (isComposite || isDeepRelation) {
+			this.hasDeepRelations = true;
+		}
+	}
+
+	public boolean hasDeepRelations() {
+		return this.hasDeepRelations;
 	}
 
 	@Override
@@ -68,6 +75,9 @@ public class Entity {
 			buffer.append(" extends ").append(superTypeName);
 		}
 		buffer.append(" {\n");
+		
+		buffer.append("  hasDeepRelations: " + hasDeepRelations + "\n");
+		buffer.append("  explicitAttribute: " + (explicitId == null ? "none" : explicitId.getName()) + "\n");
 
 		for (Attribute attribute : this.attributes) {
 			buffer.append("  ").append(attribute);

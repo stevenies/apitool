@@ -17,7 +17,13 @@ public class UMLAssociationEnd {
 
 	@JsonProperty
 	private boolean navigable = true;
-	
+
+	@JsonProperty
+	private String aggregation;
+
+	@JsonProperty
+	private String stereotype;
+
 	public String getName() {
 		return name;
 	}
@@ -48,6 +54,22 @@ public class UMLAssociationEnd {
 
 	public void setNavigable(boolean navigable) {
 		this.navigable = navigable;
+	}
+
+	public String getAggregation() {
+		return this.aggregation;
+	}
+
+	public void setAggregation(String aggregation) {
+		this.aggregation = aggregation;
+	}
+
+	public String getStereotype() {
+		return this.stereotype;
+	}
+
+	public void setStereotype(String stereotype) {
+		this.stereotype = stereotype;
 	}
 
 }

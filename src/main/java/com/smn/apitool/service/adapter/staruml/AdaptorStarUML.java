@@ -118,20 +118,28 @@ public class AdaptorStarUML {
 								String end1Name = umlEnd1.getName();
 								String end1Multiplicity = umlEnd1.getMultiplicity();
 								boolean end1Navigable = umlEnd1.isNavigable();
+								boolean end1Composite = "composite".equalsIgnoreCase(umlEnd1.getAggregation());
+								boolean end1DeepRelation = "deep".equalsIgnoreCase(umlEnd1.getStereotype());
 
 								UMLAssociationEnd umlEnd2 = umlAssociation.getEnd2();
 								Entity end2Entity = classMap.get(umlEnd2.getReference().get$ref());
 								String end2Name = umlEnd2.getName();
 								String end2Multiplicity = umlEnd2.getMultiplicity();
-								boolean end2Navigable = umlEnd1.isNavigable();
+								boolean end2Navigable = umlEnd2.isNavigable();
+								boolean end2Composite = "composite".equalsIgnoreCase(umlEnd2.getAggregation());
+								boolean end2DeepRelation = "deep".equalsIgnoreCase(umlEnd2.getStereotype());
 
 								if (end2Navigable) {
 									MVA mva1 = new MVA(end2Entity, end2Name, end2Multiplicity);
+									mva1.setComposite(end1Composite);
+									mva1.setDeepRelation(end2DeepRelation);
 									end1Entity.addRelation(mva1);
 								}
 
 								if (end1Navigable) {
 									MVA mva2 = new MVA(end1Entity, end1Name, end1Multiplicity);
+									mva2.setComposite(end2Composite);
+									mva2.setDeepRelation(end1DeepRelation);
 									end2Entity.addRelation(mva2);
 								}
 							}

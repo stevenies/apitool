@@ -10,6 +10,8 @@ public class MVA {
 	private Entity targetEntity;
 	private String name;
 	private String cardinality;
+	private boolean isComposite;
+	private boolean isDeepRelation;
 
 	public MVA(Entity targetEntity, String name, String cardinality) {
 		String targetEntityName = targetEntity.getName();
@@ -40,6 +42,22 @@ public class MVA {
 		return this.cardinality;
 	}
 
+	public boolean isComposite() {
+		return this.isComposite;
+	}
+
+	public void setComposite(boolean isComposite) {
+		this.isComposite = isComposite;
+	}
+
+	public boolean isDeepRelation() {
+		return this.isDeepRelation;
+	}
+
+	public void setDeepRelation(boolean isDeepRelation) {
+		this.isDeepRelation = isDeepRelation;
+	}
+
 	@Override
 	public String toString() {
 		StringBuilder buffer = new StringBuilder();
@@ -49,7 +67,7 @@ public class MVA {
 		if (StringUtil.isEmpty(this.cardinality)) {
 			this.cardinality = "1";
 		}
-		buffer.append(" (").append(this.cardinality).append(")\n");
+		buffer.append(" (cardinality:").append(this.cardinality).append(", isComposite:").append(this.isComposite).append(", isDeepRelation:").append(this.isDeepRelation).append(")\n");
 
 		return buffer.toString();
 	}
