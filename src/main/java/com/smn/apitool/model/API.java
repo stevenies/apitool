@@ -1,5 +1,6 @@
 package com.smn.apitool.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class API {
@@ -14,7 +15,8 @@ public class API {
 		this.title = title;
 		this.description = description;
 		this.version = version;
-		this.entities = entities;
+		this.entities = new ArrayList<>(entities);
+		this.entities.sort(null);;
 	}
 
 	public String getTitle() {

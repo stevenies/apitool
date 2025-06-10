@@ -10,7 +10,8 @@ public class MVA {
 	public enum TRelationDepth {
 		NONE, // Relation will not be included in the Entity's schema definition
 		SHALLOW, // Relation will be represented in the Entity's schema definition as the primary ID of the target class
-		DEEP // Relation will be represented in the Entity's schema definition by embedding the target class's schema definition
+		DEEP, // Relation will be represented in the Entity's schema definition by embedding only the attributes from target class's schema definition
+		DEEP_RELATIONS // Relation will be represented in the Entity's schema definition by embedding the attributes and relations from target class's schema definition
 	}
 
 	private Entity targetEntity;

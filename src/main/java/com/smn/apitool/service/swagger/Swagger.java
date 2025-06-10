@@ -225,7 +225,7 @@ public class Swagger {
 			if (StringUtil.isEmpty(relationText)) {
 				continue;
 			}
-			
+
 			if (!firstAttribute) {
 				buffer.append(",\n");
 			}
@@ -237,30 +237,58 @@ public class Swagger {
 
 	private String makeRelation(int tabs, MVA relation) {
 		String name = relation.getName();
-		Attribute idAttribute = relation.getTargetEntity().getExplicitId();
-		String idType = idAttribute == null ? "string" : idAttribute.getType();
-		boolean isSingleRelation = "1".equalsIgnoreCase(relation.getCardinality());
-		boolean isShallowRelation = relation.getRelationDepth() == TRelationDepth.SHALLOW;
-		boolean isDeepRelation = relation.getRelationDepth() == TRelationDepth.DEEP;
+		Entity targetEntity = relation.getTargetEntity();
+		Attribute targetIdAttribute = targetEntity.getExplicitId();
+		String targetIdType = targetIdAttribute == null ? "string" : targetIdAttribute.getType();
+		boolean isComposite = relation.isComposite();
+		boolean isSingleValued = "1".equalsIgnoreCase(relation.getCardinality());
+		TRelationDepth relationDepth = relation.getRelationDepth();
+		boolean hasShallowRelations = relationDepth == TRelationDepth.SHALLOW;
+		boolean hasDeepRelations = isComposite || relationDepth == TRelationDepth.DEEP || relationDepth == TRelationDepth.DEEP_RELATIONS;
 
 		StringBuilder buffer = new StringBuilder();
-		if (isShallowRelation) {
-			if (isSingleRelation) {
-				buffer.append(this.indent(tabs)).append("\"").append(name).append("\": {\n");
-				buffer.append(this.indent(++tabs)).append("\"type\": \"").append(idType).append("\"\n");
-				buffer.append(this.indent(--tabs)).append("}");
+		if (hasShallowRelations) {
+			buffer.append(this.indent(tabs)).append("\"").append(name).append("\": {\n");
+			if (isSingleValued) {
+				buffer.append(this.indent(++tabs)).append("\"type\": \"").append(targetIdType).append("\"\n");
 			} else {
-				buffer.append(this.indent(tabs)).append("\"").append(name).append("\": {\n");
-				buffer.append(this.indent(++tabs)).append("\"type\": \"array\"\n");
+				buffer.append(this.indent(++tabs)).append("\"type\": \"array\",\n");
 				buffer.append(this.indent(tabs)).append("\"items\": {\n");
-				buffer.append(this.indent(++tabs)).append("\"type\": \"").append(idType).append("\"\n");
+				buffer.append(this.indent(++tabs)).append("\"type\": \"").append(targetIdType).append("\"\n");
 				buffer.append(this.indent(--tabs)).append("}\n");
-				buffer.append(this.indent(--tabs)).append("}");
 			}
+			buffer.append(this.indent(--tabs)).append("}");
 		}
+		if (hasDeepRelations) {
+			buffer.append(this.indent(tabs)).append("\"").append(name).append("\": {\n");
+			if (isSingleValued) {
+				buffer.append(this.indent(++tabs)).append("\"type\": \"object\",\n");
+				buffer.append(this.indent(tabs)).append("\"properties\": {\n");
 
-		if (isDeepRelation) {
+				if (relationDepth == TRelationDepth.DEEP) {
+					buffer.append(this.makeEntityProperties(tabs + 1, targetEntity));
+				} else if (isComposite || relationDepth == TRelationDepth.DEEP_RELATIONS) {
+					buffer.append(this.makeEntityRelations(tabs + 1, targetEntity));
+				}
+				buffer.append("\n");
 
+				buffer.append(this.indent(tabs)).append("}\n");
+			} else {
+				buffer.append(this.indent(++tabs)).append("\"type\": \"array\",\n");
+				buffer.append(this.indent(tabs)).append("\"items\": {\n");
+				buffer.append(this.indent(++tabs)).append("\"properties\": {\n");
+
+				if (relationDepth == TRelationDepth.DEEP) {
+					buffer.append(this.makeEntityProperties(tabs + 1, targetEntity));
+				} else if (isComposite || relationDepth == TRelationDepth.DEEP_RELATIONS) {
+					buffer.append(this.makeEntityRelations(tabs + 1, targetEntity));
+				}
+				buffer.append("\n");
+
+				buffer.append(this.indent(tabs)).append("}\n");
+				buffer.append(this.indent(--tabs)).append("}\n");
+			}
+			buffer.append(this.indent(--tabs)).append("}");
 		}
 		return buffer.toString();
 	}

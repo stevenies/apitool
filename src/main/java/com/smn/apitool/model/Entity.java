@@ -5,7 +5,7 @@ import com.smn.apitool.util.StringUtil;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Entity {
+public class Entity implements Comparable<Entity> {
 
 	private String name;
 	private Entity supertype;
@@ -57,12 +57,14 @@ public class Entity {
 		this.relations.add(relation);
 
 		boolean isComposite = relation.isComposite();
-		boolean isShallowRelation = relation.getRelationDepth() == TRelationDepth.SHALLOW;
-		if (isShallowRelation) {
+		TRelationDepth relationDepth = relation.getRelationDepth();
+		boolean hasShallowRelations = relationDepth == TRelationDepth.SHALLOW;
+		boolean hasDeepRelations = relationDepth == TRelationDepth.DEEP || relationDepth == TRelationDepth.DEEP_RELATIONS;
+
+		if (hasShallowRelations) {
 			this.hasShallowRelations = true;
 		}
-		boolean isDeepRelation = relation.getRelationDepth() == TRelationDepth.DEEP;
-		if (isComposite || isDeepRelation) {
+		if (isComposite || hasDeepRelations) {
 			this.hasDeepRelations = true;
 		}
 	}
@@ -99,6 +101,13 @@ public class Entity {
 
 		buffer.append("}\n");
 		return buffer.toString();
+	}
+
+	@Override
+	public int compareTo(Entity other) {
+		String thisName = this.name;
+		String otherName = other.name;
+		return thisName.compareTo(otherName);
 	}
 
 }
