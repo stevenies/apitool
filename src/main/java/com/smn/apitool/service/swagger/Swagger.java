@@ -118,12 +118,12 @@ public class Swagger {
 			buffer.append(this.indent(tabs)).append("\"").append(entityName).append("\": {\n");
 			buffer.append(this.indent(++tabs)).append("\"type\": \"object\",\n");
 			buffer.append(this.indent(tabs)).append("\"properties\": {\n");
-			buffer.append(this.makeEntityProperties(++tabs, entity)).append("\n");
+			buffer.append(this.makeProperties(++tabs, entity)).append("\n");
 			buffer.append(this.indent(--tabs)).append("}\n");
 			buffer.append(this.indent(--tabs)).append("},\n");
 
-			// Create a set of Entities
-			buffer.append(this.indent(tabs)).append("\"").append(entityName).append("-set").append("\": {\n");
+			// Create an array of Entities
+			buffer.append(this.indent(tabs)).append("\"").append(entityName).append("-array").append("\": {\n");
 			buffer.append(this.indent(++tabs)).append("\"type\": \"array\",\n");
 			buffer.append(this.indent(tabs)).append("\"items\": {\n");
 			buffer.append(this.indent(++tabs)).append("\"$ref\": \"#/components/schemas/").append(entityName).append("\"\n");
@@ -133,16 +133,16 @@ public class Swagger {
 			if (hasShallowRelations || hasDeepRelations) {
 				buffer.append("\n");
 
-				// Create a deep Entity containing attributes and deep related Entity(s)
+				// Create a deep Entity containing attributes and related Entity(s)
 				buffer.append(this.indent(tabs)).append("\"").append(entityName).append("-deep\": {\n");
 				buffer.append(this.indent(++tabs)).append("\"type\": \"object\",\n");
 				buffer.append(this.indent(tabs)).append("\"properties\": {\n");
-				buffer.append(this.makeEntityRelations(++tabs, entity)).append("\n");
+				buffer.append(this.makeRelations(++tabs, entity)).append("\n");
 				buffer.append(this.indent(--tabs)).append("}\n");
 				buffer.append(this.indent(--tabs)).append("},\n");
 
-				// Create a set of Deep Entities
-				buffer.append(this.indent(tabs)).append("\"").append(entityName).append("-deepSet").append("\": {\n");
+				// Create an array of Deep Entities
+				buffer.append(this.indent(tabs)).append("\"").append(entityName).append("-deepArray").append("\": {\n");
 				buffer.append(this.indent(++tabs)).append("\"type\": \"array\",\n");
 				buffer.append(this.indent(tabs)).append("\"items\": {\n");
 				buffer.append(this.indent(++tabs)).append("\"$ref\": \"#/components/schemas/").append(entityName).append("-deep\"\n");
@@ -154,12 +154,12 @@ public class Swagger {
 		return buffer.toString();
 	}
 
-	private String makeEntityProperties(int tabs, Entity entity) {
+	private String makeProperties(int tabs, Entity entity) {
 		StringBuilder buffer = new StringBuilder();
 
 		Entity superType = entity.getSupertype();
 		if (superType != null) {
-			buffer.append(this.makeEntityProperties(tabs, superType));
+			buffer.append(this.makeProperties(tabs, superType));
 		}
 
 		boolean firstAttribute = buffer.length() == 0;
@@ -198,12 +198,12 @@ public class Swagger {
 		return buffer.toString();
 	}
 
-	private String makeEntityRelations(int tabs, Entity entity) {
+	private String makeRelations(int tabs, Entity entity) {
 		StringBuilder buffer = new StringBuilder();
 
 		Entity superType = entity.getSupertype();
 		if (superType != null) {
-			buffer.append(this.makeEntityProperties(tabs, superType));
+			buffer.append(this.makeProperties(tabs, superType));
 		}
 
 		boolean firstAttribute = buffer.length() == 0;
@@ -266,9 +266,9 @@ public class Swagger {
 				buffer.append(this.indent(tabs)).append("\"properties\": {\n");
 
 				if (relationDepth == TRelationDepth.DEEP) {
-					buffer.append(this.makeEntityProperties(tabs + 1, targetEntity));
+					buffer.append(this.makeProperties(tabs + 1, targetEntity));
 				} else if (isComposite || relationDepth == TRelationDepth.DEEP_RELATIONS) {
-					buffer.append(this.makeEntityRelations(tabs + 1, targetEntity));
+					buffer.append(this.makeRelations(tabs + 1, targetEntity));
 				}
 				buffer.append("\n");
 
@@ -279,9 +279,9 @@ public class Swagger {
 				buffer.append(this.indent(++tabs)).append("\"properties\": {\n");
 
 				if (relationDepth == TRelationDepth.DEEP) {
-					buffer.append(this.makeEntityProperties(tabs + 1, targetEntity));
+					buffer.append(this.makeProperties(tabs + 1, targetEntity));
 				} else if (isComposite || relationDepth == TRelationDepth.DEEP_RELATIONS) {
-					buffer.append(this.makeEntityRelations(tabs + 1, targetEntity));
+					buffer.append(this.makeRelations(tabs + 1, targetEntity));
 				}
 				buffer.append("\n");
 
