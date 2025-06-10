@@ -187,7 +187,7 @@ public class Swagger {
 		buffer.append(this.indent(++tabs)).append("\"type\": \"").append(type).append("\"");
 		if (readOnly) {
 			buffer.append(",\n");
-			buffer.append(this.indent(tabs)).append("\"readonly\": \"true\"");
+			buffer.append(this.indent(tabs)).append("\"readOnly\": true");
 		}
 		if (!StringUtil.isEmpty(defaultValue)) {
 			buffer.append(",\n");
