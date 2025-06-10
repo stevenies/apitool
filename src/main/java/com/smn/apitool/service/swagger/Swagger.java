@@ -4,6 +4,7 @@ import com.smn.apitool.model.API;
 import com.smn.apitool.model.Attribute;
 import com.smn.apitool.model.Entity;
 import com.smn.apitool.model.MVA;
+import com.smn.apitool.model.MVA.TRelationDepth;
 import com.smn.apitool.util.StringUtil;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -92,8 +93,8 @@ public class Swagger {
 				buffer.append(",\n");
 			}
 			buffer.append(this.indent(tabs++)).append("{\n");
-			buffer.append(this.indent(tabs--)).append("\"name\": \"").append(entityName).append("\"\n");
-			buffer.append(this.indent(tabs)).append("}");
+			buffer.append(this.indent(tabs)).append("\"name\": \"").append(entityName).append("\"\n");
+			buffer.append(this.indent(--tabs)).append("}");
 		}
 		buffer.append("\n");
 		return buffer.toString();
@@ -101,7 +102,7 @@ public class Swagger {
 
 	private String makeSchema(int tabs, API api) {
 		StringBuilder buffer = new StringBuilder();
-		
+
 		boolean firstEntity = true;
 		List<Entity> entities = api.getEntities();
 		for (Entity entity : entities) {
@@ -114,33 +115,39 @@ public class Swagger {
 			}
 
 			// Create an Entity containing only attributes
-			buffer.append(this.indent(tabs++)).append("\"").append(entityName).append("\": {\n");
-			buffer.append(this.indent(tabs)).append("\"type\": \"object\",\n");
-			buffer.append(this.indent(tabs++)).append("\"properties\": {\n");
-			buffer.append(this.makeEntityProperties(tabs, entity)).append("\n");
-			tabs--;
-			buffer.append(this.indent(tabs--)).append("}\n");
-			buffer.append(this.indent(tabs)).append("},\n");
+			buffer.append(this.indent(tabs)).append("\"").append(entityName).append("\": {\n");
+			buffer.append(this.indent(++tabs)).append("\"type\": \"object\",\n");
+			buffer.append(this.indent(tabs)).append("\"properties\": {\n");
+			buffer.append(this.makeEntityProperties(++tabs, entity)).append("\n");
+			buffer.append(this.indent(--tabs)).append("}\n");
+			buffer.append(this.indent(--tabs)).append("},\n");
 
 			// Create a set of Entities
-			buffer.append(this.indent(tabs++)).append("\"").append(entityName).append("-set").append("\": {\n");
-			buffer.append(this.indent(tabs)).append("\"type\": \"array\",\n");
-			buffer.append(this.indent(tabs++)).append("\"items\": {\n");
-			buffer.append(this.indent(tabs--)).append("\"$ref\": \"#/components/schemas/").append(entityName).append("\"\n");
-			buffer.append(this.indent(tabs--)).append("}\n");
-			buffer.append(this.indent(tabs)).append("},");
+			buffer.append(this.indent(tabs)).append("\"").append(entityName).append("-set").append("\": {\n");
+			buffer.append(this.indent(++tabs)).append("\"type\": \"array\",\n");
+			buffer.append(this.indent(tabs)).append("\"items\": {\n");
+			buffer.append(this.indent(++tabs)).append("\"$ref\": \"#/components/schemas/").append(entityName).append("\"\n");
+			buffer.append(this.indent(--tabs)).append("}\n");
+			buffer.append(this.indent(--tabs)).append("},");
 
-			if (hasShallowRelations) {
-				List<MVA> relations = entity.getRelations();
-
-				// Create a shallow Entity containing attributes and shallow related Entity(s)
-				// TODO Implement
-			}
-			if (hasDeepRelations) {
-				List<MVA> relations = entity.getRelations();
+			if (hasShallowRelations || hasDeepRelations) {
+				buffer.append("\n");
 
 				// Create a deep Entity containing attributes and deep related Entity(s)
-				// TODO Implement
+				buffer.append(this.indent(tabs)).append("\"").append(entityName).append("-deep\": {\n");
+				buffer.append(this.indent(++tabs)).append("\"type\": \"object\",\n");
+				buffer.append(this.indent(tabs)).append("\"properties\": {\n");
+				buffer.append(this.makeEntityRelations(++tabs, entity)).append("\n");
+				buffer.append(this.indent(--tabs)).append("}\n");
+				buffer.append(this.indent(--tabs)).append("},\n");
+
+				// Create a set of Deep Entities
+				buffer.append(this.indent(tabs)).append("\"").append(entityName).append("-deepSet").append("\": {\n");
+				buffer.append(this.indent(++tabs)).append("\"type\": \"array\",\n");
+				buffer.append(this.indent(tabs)).append("\"items\": {\n");
+				buffer.append(this.indent(++tabs)).append("\"$ref\": \"#/components/schemas/").append(entityName).append("-deep\"\n");
+				buffer.append(this.indent(--tabs)).append("}\n");
+				buffer.append(this.indent(--tabs)).append("},");
 			}
 			firstEntity = false;
 		}
@@ -158,11 +165,12 @@ public class Swagger {
 		boolean firstAttribute = buffer.length() == 0;
 		List<Attribute> attributes = entity.getAttributes();
 		for (Attribute attribute : attributes) {
+			String propertyText = this.makeProperty(tabs, attribute);
 
 			if (!firstAttribute) {
 				buffer.append(",\n");
 			}
-			buffer.append(this.makeProperty(tabs, attribute));
+			buffer.append(propertyText);
 			firstAttribute = false;
 		}
 		return buffer.toString();
@@ -175,8 +183,8 @@ public class Swagger {
 		String defaultValue = attribute.getDefaultValue();
 
 		StringBuilder buffer = new StringBuilder();
-		buffer.append(this.indent(tabs++)).append("\"").append(name).append("\": {\n");
-		buffer.append(this.indent(tabs)).append("\"type\": \"").append(type).append("\"");
+		buffer.append(this.indent(tabs)).append("\"").append(name).append("\": {\n");
+		buffer.append(this.indent(++tabs)).append("\"type\": \"").append(type).append("\"");
 		if (readOnly) {
 			buffer.append(",\n");
 			buffer.append(this.indent(tabs)).append("\"readonly\": \"true\"");
@@ -187,6 +195,73 @@ public class Swagger {
 		}
 		buffer.append("\n");
 		buffer.append(this.indent(--tabs)).append("}");
+		return buffer.toString();
+	}
+
+	private String makeEntityRelations(int tabs, Entity entity) {
+		StringBuilder buffer = new StringBuilder();
+
+		Entity superType = entity.getSupertype();
+		if (superType != null) {
+			buffer.append(this.makeEntityProperties(tabs, superType));
+		}
+
+		boolean firstAttribute = buffer.length() == 0;
+		List<Attribute> attributes = entity.getAttributes();
+		for (Attribute attribute : attributes) {
+			String propertyText = this.makeProperty(tabs, attribute);
+
+			if (!firstAttribute) {
+				buffer.append(",\n");
+			}
+			buffer.append(propertyText);
+			firstAttribute = false;
+		}
+
+		List<MVA> mvaList = entity.getRelations();
+		for (MVA relation : mvaList) {
+			String relationText = this.makeRelation(tabs, relation);
+
+			if (StringUtil.isEmpty(relationText)) {
+				continue;
+			}
+			
+			if (!firstAttribute) {
+				buffer.append(",\n");
+			}
+			buffer.append(relationText);
+			firstAttribute = false;
+		}
+		return buffer.toString();
+	}
+
+	private String makeRelation(int tabs, MVA relation) {
+		String name = relation.getName();
+		Attribute idAttribute = relation.getTargetEntity().getExplicitId();
+		String idType = idAttribute == null ? "string" : idAttribute.getType();
+		boolean isSingleRelation = "1".equalsIgnoreCase(relation.getCardinality());
+		boolean isShallowRelation = relation.getRelationDepth() == TRelationDepth.SHALLOW;
+		boolean isDeepRelation = relation.getRelationDepth() == TRelationDepth.DEEP;
+
+		StringBuilder buffer = new StringBuilder();
+		if (isShallowRelation) {
+			if (isSingleRelation) {
+				buffer.append(this.indent(tabs)).append("\"").append(name).append("\": {\n");
+				buffer.append(this.indent(++tabs)).append("\"type\": \"").append(idType).append("\"\n");
+				buffer.append(this.indent(--tabs)).append("}");
+			} else {
+				buffer.append(this.indent(tabs)).append("\"").append(name).append("\": {\n");
+				buffer.append(this.indent(++tabs)).append("\"type\": \"array\"\n");
+				buffer.append(this.indent(tabs)).append("\"items\": {\n");
+				buffer.append(this.indent(++tabs)).append("\"type\": \"").append(idType).append("\"\n");
+				buffer.append(this.indent(--tabs)).append("}\n");
+				buffer.append(this.indent(--tabs)).append("}");
+			}
+		}
+
+		if (isDeepRelation) {
+
+		}
 		return buffer.toString();
 	}
 
