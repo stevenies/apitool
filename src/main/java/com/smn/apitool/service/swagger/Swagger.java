@@ -25,6 +25,10 @@ public class Swagger {
 	final static String MARKER_TAGS = "{\">>>tags\": \"\"}";
 	final static String MARKER_PATHS = "\">>>paths\": \"\"";
 	final static String MARKER_SCHEMAS = "\">>>schemas\": \"\",";
+	final static String MARKER_URL = ">>>url";
+	final static String MARKER_TAG = ">>>tag";
+	final static String MARKER_SUMMARY = ">>>summary";
+	final static String MARKER_ENTITY = ">>>entity";
 
 	public String generate(API api, String serverDomain, String contextRoot, boolean makePOST, boolean makeGET, boolean makePUT, boolean makePATCH, boolean makeDELETE, boolean makeSEARCH)
 		throws IOException {
@@ -61,7 +65,7 @@ public class Swagger {
 		String tags = this.makeTags(tabs, api);
 		swagger = swagger.replace(Swagger.MARKER_TAGS, tags);
 
-		String paths = this.makePaths(tabs++, api);
+		String paths = this.makePaths(tabs++, api, makePOST, makeGET, makePUT, makePATCH, makeDELETE, makeSEARCH);
 		swagger = swagger.replace(Swagger.MARKER_PATHS, paths);
 
 		String schemas = this.makeSchema(tabs--, api);
@@ -293,9 +297,69 @@ public class Swagger {
 		return buffer.toString();
 	}
 
-	private String makePaths(int tabs, API api) {
+	private String makePaths(int tabs, API api, boolean makePOST, boolean makeGET, boolean makePUT, boolean makePATCH, boolean makeDELETE, boolean makeSEARCH) {
 		StringBuilder buffer = new StringBuilder();
+
+		boolean firstEntity = true;
+		List<Entity> entities = api.getEntities();
+		for (Entity entity : entities) {
+
+			if (!firstEntity) {
+				buffer.append(",\n");
+			}
+
+			if (makeSEARCH) {
+
+			}
+			if (makeGET) {
+				buffer.append(this.makeGetAll(entity));
+			}
+			if (makePOST) {
+
+			}
+			if (makePUT) {
+
+			}
+			if (makePATCH) {
+
+			}
+			if (makeDELETE) {
+
+			}
+			firstEntity = false;
+		}
+
 		// TODO Implement
 		return buffer.toString();
+	}
+
+	private String makeGetAll(Entity entity) {
+		String entityName = entity.getName();
+
+		Resource resource = new ClassPathResource("/swagger/pathGETMany.json");
+		String resourceText = "";
+		try (InputStream inputStream = resource.getInputStream(); OutputStream outputStream = new ByteArrayOutputStream()) {
+
+			// Copy input stream to output stream
+			byte[] byteBuffer = new byte[1024];
+			int bytesRead;
+			while ((bytesRead = inputStream.read(byteBuffer)) != -1) {
+				outputStream.write(byteBuffer, 0, bytesRead);
+			}
+			resourceText = outputStream.toString();
+		} catch (Throwable t) {
+
+		}
+
+		String entityUrl = "/" + entityName;
+		resourceText = resourceText.replace(MARKER_URL, entityUrl);
+
+		resourceText = resourceText.replace(MARKER_TAG, entityName);
+
+		String summary = "Return all instances of resource " + entityName;
+		resourceText = resourceText.replace(MARKER_SUMMARY, summary);
+
+		resourceText = resourceText.replace(MARKER_ENTITY, entityName);
+		return resourceText;
 	}
 }

@@ -38,12 +38,12 @@ public class UIController {
 		@RequestParam MultipartFile file,
 		@RequestParam String serverDomain,
 		@RequestParam String contextRoot,
-		@RequestParam (required=false, defaultValue="false") boolean makePOST,
+		@RequestParam (required=false, defaultValue="false") boolean makeSEARCH,
 		@RequestParam (required=false, defaultValue="false") boolean makeGET,
+		@RequestParam (required=false, defaultValue="false") boolean makePOST,
 		@RequestParam (required=false, defaultValue="false") boolean makePUT,
 		@RequestParam (required=false, defaultValue="false") boolean makePATCH,
 		@RequestParam (required=false, defaultValue="false") boolean makeDELETE,
-		@RequestParam (required=false, defaultValue="false") boolean makeSEARCH,
 		HttpServletResponse response,
 		Model model) {
 

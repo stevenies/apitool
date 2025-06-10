@@ -19,6 +19,17 @@
 	"components": {
 		"schemas": {
 ">>>schemas": "",
+			"PageInfo": {
+				"type": "object",
+				"properties": {
+					"pageIndex": {
+						"type": "integer"
+					},
+					"totalPages": {
+						"type": "integer"
+					}
+				}
+			},
 			"Error": {
 				"type": "object",
 				"properties": {

@@ -64,28 +64,28 @@
 				<td><input id="contextRoot" name="contextRoot" type="text" /></td>
 			</tr>
 			<tr>
-				<td>Generate POST (resource creation) endpoints:</td>
-				<td><input id="genPOST" name="genPOST" type="checkbox" /></td>
+				<td>Generate SEARCH (query by example) endpoints:</td>
+				<td><input id="makeSEARCH" name="makeSEARCH" type="checkbox" value="true" /></td>
 			</tr>
 			<tr>
 				<td>Generate GET (resource query) endpoints:</td>
-				<td><input id="genGET" name="genGET" type="checkbox" /></td>
+				<td><input id="makeGET" name="makeGET" type="checkbox" value="true" /></td>
+			</tr>
+			<tr>
+				<td>Generate POST (resource creation) endpoints:</td>
+				<td><input id="makePOST" name="makePOST" type="checkbox" /></td>
 			</tr>
 			<tr>
 				<td>Generate PUT (full resource update) endpoints:</td>
-				<td><input id="genPUT" name="genPUT" type="checkbox" /></td>
+				<td><input id="makePUT" name="makePUT" type="checkbox" value="true" /></td>
 			</tr>
 			<tr>
 				<td>Generate PATCH (partial resource update) endpoints:</td>
-				<td><input id="genPATCH" name="genPATCH" type="checkbox" /></td>
+				<td><input id="makePATCH" name="makePATCH" type="checkbox" value="true" /></td>
 			</tr>
 			<tr>
 				<td>Generate DELETE (resource deletion) endpoints:</td>
-				<td><input id="genDELETE" name="genDELETE" type="checkbox" /></td>
-			</tr>
-			<tr>
-				<td>Generate SEARCH (query by example) endpoints:</td>
-				<td><input id="genSEARCH" name="genSEARCH" type="checkbox" /></td>
+				<td><input id="makeDELETE" name="makeDELETE" type="checkbox" value="true" /></td>
 			</tr>
 			<tr>
 				<td colspan="2"><button id="buttonSubmit">Generate API Interface</button></td>
