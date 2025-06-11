@@ -1,0 +1,1131 @@
+﻿{
+	"openapi": "3.0.4",
+	"info": {
+		"title": "Title TBD",
+		"description": "Description TBD",
+		"version": "1.0"
+	},
+	"servers": [
+		{
+			"url": "https://<domain>/<contextRoot>"
+		}
+	],
+	"tags": [
+		{
+			"name": "Tire"
+		},
+		{
+			"name": "Vehicle"
+		},
+		{
+			"name": "Wheel"
+		}
+
+	],
+	"paths": {
+		"/Tire" : {
+			"post": {
+				"tags": [
+					"Tire"
+				],
+				"summary": "Create a new Tire instance",
+				"description": "",
+				"requestBody": {
+					"description": "Data used to create a new Tire instance",
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/Tire-Array"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Successful operation",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Tire-Array"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request"
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"403": {
+						"description": "Forbidden"
+					},
+					"405": {
+						"description": "Method Not Allowed"
+					},
+					"413": {
+						"description": "Content Too Large"
+					},
+					"415": {
+						"description": "Unsupported Media Type"
+					},
+					"422": {
+						"description": "Validation exception"
+					},
+					"429": {
+						"description": "Too Many Requests"
+					},
+					"500": {
+						"description": "Internal Server Error"
+					},
+					"503": {
+						"description": "Service Unavailable"
+					},
+					"504": {
+						"description": "Gateway Timeout"
+					}
+				}
+			},
+			"get": {
+				"tags": [
+					"Tire"
+				],
+				"summary": "Return all Tire data resources",
+				"description": "",
+				"parameters": [
+					{
+						"name": "pageId",
+						"in": "query",
+						"description": "Id of the desired page of data to be returned",
+						"required": false,
+						"schema": {
+							"type": "integer",
+							"default": 0
+						}
+					},
+					{
+						"name": "pageSize",
+						"in": "query",
+						"description": "Number of data objects per page of data returned",
+						"required": false,
+						"schema": {
+							"type": "integer",
+							"default": 1000
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Successful operation",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										"$ref": "#/components/schemas/PageInfo",
+										"$ref": "#/components/schemas/Tire-Array"
+									]
+								}
+							},
+						}
+					},
+					"400": {
+						"description": "Bad Request"
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"403": {
+						"description": "Forbidden"
+					},
+					"404": {
+						"description": "Not Found"
+					},
+					"405": {
+						"description": "Method Not Allowed"
+					},
+					"413": {
+						"description": "Content Too Large"
+					},
+					"414": {
+						"description": "URI Too Long"
+					},
+					"415": {
+						"description": "Unsupported Media Type"
+					},
+					"429": {
+						"description": "Too Many Requests"
+					},
+					"500": {
+						"description": "Internal Server Error"
+					},
+					"503": {
+						"description": "Service Unavailable"
+					},
+					"504": {
+						"description": "Gateway Timeout"
+					}
+				}
+			}
+		},
+		"/Vehicle" : {
+			"post": {
+				"tags": [
+					"Vehicle"
+				],
+				"summary": "Create a new Vehicle instance",
+				"description": "",
+				"requestBody": {
+					"description": "Data used to create a new Vehicle instance",
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/Vehicle-DeepArray"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Successful operation",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Vehicle-DeepArray"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request"
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"403": {
+						"description": "Forbidden"
+					},
+					"405": {
+						"description": "Method Not Allowed"
+					},
+					"413": {
+						"description": "Content Too Large"
+					},
+					"415": {
+						"description": "Unsupported Media Type"
+					},
+					"422": {
+						"description": "Validation exception"
+					},
+					"429": {
+						"description": "Too Many Requests"
+					},
+					"500": {
+						"description": "Internal Server Error"
+					},
+					"503": {
+						"description": "Service Unavailable"
+					},
+					"504": {
+						"description": "Gateway Timeout"
+					}
+				}
+			},
+			"get": {
+				"tags": [
+					"Vehicle"
+				],
+				"summary": "Return all Vehicle data resources",
+				"description": "",
+				"parameters": [
+					{
+						"name": "pageId",
+						"in": "query",
+						"description": "Id of the desired page of data to be returned",
+						"required": false,
+						"schema": {
+							"type": "integer",
+							"default": 0
+						}
+					},
+					{
+						"name": "pageSize",
+						"in": "query",
+						"description": "Number of data objects per page of data returned",
+						"required": false,
+						"schema": {
+							"type": "integer",
+							"default": 1000
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Successful operation",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										"$ref": "#/components/schemas/PageInfo",
+										"$ref": "#/components/schemas/Vehicle-DeepArray"
+									]
+								}
+							},
+						}
+					},
+					"400": {
+						"description": "Bad Request"
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"403": {
+						"description": "Forbidden"
+					},
+					"404": {
+						"description": "Not Found"
+					},
+					"405": {
+						"description": "Method Not Allowed"
+					},
+					"413": {
+						"description": "Content Too Large"
+					},
+					"414": {
+						"description": "URI Too Long"
+					},
+					"415": {
+						"description": "Unsupported Media Type"
+					},
+					"429": {
+						"description": "Too Many Requests"
+					},
+					"500": {
+						"description": "Internal Server Error"
+					},
+					"503": {
+						"description": "Service Unavailable"
+					},
+					"504": {
+						"description": "Gateway Timeout"
+					}
+				}
+			}
+		},
+		"/Vehicle/{vin}" : {
+			"get": {
+				"tags": [
+					"Vehicle"
+				],
+				"summary": "Return the specified Vehicle data resource",
+				"description": "",
+				"parameters": [
+					{
+						"name": "vin",
+						"in": "path",
+						"description": "Id of the data resource to be returned",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Successful operation",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Vehicle-DeepArray"
+								}
+							},
+						}
+					},
+					"400": {
+						"description": "Bad Request"
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"403": {
+						"description": "Forbidden"
+					},
+					"404": {
+						"description": "Not Found"
+					},
+					"405": {
+						"description": "Method Not Allowed"
+					},
+					"413": {
+						"description": "Content Too Large"
+					},
+					"414": {
+						"description": "URI Too Long"
+					},
+					"415": {
+						"description": "Unsupported Media Type"
+					},
+					"429": {
+						"description": "Too Many Requests"
+					},
+					"500": {
+						"description": "Internal Server Error"
+					},
+					"503": {
+						"description": "Service Unavailable"
+					},
+					"504": {
+						"description": "Gateway Timeout"
+					}
+				}
+			}
+,
+			"put": {
+				"tags": [
+					"Vehicle"
+				],
+				"summary": "Update all attributes of a specified Vehicle instance",
+				"description": "",
+				"parameters": [
+					{
+						"name": "vin",
+						"in": "path",
+						"description": "Id of the data resource to be updated",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"description": "Data used to update the entire Vehicle instance",
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/Vehicle-DeepArray"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Successful operation",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Vehicle-DeepArray"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request"
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"403": {
+						"description": "Forbidden"
+					},
+					"405": {
+						"description": "Method Not Allowed"
+					},
+					"413": {
+						"description": "Content Too Large"
+					},
+					"415": {
+						"description": "Unsupported Media Type"
+					},
+					"422": {
+						"description": "Validation exception"
+					},
+					"429": {
+						"description": "Too Many Requests"
+					},
+					"500": {
+						"description": "Internal Server Error"
+					},
+					"503": {
+						"description": "Service Unavailable"
+					},
+					"504": {
+						"description": "Gateway Timeout"
+					}
+				}
+			},
+			"patch": {
+				"tags": [
+					"Vehicle"
+				],
+				"summary": "Update one or more attributes of a specified Vehicle instance",
+				"description": "",
+				"parameters": [
+					{
+						"name": "vin",
+						"in": "path",
+						"description": "Id of the data resource to be updated",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"description": "Data used to update the Vehicle instance",
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/Vehicle-DeepArray"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Successful operation",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Vehicle-DeepArray"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request"
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"403": {
+						"description": "Forbidden"
+					},
+					"405": {
+						"description": "Method Not Allowed"
+					},
+					"413": {
+						"description": "Content Too Large"
+					},
+					"415": {
+						"description": "Unsupported Media Type"
+					},
+					"422": {
+						"description": "Validation exception"
+					},
+					"429": {
+						"description": "Too Many Requests"
+					},
+					"500": {
+						"description": "Internal Server Error"
+					},
+					"503": {
+						"description": "Service Unavailable"
+					},
+					"504": {
+						"description": "Gateway Timeout"
+					}
+				}
+			},
+			"delete": {
+				"tags": [
+					"Vehicle"
+				],
+				"summary": "Delete the specified Vehicle data resource",
+				"description": "",
+				"parameters": [
+					{
+						"name": "vin",
+						"in": "path",
+						"description": "Id of the data resource to be deleted",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"201": {
+						"description": "Successful operation",
+					},
+					"400": {
+						"description": "Bad Request"
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"403": {
+						"description": "Forbidden"
+					},
+					"404": {
+						"description": "Not Found"
+					},
+					"405": {
+						"description": "Method Not Allowed"
+					},
+					"429": {
+						"description": "Too Many Requests"
+					},
+					"500": {
+						"description": "Internal Server Error"
+					},
+					"503": {
+						"description": "Service Unavailable"
+					},
+					"504": {
+						"description": "Gateway Timeout"
+					}
+				}
+			}
+		},
+		"/Wheel" : {
+			"post": {
+				"tags": [
+					"Wheel"
+				],
+				"summary": "Create a new Wheel instance",
+				"description": "",
+				"requestBody": {
+					"description": "Data used to create a new Wheel instance",
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/Wheel-DeepArray"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Successful operation",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Wheel-DeepArray"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request"
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"403": {
+						"description": "Forbidden"
+					},
+					"405": {
+						"description": "Method Not Allowed"
+					},
+					"413": {
+						"description": "Content Too Large"
+					},
+					"415": {
+						"description": "Unsupported Media Type"
+					},
+					"422": {
+						"description": "Validation exception"
+					},
+					"429": {
+						"description": "Too Many Requests"
+					},
+					"500": {
+						"description": "Internal Server Error"
+					},
+					"503": {
+						"description": "Service Unavailable"
+					},
+					"504": {
+						"description": "Gateway Timeout"
+					}
+				}
+			},
+			"get": {
+				"tags": [
+					"Wheel"
+				],
+				"summary": "Return all Wheel data resources",
+				"description": "",
+				"parameters": [
+					{
+						"name": "pageId",
+						"in": "query",
+						"description": "Id of the desired page of data to be returned",
+						"required": false,
+						"schema": {
+							"type": "integer",
+							"default": 0
+						}
+					},
+					{
+						"name": "pageSize",
+						"in": "query",
+						"description": "Number of data objects per page of data returned",
+						"required": false,
+						"schema": {
+							"type": "integer",
+							"default": 1000
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Successful operation",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										"$ref": "#/components/schemas/PageInfo",
+										"$ref": "#/components/schemas/Wheel-DeepArray"
+									]
+								}
+							},
+						}
+					},
+					"400": {
+						"description": "Bad Request"
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"403": {
+						"description": "Forbidden"
+					},
+					"404": {
+						"description": "Not Found"
+					},
+					"405": {
+						"description": "Method Not Allowed"
+					},
+					"413": {
+						"description": "Content Too Large"
+					},
+					"414": {
+						"description": "URI Too Long"
+					},
+					"415": {
+						"description": "Unsupported Media Type"
+					},
+					"429": {
+						"description": "Too Many Requests"
+					},
+					"500": {
+						"description": "Internal Server Error"
+					},
+					"503": {
+						"description": "Service Unavailable"
+					},
+					"504": {
+						"description": "Gateway Timeout"
+					}
+				}
+			}
+		},
+		"/Wheel/{position}" : {
+			"get": {
+				"tags": [
+					"Wheel"
+				],
+				"summary": "Return the specified Wheel data resource",
+				"description": "",
+				"parameters": [
+					{
+						"name": "position",
+						"in": "path",
+						"description": "Id of the data resource to be returned",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Successful operation",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Wheel-DeepArray"
+								}
+							},
+						}
+					},
+					"400": {
+						"description": "Bad Request"
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"403": {
+						"description": "Forbidden"
+					},
+					"404": {
+						"description": "Not Found"
+					},
+					"405": {
+						"description": "Method Not Allowed"
+					},
+					"413": {
+						"description": "Content Too Large"
+					},
+					"414": {
+						"description": "URI Too Long"
+					},
+					"415": {
+						"description": "Unsupported Media Type"
+					},
+					"429": {
+						"description": "Too Many Requests"
+					},
+					"500": {
+						"description": "Internal Server Error"
+					},
+					"503": {
+						"description": "Service Unavailable"
+					},
+					"504": {
+						"description": "Gateway Timeout"
+					}
+				}
+			}
+,
+			"put": {
+				"tags": [
+					"Wheel"
+				],
+				"summary": "Update all attributes of a specified Wheel instance",
+				"description": "",
+				"parameters": [
+					{
+						"name": "position",
+						"in": "path",
+						"description": "Id of the data resource to be updated",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"description": "Data used to update the entire Wheel instance",
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/Wheel-DeepArray"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Successful operation",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Wheel-DeepArray"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request"
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"403": {
+						"description": "Forbidden"
+					},
+					"405": {
+						"description": "Method Not Allowed"
+					},
+					"413": {
+						"description": "Content Too Large"
+					},
+					"415": {
+						"description": "Unsupported Media Type"
+					},
+					"422": {
+						"description": "Validation exception"
+					},
+					"429": {
+						"description": "Too Many Requests"
+					},
+					"500": {
+						"description": "Internal Server Error"
+					},
+					"503": {
+						"description": "Service Unavailable"
+					},
+					"504": {
+						"description": "Gateway Timeout"
+					}
+				}
+			},
+			"patch": {
+				"tags": [
+					"Wheel"
+				],
+				"summary": "Update one or more attributes of a specified Wheel instance",
+				"description": "",
+				"parameters": [
+					{
+						"name": "position",
+						"in": "path",
+						"description": "Id of the data resource to be updated",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"description": "Data used to update the Wheel instance",
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/Wheel-DeepArray"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Successful operation",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Wheel-DeepArray"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request"
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"403": {
+						"description": "Forbidden"
+					},
+					"405": {
+						"description": "Method Not Allowed"
+					},
+					"413": {
+						"description": "Content Too Large"
+					},
+					"415": {
+						"description": "Unsupported Media Type"
+					},
+					"422": {
+						"description": "Validation exception"
+					},
+					"429": {
+						"description": "Too Many Requests"
+					},
+					"500": {
+						"description": "Internal Server Error"
+					},
+					"503": {
+						"description": "Service Unavailable"
+					},
+					"504": {
+						"description": "Gateway Timeout"
+					}
+				}
+			},
+			"delete": {
+				"tags": [
+					"Wheel"
+				],
+				"summary": "Delete the specified Wheel data resource",
+				"description": "",
+				"parameters": [
+					{
+						"name": "position",
+						"in": "path",
+						"description": "Id of the data resource to be deleted",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"201": {
+						"description": "Successful operation",
+					},
+					"400": {
+						"description": "Bad Request"
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"403": {
+						"description": "Forbidden"
+					},
+					"404": {
+						"description": "Not Found"
+					},
+					"405": {
+						"description": "Method Not Allowed"
+					},
+					"429": {
+						"description": "Too Many Requests"
+					},
+					"500": {
+						"description": "Internal Server Error"
+					},
+					"503": {
+						"description": "Service Unavailable"
+					},
+					"504": {
+						"description": "Gateway Timeout"
+					}
+				}
+			}
+		}
+	},
+	"components": {
+		"schemas": {
+			"Tire": {
+				"type": "object",
+				"properties": {
+					"manufacturer": {
+						"type": "string"
+					}
+				}
+			},
+			"Tire-Array": {
+				"type": "array",
+				"items": {
+					"$ref": "#/components/schemas/Tire"
+				}
+			},
+			"Vehicle": {
+				"type": "object",
+				"properties": {
+					"vin": {
+						"type": "string"
+					},
+					"color": {
+						"type": "string"
+					}
+				}
+			},
+			"Vehicle-Array": {
+				"type": "array",
+				"items": {
+					"$ref": "#/components/schemas/Vehicle"
+				}
+			},
+			"Vehicle-Deep": {
+				"type": "object",
+				"properties": {
+					"vin": {
+						"type": "string"
+					},
+					"color": {
+						"type": "string"
+					},
+					"deep": {
+						"type": "array",
+						"items": {
+							"properties": {
+								"position": {
+									"type": "string"
+								},
+								"size": {
+									"type": "string"
+								},
+								"isAluminum": {
+									"type": "boolean"
+								}
+							}
+						}
+					}
+				}
+			},
+			"Vehicle-DeepArray": {
+				"type": "array",
+				"items": {
+					"$ref": "#/components/schemas/Vehicle-Deep"
+				}
+			},
+			"Wheel": {
+				"type": "object",
+				"properties": {
+					"position": {
+						"type": "string"
+					},
+					"size": {
+						"type": "string"
+					},
+					"isAluminum": {
+						"type": "boolean"
+					}
+				}
+			},
+			"Wheel-Array": {
+				"type": "array",
+				"items": {
+					"$ref": "#/components/schemas/Wheel"
+				}
+			},
+			"Wheel-Deep": {
+				"type": "object",
+				"properties": {
+					"position": {
+						"type": "string"
+					},
+					"size": {
+						"type": "string"
+					},
+					"isAluminum": {
+						"type": "boolean"
+					},
+					"deep": {
+						"type": "object",
+						"properties": {
+							"manufacturer": {
+								"type": "string"
+							}
+						}
+					}
+				}
+			},
+			"Wheel-DeepArray": {
+				"type": "array",
+				"items": {
+					"$ref": "#/components/schemas/Wheel-Deep"
+				}
+			},
+			"PageInfo": {
+				"type": "object",
+				"properties": {
+					"pageIndex": {
+						"type": "integer"
+					},
+					"totalPages": {
+						"type": "integer"
+					}
+				}
+			},
+			"Error": {
+				"type": "object",
+				"properties": {
+					"code": {
+						"type": "string"
+					},
+					"message": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"code",
+					"message"
+				]
+			}
+		}
+	}
+}
