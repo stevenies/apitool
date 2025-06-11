@@ -1,4 +1,3 @@
-		">>>url": {
 			"get": {
 				"tags": [
 					">>>tag"
@@ -9,7 +8,7 @@
 					{
 						"name": ">>>entityId",
 						"in": "path",
-						"description": "Id of the data resource to be returned by the request",
+						"description": "Id of the data resource to be returned",
 						"required": true,
 						"schema": {
 							"type": ">>>idType"
@@ -65,4 +64,3 @@
 					}
 				}
 			}
-		}

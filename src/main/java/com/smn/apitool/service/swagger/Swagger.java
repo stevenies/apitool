@@ -28,7 +28,6 @@ public class Swagger {
 	final static String MARKER_SCHEMAS = "\">>>schemas\": \"\",";
 	final static String MARKER_ENTITY_ID = ">>>entityId";
 	final static String MARKER_ENTITY_ID_TYPE = ">>>idType";
-	final static String MARKER_URL = ">>>url";
 	final static String MARKER_TAG = ">>>tag";
 	final static String MARKER_SUMMARY = ">>>summary";
 	final static String MARKER_SCHEMA_GET_MANY = ">>>schemaGetMany";
@@ -168,7 +167,7 @@ public class Swagger {
 				boolean firstSubtype = true;
 				for (Entity subtype : subtypes) {
 					String subtypeName = subtype.getName();
-					
+
 					if (!firstSubtype) {
 						buffer.append(",\n");
 					}
@@ -335,48 +334,83 @@ public class Swagger {
 	private String makePaths(int tabs, API api, boolean makePOST, boolean makeGET, boolean makePUT, boolean makePATCH, boolean makeDELETE, boolean makeSEARCH) {
 		StringBuilder buffer = new StringBuilder();
 
-		boolean firstEntity = true;
 		List<Entity> entities = api.getEntities();
 		for (Entity entity : entities) {
-
-			if (!firstEntity) {
-				buffer.append(",\n");
-			}
+			String entityName = entity.getName();
+			Attribute entityId = entity.getExplicitId();
 
 			if (makeSEARCH) {
+				if (buffer.length() > 0) {
+					buffer.append(",\n");
+				}
 				// TODO Implement
 			}
-			if (makeGET) {
-				buffer.append(this.makeGetAll(entity));
 
-				String getOneText = this.makeGetOne(entity);
-				if (!StringUtil.isEmpty(getOneText)) {
+			if (makePOST) {
+				if (buffer.length() > 0) {
 					buffer.append(",\n");
-					buffer.append(getOneText);
+				}
+				// TODO Implement
+			}
+
+			if (makeGET) {
+				if (buffer.length() > 0) {
+					buffer.append(",\n");
+				}
+				buffer.append(this.indent(tabs)).append("\"/").append(entityName).append("\" : {\n");
+				buffer.append(this.makeGetAll(entity)).append("\n");
+				buffer.append(this.indent(tabs)).append("}");
+			}
+
+			if (entityId == null) {
+				// TODO Append error message indicating ID field has not been defined
+
+			} else {
+				String entityIdName = entityId.getName();
+
+				StringBuilder endpointBuffer = new StringBuilder();
+				if (makeGET) {
+					endpointBuffer.append(this.makeGetOne(entity));
+				}
+
+				if (makePUT) {
+					if (endpointBuffer.length() > 0) {
+						endpointBuffer.append(",\n");
+					}
+					// TODO Implement
+				}
+
+				if (makePATCH) {
+					if (endpointBuffer.length() > 0) {
+						endpointBuffer.append(",\n");
+					}
+					// TODO Implement
+				}
+
+				if (makeDELETE) {
+					if (endpointBuffer.length() > 0) {
+						endpointBuffer.append(",\n");
+					}
+					endpointBuffer.append(this.makeDelete(entity));
+				}
+
+				if (endpointBuffer.length() > 0) {
+					if (buffer.length() > 0) {
+						buffer.append(",\n");
+					}
+					buffer.append(this.indent(tabs)).append("\"/").append(entityName).append("/{").append(entityIdName).append("}\" : {\n");
+					buffer.append(endpointBuffer);
+					buffer.append(this.indent(tabs)).append("}");
 				}
 			}
-			if (makePOST) {
-				// TODO Implement
-			}
-			if (makePUT) {
-				// TODO Implement
-			}
-			if (makePATCH) {
-				// TODO Implement
-			}
-			if (makeDELETE) {
-				// TODO Implement
-			}
-			firstEntity = false;
 		}
 		return buffer.toString();
 	}
 
 	private String makeGetAll(Entity entity) {
 		String entityName = entity.getName();
-		String entityUrl = "/" + entityName;
 		boolean hasSubtypes = entity.getSubtypes().size() > 0;
-		String summary = "Return all instances of " + entityName + " data resources";
+		String summary = "Return all " + entityName + " data resources";
 
 		String resourceText = "";
 		try {
@@ -384,7 +418,6 @@ public class Swagger {
 		} catch (IOException e) {
 			System.err.println(e.getMessage());
 		}
-		resourceText = resourceText.replace(Swagger.MARKER_URL, entityUrl);
 		resourceText = resourceText.replace(Swagger.MARKER_TAG, entityName);
 		resourceText = resourceText.replace(Swagger.MARKER_SUMMARY, summary);
 
@@ -398,16 +431,10 @@ public class Swagger {
 	}
 
 	private String makeGetOne(Entity entity) {
-
-		Attribute entityId = entity.getExplicitId();
-		if (entityId == null) {
-			return "";
-		}
-		
 		String entityName = entity.getName();
+		Attribute entityId = entity.getExplicitId();
 		String entityIdName = entityId.getName();
 		String entityIdType = entityId.getType();
-		String entityUrl = "/" + entityName + "/{" + entityIdName + "}";
 		String summary = "Return the specified " + entityName + " data resource";
 
 		String resourceText = "";
@@ -416,7 +443,6 @@ public class Swagger {
 		} catch (IOException e) {
 			System.err.println(e.getMessage());
 		}
-		resourceText = resourceText.replace(Swagger.MARKER_URL, entityUrl);
 		resourceText = resourceText.replace(Swagger.MARKER_TAG, entityName);
 		resourceText = resourceText.replace(Swagger.MARKER_SUMMARY, summary);
 		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_ID, entityIdName);
@@ -425,6 +451,27 @@ public class Swagger {
 		int tabs = 9;
 		StringBuilder schema = new StringBuilder();
 		schema.append(this.indent(tabs)).append("\"$ref\": \"#/components/schemas/").append(entityName).append("\"");
-		return resourceText.replace(Swagger.MARKER_SCHEMA_GET_ONE, schema.toString());
+		resourceText = resourceText.replace(Swagger.MARKER_SCHEMA_GET_ONE, schema.toString());
+		return resourceText;
+	}
+
+	private String makeDelete(Entity entity) {
+		String entityName = entity.getName();
+		Attribute entityId = entity.getExplicitId();
+		String entityIdName = entityId.getName();
+		String entityIdType = entityId.getType();
+		String summary = "Delete the specified " + entityName + " data resource";
+
+		String resourceText = "";
+		try {
+			resourceText = FileUtil.readResource("/swagger/pathDELETE.part");
+		} catch (IOException e) {
+			System.err.println(e.getMessage());
+		}
+		resourceText = resourceText.replace(Swagger.MARKER_TAG, entityName);
+		resourceText = resourceText.replace(Swagger.MARKER_SUMMARY, summary);
+		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_ID, entityIdName);
+		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_ID_TYPE, entityIdType);
+		return resourceText;
 	}
 }
