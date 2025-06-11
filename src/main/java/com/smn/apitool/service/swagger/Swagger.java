@@ -5,6 +5,7 @@ import com.smn.apitool.model.Attribute;
 import com.smn.apitool.model.Entity;
 import com.smn.apitool.model.MVA;
 import com.smn.apitool.model.MVA.TRelationDepth;
+import com.smn.apitool.util.FileUtil;
 import com.smn.apitool.util.StringUtil;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -28,7 +29,7 @@ public class Swagger {
 	final static String MARKER_URL = ">>>url";
 	final static String MARKER_TAG = ">>>tag";
 	final static String MARKER_SUMMARY = ">>>summary";
-	final static String MARKER_ENTITY = ">>>entity";
+	final static String MARKER_SCHEMA_GET_MANY = ">>>schemaGetMany";
 
 	public String generate(API api, String serverDomain, String contextRoot, boolean makePOST, boolean makeGET, boolean makePUT, boolean makePATCH, boolean makeDELETE, boolean makeSEARCH)
 		throws IOException {
@@ -309,57 +310,53 @@ public class Swagger {
 			}
 
 			if (makeSEARCH) {
-
+				// TODO Implement
 			}
 			if (makeGET) {
 				buffer.append(this.makeGetAll(entity));
+				// TODO Implement Get One
 			}
 			if (makePOST) {
-
+				// TODO Implement
 			}
 			if (makePUT) {
-
+				// TODO Implement
 			}
 			if (makePATCH) {
-
+				// TODO Implement
 			}
 			if (makeDELETE) {
-
+				// TODO Implement
 			}
 			firstEntity = false;
 		}
-
-		// TODO Implement
 		return buffer.toString();
 	}
 
 	private String makeGetAll(Entity entity) {
 		String entityName = entity.getName();
+		String entityUrl = "/" + entityName;
+		boolean hasRelations = entity.hasShallowRelations() || entity.hasDeepRelations();
+		String summary = "Return all instances of " + entityName + " data resources";
 
-		Resource resource = new ClassPathResource("/swagger/pathGETMany.json");
 		String resourceText = "";
-		try (InputStream inputStream = resource.getInputStream(); OutputStream outputStream = new ByteArrayOutputStream()) {
-
-			// Copy input stream to output stream
-			byte[] byteBuffer = new byte[1024];
-			int bytesRead;
-			while ((bytesRead = inputStream.read(byteBuffer)) != -1) {
-				outputStream.write(byteBuffer, 0, bytesRead);
-			}
-			resourceText = outputStream.toString();
-		} catch (Throwable t) {
-
+		try {
+			resourceText = FileUtil.readResource("/swagger/pathGETMany.part");
+		} catch (IOException e) {
+			System.err.println(e.getMessage());
 		}
 
-		String entityUrl = "/" + entityName;
+		StringBuilder schema = new StringBuilder();
+		int tabs = 9;
+		schema.append(this.indent(tabs)).append("\"allOf\": [\n");
+		schema.append(this.indent(++tabs)).append("\"$ref\": \"#/components/schemas/PageInfo\",\n");
+		schema.append(this.indent(tabs)).append("\"$ref\": \"#/components/schemas/").append(entityName).append(hasRelations ? "-deepArray\"\n" : "-array\"\n");
+		schema.append(this.indent(--tabs)).append("]");
+
 		resourceText = resourceText.replace(MARKER_URL, entityUrl);
-
 		resourceText = resourceText.replace(MARKER_TAG, entityName);
-
-		String summary = "Return all instances of resource " + entityName;
 		resourceText = resourceText.replace(MARKER_SUMMARY, summary);
-
-		resourceText = resourceText.replace(MARKER_ENTITY, entityName);
+		resourceText = resourceText.replace(MARKER_SCHEMA_GET_MANY, schema.toString());
 		return resourceText;
 	}
 }

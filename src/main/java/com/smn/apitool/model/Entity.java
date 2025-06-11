@@ -89,7 +89,7 @@ public class Entity implements Comparable<Entity> {
 		buffer.append(" {\n");
 
 		buffer.append("  hasDeepRelations: " + hasDeepRelations + "\n");
-		buffer.append("  explicitAttribute: " + (explicitId == null ? "none" : explicitId.getName()) + "\n");
+		buffer.append("  explicitId: " + (explicitId == null ? "none" : explicitId.getName()) + "\n");
 
 		for (Attribute attribute : this.attributes) {
 			buffer.append("  ").append(attribute);
