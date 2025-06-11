@@ -26,10 +26,13 @@ public class Swagger {
 	final static String MARKER_TAGS = "{\">>>tags\": \"\"}";
 	final static String MARKER_PATHS = "\">>>paths\": \"\"";
 	final static String MARKER_SCHEMAS = "\">>>schemas\": \"\",";
+	final static String MARKER_ENTITY_ID = ">>>entityId";
+	final static String MARKER_ENTITY_ID_TYPE = ">>>idType";
 	final static String MARKER_URL = ">>>url";
 	final static String MARKER_TAG = ">>>tag";
 	final static String MARKER_SUMMARY = ">>>summary";
 	final static String MARKER_SCHEMA_GET_MANY = ">>>schemaGetMany";
+	final static String MARKER_SCHEMA_GET_ONE = ">>>schemaGetOne";
 
 	public String generate(API api, String serverDomain, String contextRoot, boolean makePOST, boolean makeGET, boolean makePUT, boolean makePATCH, boolean makeDELETE, boolean makeSEARCH)
 		throws IOException {
@@ -345,7 +348,12 @@ public class Swagger {
 			}
 			if (makeGET) {
 				buffer.append(this.makeGetAll(entity));
-				// TODO Implement Get One
+
+				String getOneText = this.makeGetOne(entity);
+				if (!StringUtil.isEmpty(getOneText)) {
+					buffer.append(",\n");
+					buffer.append(getOneText);
+				}
 			}
 			if (makePOST) {
 				// TODO Implement
@@ -387,5 +395,36 @@ public class Swagger {
 		schema.append(this.indent(tabs)).append("\"$ref\": \"#/components/schemas/").append(entityName).append(hasSubtypes ? "-SubtypesArray\",\n" : "-Array\",\n");
 		schema.append(this.indent(--tabs)).append("]");
 		return resourceText.replace(Swagger.MARKER_SCHEMA_GET_MANY, schema.toString());
+	}
+
+	private String makeGetOne(Entity entity) {
+
+		Attribute entityId = entity.getExplicitId();
+		if (entityId == null) {
+			return "";
+		}
+		
+		String entityName = entity.getName();
+		String entityIdName = entityId.getName();
+		String entityIdType = entityId.getType();
+		String entityUrl = "/" + entityName + "/{" + entityIdName + "}";
+		String summary = "Return the specified " + entityName + " data resource";
+
+		String resourceText = "";
+		try {
+			resourceText = FileUtil.readResource("/swagger/pathGETOne.part");
+		} catch (IOException e) {
+			System.err.println(e.getMessage());
+		}
+		resourceText = resourceText.replace(Swagger.MARKER_URL, entityUrl);
+		resourceText = resourceText.replace(Swagger.MARKER_TAG, entityName);
+		resourceText = resourceText.replace(Swagger.MARKER_SUMMARY, summary);
+		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_ID, entityIdName);
+		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_ID_TYPE, entityIdType);
+
+		int tabs = 9;
+		StringBuilder schema = new StringBuilder();
+		schema.append(this.indent(tabs)).append("\"$ref\": \"#/components/schemas/").append(entityName).append("\"");
+		return resourceText.replace(Swagger.MARKER_SCHEMA_GET_ONE, schema.toString());
 	}
 }
