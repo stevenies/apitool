@@ -133,7 +133,7 @@ public class AdaptorStarUML {
 								String end1Name = umlEnd1.getName();
 								String end1Multiplicity = umlEnd1.getMultiplicity();
 								boolean end1Navigable = umlEnd1.isNavigable();
-								boolean end1Composite = "composite".equalsIgnoreCase(umlEnd1.getAggregation());
+								boolean end1Composite = umlEnd1.isComposite();
 								String end1Stereotype = umlEnd1.getStereotype();
 								TRelationDepth end1RelationDepth = "deep".equalsIgnoreCase(end1Stereotype) ? TRelationDepth.DEEP //
 									: "deep-relations".equalsIgnoreCase(end1Stereotype) ? TRelationDepth.DEEP_RELATIONS //
@@ -145,13 +145,16 @@ public class AdaptorStarUML {
 								String end2Name = umlEnd2.getName();
 								String end2Multiplicity = umlEnd2.getMultiplicity();
 								boolean end2Navigable = umlEnd2.isNavigable();
-								boolean end2Composite = "composite".equalsIgnoreCase(umlEnd2.getAggregation());
+								boolean end2Composite = umlEnd2.isComposite();
 								String end2Stereotype = umlEnd2.getStereotype();
 								TRelationDepth end2RelationDepth = "deep".equalsIgnoreCase(end2Stereotype) ? TRelationDepth.DEEP //
 									: "deep-relations".equalsIgnoreCase(end2Stereotype) ? TRelationDepth.DEEP_RELATIONS //
 									: "shallow".equalsIgnoreCase(end2Stereotype) ? TRelationDepth.SHALLOW //
 									: TRelationDepth.NONE;
 
+								if (end2Composite) {
+									end1Entity.setEmbedded(true);
+								}
 								if (end2Navigable) {
 									MVA mva1 = new MVA(end2Entity, end2Name, end2Multiplicity);
 									mva1.setComposite(end1Composite);
@@ -159,6 +162,9 @@ public class AdaptorStarUML {
 									end1Entity.addRelation(mva1);
 								}
 
+								if (end1Composite) {
+									end2Entity.setEmbedded(true);
+								}
 								if (end1Navigable) {
 									MVA mva2 = new MVA(end1Entity, end1Name, end1Multiplicity);
 									mva2.setComposite(end2Composite);

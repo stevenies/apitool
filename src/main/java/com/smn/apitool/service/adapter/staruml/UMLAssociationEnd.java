@@ -56,8 +56,8 @@ public class UMLAssociationEnd {
 		this.navigable = navigable;
 	}
 
-	public String getAggregation() {
-		return this.aggregation;
+	public boolean isComposite() {
+		return "composite".equalsIgnoreCase(this.aggregation);
 	}
 
 	public void setAggregation(String aggregation) {

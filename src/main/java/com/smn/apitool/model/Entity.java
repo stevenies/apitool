@@ -10,6 +10,7 @@ public class Entity implements Comparable<Entity> {
 	private String name;
 	private Entity supertype;
 	private List<Entity> subtypes = new ArrayList<>();
+	private boolean isEmbedded;
 	private List<Attribute> attributes = new ArrayList<>();
 	private Attribute explicitId;
 	private List<MVA> relations = new ArrayList<>();
@@ -27,6 +28,12 @@ public class Entity implements Comparable<Entity> {
 		return this.name;
 	}
 
+	public String getType() {
+		boolean hasRelations = this.hasShallowRelations() || this.hasDeepRelations();
+		boolean hasSubtypes = this.getSubtypes().size() > 0;
+		return this.name + (hasSubtypes ? "-SubtypesArray" : hasRelations ? "-DeepArray" : "-Array");
+	}
+
 	public Entity getSupertype() {
 		return this.supertype;
 	}
@@ -38,6 +45,14 @@ public class Entity implements Comparable<Entity> {
 
 	public List<Entity> getSubtypes() {
 		return this.subtypes;
+	}
+
+	public boolean isEmbedded() {
+		return this.isEmbedded;
+	}
+
+	public void setEmbedded(boolean isEmbedded) {
+		this.isEmbedded = isEmbedded;
 	}
 
 	public List<Attribute> getAttributes() {
@@ -94,8 +109,9 @@ public class Entity implements Comparable<Entity> {
 		}
 		buffer.append(" {\n");
 
-		buffer.append("  hasDeepRelations: " + hasDeepRelations + "\n");
-		buffer.append("  explicitId: " + (explicitId == null ? "none" : explicitId.getName()) + "\n");
+		buffer.append("  isEmbedded: " + this.isEmbedded + "\n");
+		buffer.append("  hasDeepRelations: " + this.hasDeepRelations + "\n");
+		buffer.append("  explicitId: " + (this.explicitId == null ? "none" : this.explicitId.getName()) + "\n");
 
 		for (Attribute attribute : this.attributes) {
 			buffer.append("  ").append(attribute);

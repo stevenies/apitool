@@ -93,6 +93,13 @@ public class Swagger {
 		List<Entity> entities = api.getEntities();
 		for (Entity entity : entities) {
 			String entityName = entity.getName();
+			boolean isEmbedded = entity.isEmbedded();
+
+			// Don't make tags for embedded Entities.
+			if (isEmbedded) {
+				continue;
+			}
+
 			if (buffer.length() > 0) {
 				buffer.append(",\n");
 			}
@@ -214,7 +221,7 @@ public class Swagger {
 	}
 
 	private String makeProperty(int tabs, Attribute attribute) {
-		String name = attribute.getName();
+		String name = StringUtil.toCamelCase(attribute.getName());
 		String type = attribute.getType();
 		boolean readOnly = attribute.isReadOnly();
 		String defaultValue = attribute.getDefaultValue();
@@ -273,7 +280,7 @@ public class Swagger {
 	}
 
 	private String makeRelation(int tabs, MVA relation) {
-		String name = relation.getName();
+		String name = StringUtil.toCamelCase(relation.getName());
 		Entity targetEntity = relation.getTargetEntity();
 		Attribute targetIdAttribute = targetEntity.getExplicitId();
 		String targetIdType = targetIdAttribute == null ? "string" : targetIdAttribute.getType();
@@ -337,6 +344,12 @@ public class Swagger {
 		for (Entity entity : entities) {
 			String entityName = entity.getName();
 			Attribute entityId = entity.getExplicitId();
+			boolean isEmbedded = entity.isEmbedded();
+
+			// Don't make endpoints for embedded Entities.
+			if (isEmbedded) {
+				continue;
+			}
 
 			if (makeSEARCH) {
 				if (buffer.length() > 0) {
@@ -412,6 +425,7 @@ public class Swagger {
 
 	private String makePost(Entity entity) {
 		String entityName = entity.getName();
+		String entityType = entity.getType();
 
 		String resourceText = "";
 		try {
@@ -420,14 +434,14 @@ public class Swagger {
 			System.err.println(e.getMessage());
 		}
 		resourceText = resourceText.replace(Swagger.MARKER_TAG, entityName);
-		resourceText =  resourceText.replace(Swagger.MARKER_ENTITY_NAME, entityName);
-		resourceText =  resourceText.replace(Swagger.MARKER_ENTITY_TYPE, entityName);
+		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_NAME, entityName);
+		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_TYPE, entityType);
 		return resourceText;
 	}
 
 	private String makeGetAll(Entity entity) {
 		String entityName = entity.getName();
-		boolean hasSubtypes = entity.getSubtypes().size() > 0;
+		String entityType = entity.getType();
 
 		String resourceText = "";
 		try {
@@ -436,13 +450,14 @@ public class Swagger {
 			System.err.println(e.getMessage());
 		}
 		resourceText = resourceText.replace(Swagger.MARKER_TAG, entityName);
-		resourceText =  resourceText.replace(Swagger.MARKER_ENTITY_NAME, entityName);
-		resourceText =  resourceText.replace(Swagger.MARKER_ENTITY_TYPE, entityName + (hasSubtypes ? "-SubtypesArray" : "-Array"));
+		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_NAME, entityName);
+		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_TYPE, entityType);
 		return resourceText;
 	}
 
 	private String makeGetOne(Entity entity) {
 		String entityName = entity.getName();
+		String entityType = entity.getType();
 		Attribute entityId = entity.getExplicitId();
 		String entityIdName = entityId.getName();
 		String entityIdType = entityId.getType();
@@ -455,7 +470,7 @@ public class Swagger {
 		}
 		resourceText = resourceText.replace(Swagger.MARKER_TAG, entityName);
 		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_NAME, entityName);
-		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_TYPE, entityName);
+		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_TYPE, entityType);
 		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_ID, entityIdName);
 		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_ID_TYPE, entityIdType);
 		return resourceText;
@@ -463,6 +478,7 @@ public class Swagger {
 
 	private String makePut(Entity entity) {
 		String entityName = entity.getName();
+		String entityType = entity.getType();
 		Attribute entityId = entity.getExplicitId();
 		String entityIdName = entityId.getName();
 		String entityIdType = entityId.getType();
@@ -475,7 +491,7 @@ public class Swagger {
 		}
 		resourceText = resourceText.replace(Swagger.MARKER_TAG, entityName);
 		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_NAME, entityName);
-		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_TYPE, entityName);
+		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_TYPE, entityType);
 		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_ID, entityIdName);
 		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_ID_TYPE, entityIdType);
 		return resourceText;
@@ -483,6 +499,7 @@ public class Swagger {
 
 	private String makePatch(Entity entity) {
 		String entityName = entity.getName();
+		String entityType = entity.getType();
 		Attribute entityId = entity.getExplicitId();
 		String entityIdName = entityId.getName();
 		String entityIdType = entityId.getType();
@@ -495,7 +512,7 @@ public class Swagger {
 		}
 		resourceText = resourceText.replace(Swagger.MARKER_TAG, entityName);
 		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_NAME, entityName);
-		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_TYPE, entityName);
+		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_TYPE, entityType);
 		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_ID, entityIdName);
 		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_ID_TYPE, entityIdType);
 		return resourceText;
@@ -503,6 +520,7 @@ public class Swagger {
 
 	private String makeDelete(Entity entity) {
 		String entityName = entity.getName();
+		String entityType = entity.getType();
 		Attribute entityId = entity.getExplicitId();
 		String entityIdName = entityId.getName();
 		String entityIdType = entityId.getType();
@@ -515,7 +533,7 @@ public class Swagger {
 		}
 		resourceText = resourceText.replace(Swagger.MARKER_TAG, entityName);
 		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_NAME, entityName);
-		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_TYPE, entityName);
+		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_TYPE, entityType);
 		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_ID, entityIdName);
 		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_ID_TYPE, entityIdType);
 		return resourceText;
