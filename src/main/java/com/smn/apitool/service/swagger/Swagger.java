@@ -336,6 +336,7 @@ public class Swagger {
 	private String makeGetAll(Entity entity) {
 		String entityName = entity.getName();
 		String entityUrl = "/" + entityName;
+		List<Entity> subtypes = entity.getSubtypes();
 		boolean hasRelations = entity.hasShallowRelations() || entity.hasDeepRelations();
 		String summary = "Return all instances of " + entityName + " data resources";
 
@@ -345,18 +346,35 @@ public class Swagger {
 		} catch (IOException e) {
 			System.err.println(e.getMessage());
 		}
-
-		StringBuilder schema = new StringBuilder();
-		int tabs = 9;
-		schema.append(this.indent(tabs)).append("\"allOf\": [\n");
-		schema.append(this.indent(++tabs)).append("\"$ref\": \"#/components/schemas/PageInfo\",\n");
-		schema.append(this.indent(tabs)).append("\"$ref\": \"#/components/schemas/").append(entityName).append(hasRelations ? "-deepArray\"\n" : "-array\"\n");
-		schema.append(this.indent(--tabs)).append("]");
-
 		resourceText = resourceText.replace(MARKER_URL, entityUrl);
 		resourceText = resourceText.replace(MARKER_TAG, entityName);
 		resourceText = resourceText.replace(MARKER_SUMMARY, summary);
+
+		int tabs = 9;
+		StringBuilder schema = new StringBuilder();
+		schema.append(this.indent(tabs)).append("\"allOf\": [\n");
+		schema.append(this.indent(++tabs)).append("\"$ref\": \"#/components/schemas/PageInfo\",\n");
+		schema.append(this.indent(tabs)).append("{\n");
+		schema.append(this.indent(++tabs)).append("\"type\": \"array\",\n");
+		schema.append(this.indent(tabs)).append("\"items\": {\n");
+		schema.append(this.indent(++tabs)).append("\"anyOf\": [\n");
+		schema.append(this.indent(++tabs)).append("\"$ref\": \"#/components/schemas/").append(entityName).append(hasRelations ? "-deepArray\"" : "-array\"");
+
+		for (Entity subtype : subtypes) {
+			String subtypeName = subtype.getName();
+			boolean subTypeHasRelations = subtype.hasShallowRelations() || subtype.hasDeepRelations();
+
+			schema.append(",\n");
+			schema.append(this.indent(tabs)).append("\"$ref\": \"#/components/schemas/").append(subtypeName).append(subTypeHasRelations ? "-deepArray\"\n" : "-array\"");
+		}
+		schema.append("\n");
+
+		schema.append(this.indent(--tabs)).append("]\n");
+		schema.append(this.indent(--tabs)).append("}\n");
+		schema.append(this.indent(--tabs)).append("}\n");
+		schema.append(this.indent(--tabs)).append("]");
 		resourceText = resourceText.replace(MARKER_SCHEMA_GET_MANY, schema.toString());
+
 		return resourceText;
 	}
 }

@@ -9,6 +9,7 @@ public class Entity implements Comparable<Entity> {
 
 	private String name;
 	private Entity supertype;
+	private List<Entity> subtypes = new ArrayList<>();
 	private List<Attribute> attributes = new ArrayList<>();
 	private Attribute explicitId;
 	private List<MVA> relations = new ArrayList<>();
@@ -32,6 +33,11 @@ public class Entity implements Comparable<Entity> {
 
 	public void setSupertype(Entity supertype) {
 		this.supertype = supertype;
+		supertype.subtypes.add(this);
+	}
+
+	public List<Entity> getSubtypes() {
+		return this.subtypes;
 	}
 
 	public List<Attribute> getAttributes() {
