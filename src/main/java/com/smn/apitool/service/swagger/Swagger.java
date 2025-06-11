@@ -26,12 +26,11 @@ public class Swagger {
 	final static String MARKER_TAGS = "{\">>>tags\": \"\"}";
 	final static String MARKER_PATHS = "\">>>paths\": \"\"";
 	final static String MARKER_SCHEMAS = "\">>>schemas\": \"\",";
+	final static String MARKER_ENTITY_NAME = ">>>entityName";
+	final static String MARKER_ENTITY_TYPE = ">>>entityType";
 	final static String MARKER_ENTITY_ID = ">>>entityId";
 	final static String MARKER_ENTITY_ID_TYPE = ">>>idType";
 	final static String MARKER_TAG = ">>>tag";
-	final static String MARKER_SUMMARY = ">>>summary";
-	final static String MARKER_SCHEMA_GET_MANY = ">>>schemaGetMany";
-	final static String MARKER_SCHEMA_GET_ONE = ">>>schemaGetOne";
 
 	public String generate(API api, String serverDomain, String contextRoot, boolean makePOST, boolean makeGET, boolean makePUT, boolean makePATCH, boolean makeDELETE, boolean makeSEARCH)
 		throws IOException {
@@ -346,19 +345,23 @@ public class Swagger {
 				// TODO Implement
 			}
 
-			if (makePOST) {
-				if (buffer.length() > 0) {
-					buffer.append(",\n");
+			if (makePOST || makeGET) {
+				StringBuilder endpointBuffer = new StringBuilder();
+				if (makePOST) {
+					endpointBuffer.append(this.makePost(entity));
 				}
-				// TODO Implement
-			}
+				if (makeGET) {
+					if (endpointBuffer.length() > 0) {
+						endpointBuffer.append(",\n");
+					}
+					endpointBuffer.append(this.makeGetAll(entity));
+				}
 
-			if (makeGET) {
 				if (buffer.length() > 0) {
 					buffer.append(",\n");
 				}
 				buffer.append(this.indent(tabs)).append("\"/").append(entityName).append("\" : {\n");
-				buffer.append(this.makeGetAll(entity)).append("\n");
+				buffer.append(endpointBuffer).append("\n");
 				buffer.append(this.indent(tabs)).append("}");
 			}
 
@@ -377,14 +380,14 @@ public class Swagger {
 					if (endpointBuffer.length() > 0) {
 						endpointBuffer.append(",\n");
 					}
-					// TODO Implement
+					endpointBuffer.append(this.makePut(entity));
 				}
 
 				if (makePATCH) {
 					if (endpointBuffer.length() > 0) {
 						endpointBuffer.append(",\n");
 					}
-					// TODO Implement
+					endpointBuffer.append(this.makePatch(entity));
 				}
 
 				if (makeDELETE) {
@@ -407,27 +410,35 @@ public class Swagger {
 		return buffer.toString();
 	}
 
-	private String makeGetAll(Entity entity) {
+	private String makePost(Entity entity) {
 		String entityName = entity.getName();
-		boolean hasSubtypes = entity.getSubtypes().size() > 0;
-		String summary = "Return all " + entityName + " data resources";
 
 		String resourceText = "";
 		try {
-			resourceText = FileUtil.readResource("/swagger/pathGETMany.part");
+			resourceText = FileUtil.readResource("/swagger/pathPOST.part");
 		} catch (IOException e) {
 			System.err.println(e.getMessage());
 		}
 		resourceText = resourceText.replace(Swagger.MARKER_TAG, entityName);
-		resourceText = resourceText.replace(Swagger.MARKER_SUMMARY, summary);
+		resourceText =  resourceText.replace(Swagger.MARKER_ENTITY_NAME, entityName);
+		resourceText =  resourceText.replace(Swagger.MARKER_ENTITY_TYPE, entityName);
+		return resourceText;
+	}
 
-		int tabs = 9;
-		StringBuilder schema = new StringBuilder();
-		schema.append(this.indent(tabs)).append("\"allOf\": [\n");
-		schema.append(this.indent(++tabs)).append("\"$ref\": \"#/components/schemas/PageInfo\",\n");
-		schema.append(this.indent(tabs)).append("\"$ref\": \"#/components/schemas/").append(entityName).append(hasSubtypes ? "-SubtypesArray\",\n" : "-Array\",\n");
-		schema.append(this.indent(--tabs)).append("]");
-		return resourceText.replace(Swagger.MARKER_SCHEMA_GET_MANY, schema.toString());
+	private String makeGetAll(Entity entity) {
+		String entityName = entity.getName();
+		boolean hasSubtypes = entity.getSubtypes().size() > 0;
+
+		String resourceText = "";
+		try {
+			resourceText = FileUtil.readResource("/swagger/pathGETAll.part");
+		} catch (IOException e) {
+			System.err.println(e.getMessage());
+		}
+		resourceText = resourceText.replace(Swagger.MARKER_TAG, entityName);
+		resourceText =  resourceText.replace(Swagger.MARKER_ENTITY_NAME, entityName);
+		resourceText =  resourceText.replace(Swagger.MARKER_ENTITY_TYPE, entityName + (hasSubtypes ? "-SubtypesArray" : "-Array"));
+		return resourceText;
 	}
 
 	private String makeGetOne(Entity entity) {
@@ -435,7 +446,6 @@ public class Swagger {
 		Attribute entityId = entity.getExplicitId();
 		String entityIdName = entityId.getName();
 		String entityIdType = entityId.getType();
-		String summary = "Return the specified " + entityName + " data resource";
 
 		String resourceText = "";
 		try {
@@ -444,14 +454,50 @@ public class Swagger {
 			System.err.println(e.getMessage());
 		}
 		resourceText = resourceText.replace(Swagger.MARKER_TAG, entityName);
-		resourceText = resourceText.replace(Swagger.MARKER_SUMMARY, summary);
+		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_NAME, entityName);
+		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_TYPE, entityName);
 		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_ID, entityIdName);
 		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_ID_TYPE, entityIdType);
+		return resourceText;
+	}
 
-		int tabs = 9;
-		StringBuilder schema = new StringBuilder();
-		schema.append(this.indent(tabs)).append("\"$ref\": \"#/components/schemas/").append(entityName).append("\"");
-		resourceText = resourceText.replace(Swagger.MARKER_SCHEMA_GET_ONE, schema.toString());
+	private String makePut(Entity entity) {
+		String entityName = entity.getName();
+		Attribute entityId = entity.getExplicitId();
+		String entityIdName = entityId.getName();
+		String entityIdType = entityId.getType();
+
+		String resourceText = "";
+		try {
+			resourceText = FileUtil.readResource("/swagger/pathPUT.part");
+		} catch (IOException e) {
+			System.err.println(e.getMessage());
+		}
+		resourceText = resourceText.replace(Swagger.MARKER_TAG, entityName);
+		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_NAME, entityName);
+		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_TYPE, entityName);
+		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_ID, entityIdName);
+		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_ID_TYPE, entityIdType);
+		return resourceText;
+	}
+
+	private String makePatch(Entity entity) {
+		String entityName = entity.getName();
+		Attribute entityId = entity.getExplicitId();
+		String entityIdName = entityId.getName();
+		String entityIdType = entityId.getType();
+
+		String resourceText = "";
+		try {
+			resourceText = FileUtil.readResource("/swagger/pathPATCH.part");
+		} catch (IOException e) {
+			System.err.println(e.getMessage());
+		}
+		resourceText = resourceText.replace(Swagger.MARKER_TAG, entityName);
+		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_NAME, entityName);
+		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_TYPE, entityName);
+		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_ID, entityIdName);
+		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_ID_TYPE, entityIdType);
 		return resourceText;
 	}
 
@@ -460,7 +506,6 @@ public class Swagger {
 		Attribute entityId = entity.getExplicitId();
 		String entityIdName = entityId.getName();
 		String entityIdType = entityId.getType();
-		String summary = "Delete the specified " + entityName + " data resource";
 
 		String resourceText = "";
 		try {
@@ -469,7 +514,8 @@ public class Swagger {
 			System.err.println(e.getMessage());
 		}
 		resourceText = resourceText.replace(Swagger.MARKER_TAG, entityName);
-		resourceText = resourceText.replace(Swagger.MARKER_SUMMARY, summary);
+		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_NAME, entityName);
+		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_TYPE, entityName);
 		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_ID, entityIdName);
 		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_ID_TYPE, entityIdType);
 		return resourceText;

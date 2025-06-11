@@ -2,16 +2,27 @@
 				"tags": [
 					">>>tag"
 				],
-				"summary": "Return the specified >>>entityName data resource",
+				"summary": "Return all >>>entityName data resources",
 				"description": "",
 				"parameters": [
 					{
-						"name": ">>>entityId",
-						"in": "path",
-						"description": "Id of the data resource to be returned",
-						"required": true,
+						"name": "pageId",
+						"in": "query",
+						"description": "Id of the desired page of data to be returned",
+						"required": false,
 						"schema": {
-							"type": ">>>idType"
+							"type": "integer",
+							"default": 0
+						}
+					},
+					{
+						"name": "pageSize",
+						"in": "query",
+						"description": "Number of data objects per page of data returned",
+						"required": false,
+						"schema": {
+							"type": "integer",
+							"default": 1000
 						}
 					}
 				],
@@ -21,7 +32,10 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/>>>entityType"
+									"allOf": [
+										"$ref": "#/components/schemas/PageInfo",
+										"$ref": "#/components/schemas/>>>entityType"
+									]
 								}
 							},
 						}

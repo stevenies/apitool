@@ -1,23 +1,40 @@
-			"delete": {
+			"put": {
 				"tags": [
 					">>>tag"
 				],
-				"summary": "Delete the specified >>>entityName data resource",
+				"summary": "Update all attributes of a specified >>>entityName instance",
 				"description": "",
 				"parameters": [
 					{
 						"name": ">>>entityId",
 						"in": "path",
-						"description": "Id of the data resource to be deleted",
+						"description": "Id of the data resource to be updated",
 						"required": true,
 						"schema": {
 							"type": ">>>idType"
 						}
 					}
 				],
+				"requestBody": {
+					"description": "Data used to update the entire >>>entityName instance",
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/>>>entityType"
+							}
+						}
+					}
+				},
 				"responses": {
-					"201": {
+					"200": {
 						"description": "Successful operation",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/>>>entityType"
+								}
+							}
+						}
 					},
 					"400": {
 						"description": "Bad Request"
@@ -28,11 +45,17 @@
 					"403": {
 						"description": "Forbidden"
 					},
-					"404": {
-						"description": "Not Found"
-					},
 					"405": {
 						"description": "Method Not Allowed"
+					},
+					"413": {
+						"description": "Content Too Large"
+					},
+					"415": {
+						"description": "Unsupported Media Type"
+					},
+					"422": {
+						"description": "Validation exception"
 					},
 					"429": {
 						"description": "Too Many Requests"

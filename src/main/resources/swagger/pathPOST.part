@@ -1,20 +1,19 @@
-			"get": {
+			"post": {
 				"tags": [
 					">>>tag"
 				],
-				"summary": "Return the specified >>>entityName data resource",
+				"summary": "Create a new >>>entityName instance",
 				"description": "",
-				"parameters": [
-					{
-						"name": ">>>entityId",
-						"in": "path",
-						"description": "Id of the data resource to be returned",
-						"required": true,
-						"schema": {
-							"type": ">>>idType"
+				"requestBody": {
+					"description": "Data used to create a new >>>entityName instance",
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/>>>entityType"
+							}
 						}
 					}
-				],
+				},
 				"responses": {
 					"200": {
 						"description": "Successful operation",
@@ -23,7 +22,7 @@
 								"schema": {
 									"$ref": "#/components/schemas/>>>entityType"
 								}
-							},
+							}
 						}
 					},
 					"400": {
@@ -35,20 +34,17 @@
 					"403": {
 						"description": "Forbidden"
 					},
-					"404": {
-						"description": "Not Found"
-					},
 					"405": {
 						"description": "Method Not Allowed"
 					},
 					"413": {
 						"description": "Content Too Large"
 					},
-					"414": {
-						"description": "URI Too Long"
-					},
 					"415": {
 						"description": "Unsupported Media Type"
+					},
+					"422": {
+						"description": "Validation exception"
 					},
 					"429": {
 						"description": "Too Many Requests"

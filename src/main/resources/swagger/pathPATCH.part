@@ -1,40 +1,39 @@
-			"get": {
+			"patch": {
 				"tags": [
 					">>>tag"
 				],
-				"summary": ">>>summary",
+				"summary": "Update one or more attributes of a specified >>>entityName instance",
 				"description": "",
 				"parameters": [
 					{
-						"name": "pageId",
-						"in": "query",
-						"description": "Id of the desired page of data to be returned",
-						"required": false,
+						"name": ">>>entityId",
+						"in": "path",
+						"description": "Id of the data resource to be updated",
+						"required": true,
 						"schema": {
-							"type": "integer",
-							"default": 0
-						}
-					},
-					{
-						"name": "pageSize",
-						"in": "query",
-						"description": "Number of data objects per page of data returned",
-						"required": false,
-						"schema": {
-							"type": "integer",
-							"default": 1000
+							"type": ">>>idType"
 						}
 					}
 				],
+				"requestBody": {
+					"description": "Data used to update the >>>entityName instance",
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/>>>entityType"
+							}
+						}
+					}
+				},
 				"responses": {
 					"200": {
 						"description": "Successful operation",
 						"content": {
 							"application/json": {
 								"schema": {
->>>schemaGetMany
+									"$ref": "#/components/schemas/>>>entityType"
 								}
-							},
+							}
 						}
 					},
 					"400": {
@@ -46,20 +45,17 @@
 					"403": {
 						"description": "Forbidden"
 					},
-					"404": {
-						"description": "Not Found"
-					},
 					"405": {
 						"description": "Method Not Allowed"
 					},
 					"413": {
 						"description": "Content Too Large"
 					},
-					"414": {
-						"description": "URI Too Long"
-					},
 					"415": {
 						"description": "Unsupported Media Type"
+					},
+					"422": {
+						"description": "Validation exception"
 					},
 					"429": {
 						"description": "Too Many Requests"
