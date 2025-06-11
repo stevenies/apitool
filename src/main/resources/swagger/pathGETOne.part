@@ -1,0 +1,68 @@
+		">>>url": {
+			"get": {
+				"tags": [
+					">>>tag"
+				],
+				"summary": ">>>summary",
+				"description": "",
+				"parameters": [
+					{
+						"name": ">>>entityId",
+						"in": "path",
+						"description": "Id of the data resource to be returned by the request",
+						"required": true,
+						"schema": {
+							"type": ">>>idType"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Successful operation",
+						"content": {
+							"application/json": {
+								"schema": {
+>>>schemaGetOne
+								}
+							},
+						}
+					},
+					"400": {
+						"description": "Bad Request"
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"403": {
+						"description": "Forbidden"
+					},
+					"404": {
+						"description": "Not Found"
+					},
+					"405": {
+						"description": "Method Not Allowed"
+					},
+					"413": {
+						"description": "Content Too Large"
+					},
+					"414": {
+						"description": "URI Too Long"
+					},
+					"415": {
+						"description": "Unsupported Media Type"
+					},
+					"429": {
+						"description": "Too Many Requests"
+					},
+					"500": {
+						"description": "Internal Server Error"
+					},
+					"503": {
+						"description": "Service Unavailable"
+					},
+					"504": {
+						"description": "Gateway Timeout"
+					}
+				}
+			}
+		}
