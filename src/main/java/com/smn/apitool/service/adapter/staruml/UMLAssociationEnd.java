@@ -19,10 +19,10 @@ public class UMLAssociationEnd {
 	private boolean navigable = true;
 
 	@JsonProperty
-	private String aggregation;
+	private String aggregation = "";
 
 	@JsonProperty
-	private String stereotype;
+	private String stereotype = "";
 
 	public String getName() {
 		return name;
@@ -61,7 +61,7 @@ public class UMLAssociationEnd {
 	}
 
 	public void setAggregation(String aggregation) {
-		this.aggregation = aggregation;
+		this.aggregation = aggregation.toLowerCase();
 	}
 
 	public String getStereotype() {
@@ -69,7 +69,7 @@ public class UMLAssociationEnd {
 	}
 
 	public void setStereotype(String stereotype) {
-		this.stereotype = stereotype;
+		this.stereotype = stereotype.toLowerCase();
 	}
 
 }

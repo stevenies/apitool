@@ -11,7 +11,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
@@ -32,7 +34,17 @@ public class Swagger {
 	final static String MARKER_ENTITY_ID_TYPE = ">>>idType";
 	final static String MARKER_TAG = ">>>tag";
 
-	public String generate(API api, String serverDomain, String contextRoot, boolean makePOST, boolean makeGET, boolean makePUT, boolean makePATCH, boolean makeDELETE, boolean makeSEARCH)
+	public String generate(
+		API api,
+		String serverDomain,
+		String contextRoot,
+		boolean makePOST,
+		boolean makeGET,
+		boolean makePUT,
+		boolean makePATCH,
+		boolean makeDELETE,
+		boolean makeSEARCH,
+		Map<Entity, List<String>> issues)
 		throws IOException {
 
 		// Read the Swagger template into memory
@@ -50,8 +62,6 @@ public class Swagger {
 		}
 
 		// Update the template with the various substitution sections.
-		int tabs = 2;
-
 		String title = api.getTitle();
 		swagger = swagger.replace(Swagger.MARKER_TITLE, title);
 
@@ -61,16 +71,17 @@ public class Swagger {
 		String version = api.getVersion();
 		swagger = swagger.replace(Swagger.MARKER_VERSION, version);
 
+		int tabs = 2;
 		String servers = this.makeServers(tabs + 1, serverDomain, contextRoot);
 		swagger = swagger.replace(Swagger.MARKER_SERVERS, servers);
 
 		String tags = this.makeTags(tabs, api);
 		swagger = swagger.replace(Swagger.MARKER_TAGS, tags);
 
-		String paths = this.makePaths(tabs++, api, makePOST, makeGET, makePUT, makePATCH, makeDELETE, makeSEARCH);
+		String paths = this.makePaths(tabs++, api, makePOST, makeGET, makePUT, makePATCH, makeDELETE, makeSEARCH, issues);
 		swagger = swagger.replace(Swagger.MARKER_PATHS, paths);
 
-		String schemas = this.makeSchema(tabs--, api);
+		String schemas = this.makeSchema(tabs--, api, issues);
 		return swagger.replace(Swagger.MARKER_SCHEMAS, schemas);
 	}
 
@@ -111,7 +122,7 @@ public class Swagger {
 		return buffer.toString();
 	}
 
-	private String makeSchema(int tabs, API api) {
+	private String makeSchema(int tabs, API api, Map<Entity, List<String>> issues) {
 		StringBuilder buffer = new StringBuilder();
 
 		boolean firstEntity = true;
@@ -128,7 +139,22 @@ public class Swagger {
 
 			// Create an Entity containing only attributes
 			buffer.append(this.indent(tabs)).append("\"").append(entityName).append("\": {\n");
-			buffer.append(this.indent(++tabs)).append("\"type\": \"object\",\n");
+			
+			List<String> entityIssues = issues.get(entity);
+			if (entityIssues != null && entityIssues.size() > 0) {
+				StringBuilder issueBuffer = new StringBuilder();
+				for (String issue : entityIssues) {
+					if (issueBuffer.length() > 0) {
+						buffer.append("\n");
+					}
+					issueBuffer.append(issue);
+				}
+				buffer.append(this.indent(++tabs)).append("\"description\": \"").append(issueBuffer).append("\",\n");
+			} else {
+				++tabs;
+			}
+			
+			buffer.append(this.indent(tabs)).append("\"type\": \"object\",\n");
 			buffer.append(this.indent(tabs)).append("\"properties\": {\n");
 			buffer.append(this.makeProperties(++tabs, entity)).append("\n");
 			buffer.append(this.indent(--tabs)).append("}\n");
@@ -284,11 +310,10 @@ public class Swagger {
 		Entity targetEntity = relation.getTargetEntity();
 		Attribute targetIdAttribute = targetEntity.getExplicitId();
 		String targetIdType = targetIdAttribute == null ? "string" : targetIdAttribute.getType();
-		boolean isComposite = relation.isComposite();
 		boolean isSingleValued = "1".equalsIgnoreCase(relation.getCardinality());
 		TRelationDepth relationDepth = relation.getRelationDepth();
-		boolean hasShallowRelations = relationDepth == TRelationDepth.SHALLOW;
-		boolean hasDeepRelations = isComposite || relationDepth == TRelationDepth.DEEP || relationDepth == TRelationDepth.DEEP_RELATIONS;
+		boolean hasShallowRelations = relationDepth == TRelationDepth.LINK;
+		boolean hasDeepRelations = relationDepth == TRelationDepth.EMBED || relationDepth == TRelationDepth.EMBED_ALL;
 
 		StringBuilder buffer = new StringBuilder();
 		if (hasShallowRelations) {
@@ -309,9 +334,9 @@ public class Swagger {
 				buffer.append(this.indent(++tabs)).append("\"type\": \"object\",\n");
 				buffer.append(this.indent(tabs)).append("\"properties\": {\n");
 
-				if (relationDepth == TRelationDepth.DEEP) {
+				if (relationDepth == TRelationDepth.EMBED) {
 					buffer.append(this.makeProperties(tabs + 1, targetEntity));
-				} else if (isComposite || relationDepth == TRelationDepth.DEEP_RELATIONS) {
+				} else if (relationDepth == TRelationDepth.EMBED_ALL) {
 					buffer.append(this.makeRelations(tabs + 1, targetEntity));
 				}
 				buffer.append("\n");
@@ -322,9 +347,9 @@ public class Swagger {
 				buffer.append(this.indent(tabs)).append("\"items\": {\n");
 				buffer.append(this.indent(++tabs)).append("\"properties\": {\n");
 
-				if (relationDepth == TRelationDepth.DEEP) {
+				if (relationDepth == TRelationDepth.EMBED) {
 					buffer.append(this.makeProperties(tabs + 1, targetEntity));
-				} else if (isComposite || relationDepth == TRelationDepth.DEEP_RELATIONS) {
+				} else if (relationDepth == TRelationDepth.EMBED_ALL) {
 					buffer.append(this.makeRelations(tabs + 1, targetEntity));
 				}
 				buffer.append("\n");
@@ -337,7 +362,7 @@ public class Swagger {
 		return buffer.toString();
 	}
 
-	private String makePaths(int tabs, API api, boolean makePOST, boolean makeGET, boolean makePUT, boolean makePATCH, boolean makeDELETE, boolean makeSEARCH) {
+	private String makePaths(int tabs, API api, boolean makePOST, boolean makeGET, boolean makePUT, boolean makePATCH, boolean makeDELETE, boolean makeSEARCH, Map<Entity, List<String>> issues) {
 		StringBuilder buffer = new StringBuilder();
 
 		List<Entity> entities = api.getEntities();
@@ -351,12 +376,10 @@ public class Swagger {
 				continue;
 			}
 
-			if (makeSEARCH) {
-				if (buffer.length() > 0) {
-					buffer.append(",\n");
-				}
-				// TODO Implement
+			if (makeSEARCH && (buffer.length() > 0)) {
+				buffer.append(",\n");
 			}
+			// TODO Implement
 
 			if (makePOST || makeGET) {
 				StringBuilder endpointBuffer = new StringBuilder();
@@ -378,8 +401,8 @@ public class Swagger {
 				buffer.append(this.indent(tabs)).append("}");
 			}
 
-			if (entityId == null) {
-				// TODO Append error message indicating ID field has not been defined
+			if (entityId == null && (makeGET || makePUT || makePATCH || makeDELETE)) {
+				this.addIssue(issues, entity, "One or more endpoints were not generated due to the resource not defining an ID attribute");
 
 			} else {
 				String entityIdName = entityId.getName();
@@ -421,6 +444,7 @@ public class Swagger {
 			}
 		}
 		return buffer.toString();
+
 	}
 
 	private String makePost(Entity entity) {
@@ -435,8 +459,7 @@ public class Swagger {
 		}
 		resourceText = resourceText.replace(Swagger.MARKER_TAG, entityName);
 		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_NAME, entityName);
-		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_TYPE, entityType);
-		return resourceText;
+		return resourceText.replace(Swagger.MARKER_ENTITY_TYPE, entityType);
 	}
 
 	private String makeGetAll(Entity entity) {
@@ -451,8 +474,7 @@ public class Swagger {
 		}
 		resourceText = resourceText.replace(Swagger.MARKER_TAG, entityName);
 		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_NAME, entityName);
-		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_TYPE, entityType);
-		return resourceText;
+		return resourceText.replace(Swagger.MARKER_ENTITY_TYPE, entityType);
 	}
 
 	private String makeGetOne(Entity entity) {
@@ -472,8 +494,7 @@ public class Swagger {
 		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_NAME, entityName);
 		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_TYPE, entityType);
 		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_ID, entityIdName);
-		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_ID_TYPE, entityIdType);
-		return resourceText;
+		return resourceText.replace(Swagger.MARKER_ENTITY_ID_TYPE, entityIdType);
 	}
 
 	private String makePut(Entity entity) {
@@ -493,8 +514,7 @@ public class Swagger {
 		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_NAME, entityName);
 		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_TYPE, entityType);
 		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_ID, entityIdName);
-		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_ID_TYPE, entityIdType);
-		return resourceText;
+		return resourceText.replace(Swagger.MARKER_ENTITY_ID_TYPE, entityIdType);
 	}
 
 	private String makePatch(Entity entity) {
@@ -514,8 +534,7 @@ public class Swagger {
 		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_NAME, entityName);
 		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_TYPE, entityType);
 		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_ID, entityIdName);
-		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_ID_TYPE, entityIdType);
-		return resourceText;
+		return resourceText.replace(Swagger.MARKER_ENTITY_ID_TYPE, entityIdType);
 	}
 
 	private String makeDelete(Entity entity) {
@@ -535,7 +554,16 @@ public class Swagger {
 		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_NAME, entityName);
 		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_TYPE, entityType);
 		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_ID, entityIdName);
-		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_ID_TYPE, entityIdType);
-		return resourceText;
+		return resourceText.replace(Swagger.MARKER_ENTITY_ID_TYPE, entityIdType);
 	}
+
+	private void addIssue(Map<Entity, List<String>> issues, Entity entity, String message) {
+		List<String> issueList = issues.get(entity);
+		if (issueList == null) {
+			issueList = new ArrayList<>();
+			issues.put(entity, issueList);
+		}
+		issueList.add(message);
+	}
+
 }

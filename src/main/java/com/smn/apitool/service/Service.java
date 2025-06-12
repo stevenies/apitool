@@ -6,7 +6,9 @@ import com.smn.apitool.service.adapter.staruml.AdaptorStarUML;
 import com.smn.apitool.service.swagger.Swagger;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -16,27 +18,29 @@ public class Service {
 	public static class DtoReadUMLFile {
 
 		private List<Entity> entities = new ArrayList<>();
-		private List<String> errors = new ArrayList<>();
+		private String error;
+		private Map<Entity, List<String>> issues = new HashMap<>();
 
 		public DtoReadUMLFile(String error) {
-			this.errors.add(error);
+			this.error = error;
 		}
 
-		public DtoReadUMLFile(List<Entity> entityList, List<String> errors) {
+		public DtoReadUMLFile(List<Entity> entityList, String error, Map<Entity, List<String>> issues) {
 			this.entities.addAll(entityList);
-			this.errors.addAll(errors);
+			this.error = error;
+			this.issues.putAll(issues);
 		}
 
 		public List<Entity> getEntities() {
 			return this.entities;
 		}
 
-		public boolean hasErrors() {
-			return this.errors != null && this.errors.size() > 0;
+		public String getError() {
+			return this.error;
 		}
 
-		public List<String> getErrors() {
-			return this.errors;
+		public Map<Entity, List<String>> getIssues() {
+			return this.issues;
 		}
 	}
 
@@ -50,13 +54,24 @@ public class Service {
 		boolean starUMLFile = true; // TODO Check file extension
 		if (starUMLFile) {
 			AdaptorStarUML.DtoReadUMLFile status = this.adaptorStarUML.readUMLFile(fileContent);
-			return new DtoReadUMLFile(status.getEntities(), status.getErrors());
+			return new DtoReadUMLFile(status.getEntities(), status.getError(), status.getIssues());
 		}
-		return new DtoReadUMLFile("Invalid File Type");
+		return new DtoReadUMLFile("Information model file has an unknown file type");
 	}
 
-	public String generateSwagger(API api, String serverDomain, String contextRoot, boolean makePOST, boolean makeGET, boolean makePUT, boolean makePATCH, boolean makeDELETE, boolean makeSEARCH)
+	public String generateSwagger(
+		API api,
+		String serverDomain,
+		String contextRoot,
+		boolean makePOST,
+		boolean makeGET,
+		boolean makePUT,
+		boolean makePATCH,
+		boolean makeDELETE,
+		boolean makeSEARCH,
+		Map<Entity, List<String>> issues)
 		throws IOException {
-		return this.swagger.generate(api, serverDomain, contextRoot, makePOST, makeGET, makePUT, makePATCH, makeDELETE, makeSEARCH);
+
+		return this.swagger.generate(api, serverDomain, contextRoot, makePOST, makeGET, makePUT, makePATCH, makeDELETE, makeSEARCH, issues);
 	}
 }

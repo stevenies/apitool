@@ -77,15 +77,14 @@ public class Entity implements Comparable<Entity> {
 	public void addRelation(MVA relation) {
 		this.relations.add(relation);
 
-		boolean isComposite = relation.isComposite();
 		TRelationDepth relationDepth = relation.getRelationDepth();
-		boolean hasShallowRelations = relationDepth == TRelationDepth.SHALLOW;
-		boolean hasDeepRelations = relationDepth == TRelationDepth.DEEP || relationDepth == TRelationDepth.DEEP_RELATIONS;
+		boolean hasShallowRelations = relationDepth == TRelationDepth.LINK;
+		boolean hasDeepRelations = relationDepth == TRelationDepth.EMBED || relationDepth == TRelationDepth.EMBED_ALL;
 
 		if (hasShallowRelations) {
 			this.hasShallowRelations = true;
 		}
-		if (isComposite || hasDeepRelations) {
+		if (hasDeepRelations) {
 			this.hasDeepRelations = true;
 		}
 	}

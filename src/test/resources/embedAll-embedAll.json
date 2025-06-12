@@ -989,6 +989,7 @@
 	"components": {
 		"schemas": {
 			"Tire": {
+				"description": "One or more endpoints were not generated due to the resource not defining an ID attribute",
 				"type": "object",
 				"properties": {
 					"manufacturer": {
@@ -1003,6 +1004,7 @@
 				}
 			},
 			"Vehicle": {
+				"description": "Type enum of attribute badType is not supported by OpenAPI",
 				"type": "object",
 				"properties": {
 					"vin": {
@@ -1010,6 +1012,9 @@
 					},
 					"color": {
 						"type": "string"
+					},
+					"badType": {
+						"type": "enum"
 					}
 				}
 			},
@@ -1028,7 +1033,10 @@
 					"color": {
 						"type": "string"
 					},
-					"deep": {
+					"badType": {
+						"type": "enum"
+					},
+					"wheel": {
 						"type": "array",
 						"items": {
 							"properties": {
@@ -1040,6 +1048,14 @@
 								},
 								"isAluminum": {
 									"type": "boolean"
+								},
+								"tire": {
+									"type": "object",
+									"properties": {
+										"manufacturer": {
+											"type": "string"
+										}
+									}
 								}
 							}
 						}
@@ -1084,7 +1100,7 @@
 					"isAluminum": {
 						"type": "boolean"
 					},
-					"deep": {
+					"tire": {
 						"type": "object",
 						"properties": {
 							"manufacturer": {

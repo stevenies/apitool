@@ -11,10 +11,7 @@ public class Attribute {
 	private String defaultValue;
 
 	public Attribute(String name, String type, String defaultValue, boolean isId, boolean isReadOnly) {
-		if (!StringUtil.isEmpty(name)) {
-			name = name.replace(" ", "_");
-		}
-		this.name = name;
+		this.name = StringUtil.isEmpty(name) ? name : name.replace(" ", "_");
 		this.type = type;
 		this.defaultValue = defaultValue;
 		this.isId = isId;

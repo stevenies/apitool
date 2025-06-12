@@ -724,6 +724,7 @@
 									"model": {
 										"$ref": "AAAAAAGXX9lxbIA6POM="
 									},
+									"visible": false,
 									"font": "Arial;13;0",
 									"left": 223,
 									"top": 206,
@@ -768,12 +769,12 @@
 										"$ref": "AAAAAAGXX9lxbIA6POM="
 									},
 									"font": "Arial;13;0",
-									"left": 255,
-									"top": 179,
+									"left": 240,
+									"top": 178,
 									"width": 21.68359375,
 									"height": 13,
-									"alpha": -0.5235987755982988,
-									"distance": 25,
+									"alpha": -0.3378782727656562,
+									"distance": 39.21734310225516,
 									"hostEdge": {
 										"$ref": "AAAAAAGXX9lxbIA9uFw="
 									},
@@ -999,6 +1000,7 @@
 									"model": {
 										"$ref": "AAAAAAGXX9l9x4B91Q4="
 									},
+									"visible": false,
 									"font": "Arial;13;0",
 									"left": 495,
 									"top": 208,
@@ -1188,6 +1190,32 @@
 							"headQualifiersCompartment": {
 								"$ref": "AAAAAAGXX9l9yICLFoQ="
 							}
+						},
+						{
+							"_type": "UMLTextView",
+							"_id": "AAAAAAGXZAsZ0/NbpdA=",
+							"_parent": {
+								"$ref": "AAAAAAFF+qBtyKM79qY="
+							},
+							"font": "Arial;13;0",
+							"left": 224,
+							"top": 200,
+							"width": 60,
+							"height": 25,
+							"text": "{embed}"
+						},
+						{
+							"_type": "UMLTextView",
+							"_id": "AAAAAAGXZAtk4vPmYj0=",
+							"_parent": {
+								"$ref": "AAAAAAFF+qBtyKM79qY="
+							},
+							"font": "Arial;13;0",
+							"left": 488,
+							"top": 200,
+							"width": 60,
+							"height": 25,
+							"text": "{embed}"
 						}
 					]
 				},
@@ -1240,11 +1268,10 @@
 								"_parent": {
 									"$ref": "AAAAAAGXX9lxbIA5MgY="
 								},
-								"name": "deep",
 								"reference": {
 									"$ref": "AAAAAAGXX9kGhX/iPMc="
 								},
-								"stereotype": "deep-relations",
+								"stereotype": "embed",
 								"multiplicity": "1..4"
 							},
 							"end2": {
@@ -1311,11 +1338,10 @@
 								"_parent": {
 									"$ref": "AAAAAAGXX9l9x4B8jI8="
 								},
-								"name": "deep",
 								"reference": {
 									"$ref": "AAAAAAGXX9kqdoANFoQ="
 								},
-								"stereotype": "deep-relations"
+								"stereotype": "embed"
 							},
 							"end2": {
 								"_type": "UMLAssociationEnd",

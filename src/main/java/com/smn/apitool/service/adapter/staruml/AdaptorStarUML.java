@@ -6,6 +6,7 @@ import com.smn.apitool.model.Attribute;
 import com.smn.apitool.model.Entity;
 import com.smn.apitool.model.MVA;
 import com.smn.apitool.model.MVA.TRelationDepth;
+import com.smn.apitool.util.StringUtil;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,37 +19,38 @@ public class AdaptorStarUML {
 	public static class DtoReadUMLFile {
 
 		private List<Entity> entities = new ArrayList<>();
-		private List<String> errors = new ArrayList<>();
+		private String error;
+		private Map<Entity, List<String>> issues = new HashMap<>();
 
 		public DtoReadUMLFile(String error) {
-			this.errors.add(error);
+			this.error = error;
 		}
 
-		public DtoReadUMLFile(List<String> errors) {
-			this.errors.addAll(errors);
+		public DtoReadUMLFile(Map<Entity, List<String>> issues) {
+			this.issues.putAll(issues);
 		}
 
-		public DtoReadUMLFile(List<Entity> entities, List<String> errors) {
+		public DtoReadUMLFile(List<Entity> entities, Map<Entity, List<String>> issues) {
 			this.entities = entities;
-			this.errors.addAll(errors);
+			this.issues.putAll(issues);
 		}
 
 		public List<Entity> getEntities() {
 			return this.entities;
 		}
 
-		public boolean hasErrors() {
-			return this.errors != null && this.errors.size() > 0;
+		public String getError() {
+			return this.error;
 		}
 
-		public List<String> getErrors() {
-			return this.errors;
+		public Map<Entity, List<String>> getIssues() {
+			return this.issues;
 		}
 
 	}
 
 	public DtoReadUMLFile readUMLFile(byte[] fileContent) {
-		List<String> errors = new ArrayList<>();
+		Map<Entity, List<String>> issues = new HashMap<>();
 		try {
 			ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 			Project infoModel = mapper.readValue(new String(fileContent), Project.class);
@@ -90,8 +92,8 @@ public class AdaptorStarUML {
 							if ("string".equalsIgnoreCase(type) || "number".equalsIgnoreCase(type) || "integer".equalsIgnoreCase(type) || "boolean".equalsIgnoreCase(type)) {
 								type = type.toLowerCase();
 							} else {
-								String message = "Type " + type + " of attribute " + name + " in class " + className + " is not supported by OpenAPI";
-								errors.add(message);
+								String message = "Type '" + type + "' (attribute '" + name + "') is not supported by OpenAPI";
+								this.addIssue(issues, entity, message);
 							}
 						}
 					}
@@ -135,10 +137,7 @@ public class AdaptorStarUML {
 								boolean end1Navigable = umlEnd1.isNavigable();
 								boolean end1Composite = umlEnd1.isComposite();
 								String end1Stereotype = umlEnd1.getStereotype();
-								TRelationDepth end1RelationDepth = "deep".equalsIgnoreCase(end1Stereotype) ? TRelationDepth.DEEP //
-									: "deep-relations".equalsIgnoreCase(end1Stereotype) ? TRelationDepth.DEEP_RELATIONS //
-									: "shallow".equalsIgnoreCase(end1Stereotype) ? TRelationDepth.SHALLOW //
-									: TRelationDepth.NONE;
+								boolean end1MakeEndpoint = end1Stereotype.contains("endPoint");
 
 								UMLAssociationEnd umlEnd2 = umlAssociation.getEnd2();
 								Entity end2Entity = classMap.get(umlEnd2.getReference().get$ref());
@@ -147,18 +146,25 @@ public class AdaptorStarUML {
 								boolean end2Navigable = umlEnd2.isNavigable();
 								boolean end2Composite = umlEnd2.isComposite();
 								String end2Stereotype = umlEnd2.getStereotype();
-								TRelationDepth end2RelationDepth = "deep".equalsIgnoreCase(end2Stereotype) ? TRelationDepth.DEEP //
-									: "deep-relations".equalsIgnoreCase(end2Stereotype) ? TRelationDepth.DEEP_RELATIONS //
-									: "shallow".equalsIgnoreCase(end2Stereotype) ? TRelationDepth.SHALLOW //
-									: TRelationDepth.NONE;
+								boolean end2MakeEndpoint = end2Stereotype.contains("endpoint");
+
+								TRelationDepth end1RelationDepth = end2Composite ? TRelationDepth.EMBED_ALL //
+									: StringUtil.isEmpty(end1Stereotype) ? TRelationDepth.NONE //
+									: end1Stereotype.contains("embedall") ? TRelationDepth.EMBED_ALL //
+									: end1Stereotype.contains("embed") ? TRelationDepth.EMBED //
+									: end1Stereotype.contains("link") ? TRelationDepth.LINK : TRelationDepth.NONE;
+								TRelationDepth end2RelationDepth = end1Composite ? TRelationDepth.EMBED_ALL //
+									: StringUtil.isEmpty(end2Stereotype) ? TRelationDepth.NONE //
+									: end2Stereotype.contains("embedall") ? TRelationDepth.EMBED_ALL //
+									: end2Stereotype.contains("embed") ? TRelationDepth.EMBED //
+									: end2Stereotype.contains("link") ? TRelationDepth.LINK : TRelationDepth.NONE;
 
 								if (end2Composite) {
 									end1Entity.setEmbedded(true);
 								}
 								if (end2Navigable) {
-									MVA mva1 = new MVA(end2Entity, end2Name, end2Multiplicity);
-									mva1.setComposite(end1Composite);
-									mva1.setRelationDepth(end2RelationDepth);
+									MVA mva1 = new MVA(end2Entity, end2Name, end2Multiplicity, end2RelationDepth);
+									mva1.setMakeEndpoint(end2MakeEndpoint);
 									end1Entity.addRelation(mva1);
 								}
 
@@ -166,9 +172,8 @@ public class AdaptorStarUML {
 									end2Entity.setEmbedded(true);
 								}
 								if (end1Navigable) {
-									MVA mva2 = new MVA(end1Entity, end1Name, end1Multiplicity);
-									mva2.setComposite(end2Composite);
-									mva2.setRelationDepth(end1RelationDepth);
+									MVA mva2 = new MVA(end1Entity, end1Name, end1Multiplicity, end1RelationDepth);
+									mva2.setMakeEndpoint(end1MakeEndpoint);
 									end2Entity.addRelation(mva2);
 								}
 							}
@@ -182,7 +187,7 @@ public class AdaptorStarUML {
 				System.out.println(entity);
 			}
 
-			return new DtoReadUMLFile(entityList, errors);
+			return new DtoReadUMLFile(entityList, issues);
 
 		} catch (Throwable t) {
 			t.printStackTrace();
@@ -190,5 +195,15 @@ public class AdaptorStarUML {
 			String error = t.getMessage();
 			return new DtoReadUMLFile(error);
 		}
+	}
+
+
+	private void addIssue(Map<Entity, List<String>> issues, Entity entity, String message) {
+		List<String> issueList = issues.get(entity);
+		if (issueList == null) {
+			issueList = new ArrayList<>();
+			issues.put(entity, issueList);
+		}
+		issueList.add(message);
 	}
 }

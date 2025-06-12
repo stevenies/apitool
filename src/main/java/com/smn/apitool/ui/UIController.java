@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,18 +39,21 @@ public class UIController {
 		@RequestParam MultipartFile file,
 		@RequestParam String serverDomain,
 		@RequestParam String contextRoot,
-		@RequestParam (required=false, defaultValue="false") boolean makeSEARCH,
-		@RequestParam (required=false, defaultValue="false") boolean makeGET,
-		@RequestParam (required=false, defaultValue="false") boolean makePOST,
-		@RequestParam (required=false, defaultValue="false") boolean makePUT,
-		@RequestParam (required=false, defaultValue="false") boolean makePATCH,
-		@RequestParam (required=false, defaultValue="false") boolean makeDELETE,
+		@RequestParam(required = false, defaultValue = "false") boolean makeSEARCH,
+		@RequestParam(required = false, defaultValue = "false") boolean makeGET,
+		@RequestParam(required = false, defaultValue = "false") boolean makePOST,
+		@RequestParam(required = false, defaultValue = "false") boolean makePUT,
+		@RequestParam(required = false, defaultValue = "false") boolean makePATCH,
+		@RequestParam(required = false, defaultValue = "false") boolean makeDELETE,
 		HttpServletResponse response,
 		Model model) {
 
+		List<String> errors = new ArrayList<>();
+
 		String filename = file.getOriginalFilename();
 		if (file == null || StringUtils.isEmpty(filename)) {
-			model.addAttribute("errors", "You must specify the filename of the API's information model diagram");
+			errors.add("You must specify the filename of the API's information model diagram");
+			model.addAttribute("errors", errors);
 			return "view";
 		}
 
@@ -73,14 +77,21 @@ public class UIController {
 
 			// Read the information model into memory.
 			DtoReadUMLFile status = this.service.readUMLFile(filename, file.getBytes());
+			
+			String error = status.getError();
+			if (error != null) {
+				errors.add(error);
+				model.addAttribute("errors", errors);
+				return "view";
+			}
 
 			// Create a new API instance.
 			List<Entity> entities = status.getEntities();
 			API api = new API(title, description, version, entities);
 
 			// Generate the API's swagger.
-			String swagger = this.service.generateSwagger(api, serverDomain, contextRoot, makePOST, makeGET, makePUT, makePATCH, makeDELETE, makeSEARCH);
-
+			String swagger = this.service.generateSwagger(api, serverDomain, contextRoot, makePOST, makeGET, makePUT, makePATCH, makeDELETE, makeSEARCH, status.getIssues());
+			
 			// Download the swagger to the client's browser.
 			try (InputStream inputStream = new ByteArrayInputStream(swagger.getBytes()); OutputStream outputStream = response.getOutputStream()) {
 
@@ -99,6 +110,9 @@ public class UIController {
 
 		} catch (Throwable t) {
 			t.printStackTrace();
+
+			errors.add(t.getMessage());
+			model.addAttribute("errors", errors);
 			return "view";
 		}
 	}
