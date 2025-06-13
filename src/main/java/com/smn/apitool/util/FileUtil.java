@@ -24,5 +24,14 @@ public class FileUtil {
 		}
 		return resourceText;
 	}
+	
+	public static String getExtension(String filename) {
+		if (StringUtil.isEmpty(filename)) {
+			return filename;
+		}
+		int dot = filename.lastIndexOf('.');
+		String extension = dot >= 0 ? filename.substring(dot + 1) : "";
+		return extension;
+	}
 
 }

@@ -2,9 +2,18 @@
 				"tags": [
 					">>>entityTag"
 				],
-				"summary": "Return all >>>entityName data resources",
+				"summary": "Return all related >>>targetName data resources",
 				"description": "",
 				"parameters": [
+					{
+						"name": ">>>entityId",
+						"in": "path",
+						"description": "Id of the data resource to be queried",
+						"required": true,
+						"schema": {
+							"type": ">>>entityIdType"
+						}
+					},
 					{
 						"name": "pageId",
 						"in": "query",
@@ -34,7 +43,7 @@
 								"schema": {
 									"allOf": [
 										"$ref": "#/components/schemas/PageInfo",
-										"$ref": "#/components/schemas/>>>entityNameDeep"
+										"$ref": "#/components/schemas/>>>targetNameDeep"
 									]
 								}
 							},

@@ -1,15 +1,15 @@
 			"post": {
 				"tags": [
-					">>>tag"
+					">>>entityTag"
 				],
-				"summary": "Create a new >>>entityName instance",
+				"summary": "Create a new >>>entityName data resource",
 				"description": "",
 				"requestBody": {
-					"description": "Data used to create a new >>>entityName instance",
+					"description": "Data used to create a new >>>entityName resource data resource",
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/>>>entityType"
+								"$ref": "#/components/schemas/>>>entityNameDeep"
 							}
 						}
 					}
@@ -20,7 +20,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/>>>entityType"
+									"$ref": "#/components/schemas/>>>entityNameDeep"
 								}
 							}
 						}

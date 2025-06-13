@@ -4,6 +4,7 @@ import com.smn.apitool.model.API;
 import com.smn.apitool.model.Entity;
 import com.smn.apitool.service.adapter.staruml.AdaptorStarUML;
 import com.smn.apitool.service.swagger.Swagger;
+import com.smn.apitool.util.FileUtil;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -51,11 +52,14 @@ public class Service {
 	private Swagger swagger;
 
 	public DtoReadUMLFile readUMLFile(String filename, byte[] fileContent) {
-		boolean starUMLFile = true; // TODO Check file extension
+		String fileExtension = FileUtil.getExtension(filename);
+
+		boolean starUMLFile = "mdj".equalsIgnoreCase(fileExtension);
 		if (starUMLFile) {
 			AdaptorStarUML.DtoReadUMLFile status = this.adaptorStarUML.readUMLFile(fileContent);
 			return new DtoReadUMLFile(status.getEntities(), status.getError(), status.getIssues());
 		}
+
 		return new DtoReadUMLFile("Information model file has an unknown file type");
 	}
 

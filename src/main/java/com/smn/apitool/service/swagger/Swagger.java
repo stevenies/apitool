@@ -25,14 +25,16 @@ public class Swagger {
 	final static String MARKER_DESCRIPTION = ">>>description";
 	final static String MARKER_VERSION = ">>>version";
 	final static String MARKER_SERVERS = "\">>>servers\": \"\"";
-	final static String MARKER_TAGS = "{\">>>tags\": \"\"}";
+	final static String MARKER_TAGS = "{\">>>entityTags\": \"\"}";
 	final static String MARKER_PATHS = "\">>>paths\": \"\"";
 	final static String MARKER_SCHEMAS = "\">>>schemas\": \"\",";
+	final static String MARKER_ENTITY_TAG = ">>>entityTag";
 	final static String MARKER_ENTITY_NAME = ">>>entityName";
-	final static String MARKER_ENTITY_TYPE = ">>>entityType";
+	final static String MARKER_ENTITY_NAME_DEEP = ">>>entityNameDeep";
 	final static String MARKER_ENTITY_ID = ">>>entityId";
-	final static String MARKER_ENTITY_ID_TYPE = ">>>idType";
-	final static String MARKER_TAG = ">>>tag";
+	final static String MARKER_ENTITY_ID_TYPE = ">>>entityIdType";
+	final static String MARKER_TARGET_NAME = ">>>targetName";
+	final static String MARKER_TARGET_NAME_DEEP = ">>>targetNameDeep";
 
 	public String generate(
 		API api,
@@ -129,8 +131,7 @@ public class Swagger {
 		List<Entity> entities = api.getEntities();
 		for (Entity entity : entities) {
 			String entityName = entity.getName();
-			boolean hasShallowRelations = entity.hasShallowRelations();
-			boolean hasDeepRelations = entity.hasDeepRelations();
+			boolean hasRelations = entity.hasShallowRelations() || entity.hasDeepRelations();
 			List<Entity> subtypes = entity.getSubtypes();
 
 			if (!firstEntity) {
@@ -168,7 +169,7 @@ public class Swagger {
 			buffer.append(this.indent(--tabs)).append("}\n");
 			buffer.append(this.indent(--tabs)).append("},");
 
-			if (hasShallowRelations || hasDeepRelations) {
+			if (hasRelations) {
 				buffer.append("\n");
 
 				// Create a deep Entity containing attributes and related Entity(s)
@@ -413,6 +414,7 @@ public class Swagger {
 
 			} else {
 				String entityIdName = entityId.getName();
+				List<MVA> relations = entity.getRelations();
 
 				StringBuilder endpointBuffer = new StringBuilder();
 				if (makeGET) {
@@ -423,7 +425,8 @@ public class Swagger {
 					if (endpointBuffer.length() > 0) {
 						endpointBuffer.append(",\n");
 					}
-					endpointBuffer.append(this.makeEndpoint(entity, "/swagger/pathPUT.part", true));
+					String endpointText = this.makeEndpoint(entity, "/swagger/pathPUT.part", true);
+					endpointBuffer.append(endpointText);
 				}
 
 				if (makePATCH) {
@@ -448,6 +451,36 @@ public class Swagger {
 					buffer.append(endpointBuffer);
 					buffer.append(this.indent(tabs)).append("}");
 				}
+
+				if (makeGET) {
+					for (MVA relation : relations) {
+						String relationName = relation.getName();
+						String cardinality = relation.getCardinality();
+						
+						boolean needsEndpoint = relation.isMakeEndpoint();
+						if (!needsEndpoint) {
+							continue;
+						}
+						
+						boolean isSingleRelation = "1".equalsIgnoreCase(cardinality);
+						if (!isSingleRelation) {
+
+							// Make the relation name plural
+							if (relationName.length() > 1 && relationName.endsWith("y")) {
+								relationName = relationName.substring(0, relationName.length() - 1) + "ies";
+							} else if (!relationName.endsWith("s")) {
+								relationName += "s";
+							}
+						}
+
+						if (buffer.length() > 0) {
+							buffer.append(",\n");
+						}
+						buffer.append(this.indent(tabs)).append("\"/").append(entityName).append("/{").append(entityIdName).append("}/").append(relationName).append("\" : {\n");
+						buffer.append(this.makeEndpoint(entity, "/swagger/pathGETRelated.part", relation));
+						buffer.append(this.indent(tabs)).append("}");
+					}
+				}
 			}
 		}
 		return buffer.toString();
@@ -456,7 +489,7 @@ public class Swagger {
 
 	private String makeEndpoint(Entity entity, String partFileURI, boolean needsId) {
 		String entityName = entity.getName();
-		String entityType = entity.getType();
+		String entityDeepName = entity.getDeepName();
 		Attribute entityId = entity.getExplicitId();
 
 		String resourceText = "";
@@ -466,9 +499,9 @@ public class Swagger {
 			System.err.println(e.getMessage());
 		}
 
-		resourceText = resourceText.replace(Swagger.MARKER_TAG, entityName);
+		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_TAG, entityName);
 		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_NAME, entityName);
-		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_TYPE, entityType);
+		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_NAME_DEEP, entityDeepName);
 
 		if (needsId) {
 			String entityIdName = entityId.getName();
@@ -477,6 +510,32 @@ public class Swagger {
 			resourceText = resourceText.replace(Swagger.MARKER_ENTITY_ID, entityIdName);
 			resourceText = resourceText.replace(Swagger.MARKER_ENTITY_ID_TYPE, entityIdType);
 		}
+		return resourceText;
+	}
+
+	private String makeEndpoint(Entity entity, String partFileURI, MVA relation) {
+		String entityName = entity.getName();
+
+		Attribute entityId = entity.getExplicitId();
+		String entityIdName = entityId.getName();
+		String entityIdType = entityId.getType();
+
+		Entity targetEntity = relation.getTargetEntity();
+		String targetEntityName = relation.getName();
+		String targetEntityNameDeep = targetEntity.getDeepName();
+
+		String resourceText = "";
+		try {
+			resourceText = FileUtil.readResource(partFileURI);
+		} catch (IOException e) {
+			System.err.println(e.getMessage());
+		}
+
+		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_TAG, entityName);
+		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_ID, entityIdName);
+		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_ID_TYPE, entityIdType);
+		resourceText = resourceText.replace(Swagger.MARKER_TARGET_NAME, targetEntityName);
+		resourceText = resourceText.replace(Swagger.MARKER_TARGET_NAME_DEEP, targetEntityNameDeep);
 		return resourceText;
 	}
 

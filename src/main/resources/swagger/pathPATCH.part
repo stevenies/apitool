@@ -1,8 +1,8 @@
 			"patch": {
 				"tags": [
-					">>>tag"
+					">>>entityTag"
 				],
-				"summary": "Update one or more attributes of a specified >>>entityName instance",
+				"summary": "Update one or more attributes of a specified >>>entityName data resource",
 				"description": "",
 				"parameters": [
 					{
@@ -11,16 +11,16 @@
 						"description": "Id of the data resource to be updated",
 						"required": true,
 						"schema": {
-							"type": ">>>idType"
+							"type": ">>>entityIdType"
 						}
 					}
 				],
 				"requestBody": {
-					"description": "Data used to update the >>>entityName instance",
+					"description": "Data used to update the >>>entityName data resource",
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/>>>entityType"
+								"$ref": "#/components/schemas/>>>entityNameDeep"
 							}
 						}
 					}
@@ -31,7 +31,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/>>>entityType"
+									"$ref": "#/components/schemas/>>>entityNameDeep"
 								}
 							}
 						}

@@ -61,7 +61,7 @@ public class UMLAssociationEnd {
 	}
 
 	public void setAggregation(String aggregation) {
-		this.aggregation = aggregation.toLowerCase();
+		this.aggregation = aggregation;
 	}
 
 	public String getStereotype() {
@@ -69,7 +69,7 @@ public class UMLAssociationEnd {
 	}
 
 	public void setStereotype(String stereotype) {
-		this.stereotype = stereotype.toLowerCase();
+		this.stereotype = stereotype;
 	}
 
 }

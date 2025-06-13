@@ -137,7 +137,7 @@ public class AdaptorStarUML {
 								boolean end1Navigable = umlEnd1.isNavigable();
 								boolean end1Composite = umlEnd1.isComposite();
 								String end1Stereotype = umlEnd1.getStereotype();
-								boolean end1MakeEndpoint = end1Stereotype.contains("endPoint");
+								boolean end1MakeEndpoint = StringUtil.isEmpty(end1Stereotype)? false : end1Stereotype.toLowerCase().contains("endpoint");
 
 								UMLAssociationEnd umlEnd2 = umlAssociation.getEnd2();
 								Entity end2Entity = classMap.get(umlEnd2.getReference().get$ref());
@@ -146,7 +146,7 @@ public class AdaptorStarUML {
 								boolean end2Navigable = umlEnd2.isNavigable();
 								boolean end2Composite = umlEnd2.isComposite();
 								String end2Stereotype = umlEnd2.getStereotype();
-								boolean end2MakeEndpoint = end2Stereotype.contains("endpoint");
+								boolean end2MakeEndpoint = StringUtil.isEmpty(end2Stereotype)? false : end2Stereotype.toLowerCase().contains("endpoint");
 
 								TRelationDepth end1RelationDepth = end2Composite ? TRelationDepth.EMBED_ALL //
 									: StringUtil.isEmpty(end1Stereotype) ? TRelationDepth.NONE //

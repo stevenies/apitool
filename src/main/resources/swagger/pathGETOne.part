@@ -1,6 +1,6 @@
 			"get": {
 				"tags": [
-					">>>tag"
+					">>>entityTag"
 				],
 				"summary": "Return the specified >>>entityName data resource",
 				"description": "",
@@ -11,7 +11,7 @@
 						"description": "Id of the data resource to be returned",
 						"required": true,
 						"schema": {
-							"type": ">>>idType"
+							"type": ">>>entityIdType"
 						}
 					}
 				],
@@ -21,7 +21,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/>>>entityType"
+									"$ref": "#/components/schemas/>>>entityNameDeep"
 								}
 							},
 						}

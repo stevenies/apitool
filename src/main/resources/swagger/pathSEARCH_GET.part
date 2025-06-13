@@ -1,6 +1,6 @@
 			"get": {
 				"tags": [
-					">>>tag"
+					">>>entityTag"
 				],
 				"summary": "Return the results from a >>>entityName resource search",
 				"description": "",
@@ -43,7 +43,7 @@
 								"schema": {
 									"allOf": [
 										"$ref": "#/components/schemas/PageInfo",
-										"$ref": "#/components/schemas/>>>entityType"
+										"$ref": "#/components/schemas/>>>entityNameDeep"
 									]
 								}
 							},

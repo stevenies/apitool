@@ -1,15 +1,15 @@
 			"post": {
 				"tags": [
-					">>>tag"
+					">>>entityTag"
 				],
-				"summary": "Search for instances of >>>entityName resources matching the specified criteria",
+				"summary": "Search for instances of >>>entityName data resources matching the specified criteria",
 				"description": "",
 				"requestBody": {
-					"description": "Data used to create a new >>>entityName instance",
+					"description": "Data used to query matching >>>entityName data resources",
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/>>>entityType"
+								"$ref": "#/components/schemas/>>>entityNameDeep"
 							}
 						}
 					}

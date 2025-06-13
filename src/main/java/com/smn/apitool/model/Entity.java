@@ -28,7 +28,10 @@ public class Entity implements Comparable<Entity> {
 		return this.name;
 	}
 
-	public String getType() {
+	/**
+	 * @return the Entity's name with a prefix attached based on whether the Entity has relations or subtypes.
+	 */
+	public String getDeepName() {
 		boolean hasRelations = this.hasShallowRelations() || this.hasDeepRelations();
 		boolean hasSubtypes = this.getSubtypes().size() > 0;
 		return this.name + (hasSubtypes ? "-SubtypesArray" : hasRelations ? "-DeepArray" : "-Array");
@@ -47,6 +50,9 @@ public class Entity implements Comparable<Entity> {
 		return this.subtypes;
 	}
 
+	/**
+	 * @return True if the Entity is completely embedded within another Entity via a "Composite" relation.
+	 */
 	public boolean isEmbedded() {
 		return this.isEmbedded;
 	}
@@ -66,6 +72,9 @@ public class Entity implements Comparable<Entity> {
 		}
 	}
 
+	/**
+	 * @return either the attribute serving as the Entity's unique identifier or null if an attribute serving as the Entity's primary key has not been defined.
+	 */
 	public Attribute getExplicitId() {
 		return this.explicitId;
 	}
@@ -78,21 +87,24 @@ public class Entity implements Comparable<Entity> {
 		this.relations.add(relation);
 
 		TRelationDepth relationDepth = relation.getRelationDepth();
-		boolean hasShallowRelations = relationDepth == TRelationDepth.LINK;
-		boolean hasDeepRelations = relationDepth == TRelationDepth.EMBED || relationDepth == TRelationDepth.EMBED_ALL;
-
-		if (hasShallowRelations) {
+		if (relationDepth == TRelationDepth.LINK) {
 			this.hasShallowRelations = true;
 		}
-		if (hasDeepRelations) {
+		if (relationDepth == TRelationDepth.EMBED || relationDepth == TRelationDepth.EMBED_ALL) {
 			this.hasDeepRelations = true;
 		}
 	}
 
+	/**
+	 * @return True if the Entity contains one or more relations containing the "link" stereotype.
+	 */
 	public boolean hasShallowRelations() {
 		return this.hasShallowRelations;
 	}
 
+	/**
+	 * @return True if the Entity contains one or more relations marked as a composite relation or containing the "embed" or "embedAll" stereotypes.
+	 */
 	public boolean hasDeepRelations() {
 		return this.hasDeepRelations;
 	}
