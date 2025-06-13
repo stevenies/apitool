@@ -588,7 +588,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/Wheel-DeepArray"
+								"$ref": "#/components/schemas/Wheel-Array"
 							}
 						}
 					}
@@ -599,7 +599,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/Wheel-DeepArray"
+									"$ref": "#/components/schemas/Wheel-Array"
 								}
 							}
 						}
@@ -675,7 +675,7 @@
 								"schema": {
 									"allOf": [
 										"$ref": "#/components/schemas/PageInfo",
-										"$ref": "#/components/schemas/Wheel-DeepArray"
+										"$ref": "#/components/schemas/Wheel-Array"
 									]
 								}
 							},
@@ -744,7 +744,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/Wheel-DeepArray"
+									"$ref": "#/components/schemas/Wheel-Array"
 								}
 							},
 						}
@@ -810,7 +810,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/Wheel-DeepArray"
+								"$ref": "#/components/schemas/Wheel-Array"
 							}
 						}
 					}
@@ -821,7 +821,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/Wheel-DeepArray"
+									"$ref": "#/components/schemas/Wheel-Array"
 								}
 							}
 						}
@@ -883,7 +883,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/Wheel-DeepArray"
+								"$ref": "#/components/schemas/Wheel-Array"
 							}
 						}
 					}
@@ -894,7 +894,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/Wheel-DeepArray"
+									"$ref": "#/components/schemas/Wheel-Array"
 								}
 							}
 						}
@@ -1004,7 +1004,6 @@
 				}
 			},
 			"Vehicle": {
-				"description": "Type 'enum' (attribute 'badType') is not supported by OpenAPI",
 				"type": "object",
 				"properties": {
 					"vin": {
@@ -1012,9 +1011,6 @@
 					},
 					"color": {
 						"type": "string"
-					},
-					"badType": {
-						"type": "enum"
 					}
 				}
 			},
@@ -1033,31 +1029,10 @@
 					"color": {
 						"type": "string"
 					},
-					"badType": {
-						"type": "enum"
-					},
 					"wheel": {
 						"type": "array",
 						"items": {
-							"properties": {
-								"position": {
-									"type": "string"
-								},
-								"size": {
-									"type": "string"
-								},
-								"isAluminum": {
-									"type": "boolean"
-								},
-								"tire": {
-									"type": "object",
-									"properties": {
-										"manufacturer": {
-											"type": "string"
-										}
-									}
-								}
-							}
+							"type": "string"
 						}
 					}
 				}
@@ -1086,34 +1061,6 @@
 				"type": "array",
 				"items": {
 					"$ref": "#/components/schemas/Wheel"
-				}
-			},
-			"Wheel-Deep": {
-				"type": "object",
-				"properties": {
-					"position": {
-						"type": "string"
-					},
-					"size": {
-						"type": "string"
-					},
-					"isAluminum": {
-						"type": "boolean"
-					},
-					"tire": {
-						"type": "object",
-						"properties": {
-							"manufacturer": {
-								"type": "string"
-							}
-						}
-					}
-				}
-			},
-			"Wheel-DeepArray": {
-				"type": "array",
-				"items": {
-					"$ref": "#/components/schemas/Wheel-Deep"
 				}
 			},
 			"PageInfo": {

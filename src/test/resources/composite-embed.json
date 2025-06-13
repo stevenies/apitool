@@ -12,11 +12,158 @@
 	],
 	"tags": [
 		{
+			"name": "Tire"
+		},
+		{
 			"name": "Vehicle"
 		}
 
 	],
 	"paths": {
+		"/Tire" : {
+			"post": {
+				"tags": [
+					"Tire"
+				],
+				"summary": "Create a new Tire instance",
+				"description": "",
+				"requestBody": {
+					"description": "Data used to create a new Tire instance",
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/Tire-Array"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Successful operation",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Tire-Array"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request"
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"403": {
+						"description": "Forbidden"
+					},
+					"405": {
+						"description": "Method Not Allowed"
+					},
+					"413": {
+						"description": "Content Too Large"
+					},
+					"415": {
+						"description": "Unsupported Media Type"
+					},
+					"422": {
+						"description": "Validation exception"
+					},
+					"429": {
+						"description": "Too Many Requests"
+					},
+					"500": {
+						"description": "Internal Server Error"
+					},
+					"503": {
+						"description": "Service Unavailable"
+					},
+					"504": {
+						"description": "Gateway Timeout"
+					}
+				}
+			},
+			"get": {
+				"tags": [
+					"Tire"
+				],
+				"summary": "Return all Tire data resources",
+				"description": "",
+				"parameters": [
+					{
+						"name": "pageId",
+						"in": "query",
+						"description": "Id of the desired page of data to be returned",
+						"required": false,
+						"schema": {
+							"type": "integer",
+							"default": 0
+						}
+					},
+					{
+						"name": "pageSize",
+						"in": "query",
+						"description": "Number of data objects per page of data returned",
+						"required": false,
+						"schema": {
+							"type": "integer",
+							"default": 1000
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Successful operation",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										"$ref": "#/components/schemas/PageInfo",
+										"$ref": "#/components/schemas/Tire-Array"
+									]
+								}
+							},
+						}
+					},
+					"400": {
+						"description": "Bad Request"
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"403": {
+						"description": "Forbidden"
+					},
+					"404": {
+						"description": "Not Found"
+					},
+					"405": {
+						"description": "Method Not Allowed"
+					},
+					"413": {
+						"description": "Content Too Large"
+					},
+					"414": {
+						"description": "URI Too Long"
+					},
+					"415": {
+						"description": "Unsupported Media Type"
+					},
+					"429": {
+						"description": "Too Many Requests"
+					},
+					"500": {
+						"description": "Internal Server Error"
+					},
+					"503": {
+						"description": "Service Unavailable"
+					},
+					"504": {
+						"description": "Gateway Timeout"
+					}
+				}
+			}
+		},
 		"/Vehicle" : {
 			"post": {
 				"tags": [
@@ -430,6 +577,7 @@
 	"components": {
 		"schemas": {
 			"Tire": {
+				"description": "One or more endpoints were not generated due to the resource not defining an ID attribute",
 				"type": "object",
 				"properties": {
 					"manufacturer": {

@@ -726,17 +726,17 @@
 									},
 									"visible": false,
 									"font": "Arial;13;0",
-									"left": 215,
+									"left": 223,
 									"top": 206,
 									"width": 50.9462890625,
 									"height": 13,
-									"alpha": 0.289503730173458,
-									"distance": 49.040799340956916,
+									"alpha": 0.3446473971556103,
+									"distance": 41.43669871020132,
 									"hostEdge": {
 										"$ref": "AAAAAAGXX9lxbIA9uFw="
 									},
 									"edgePosition": 2,
-									"text": "+shallow"
+									"text": "+deep"
 								},
 								{
 									"_type": "EdgeLabelView",
@@ -769,12 +769,12 @@
 										"$ref": "AAAAAAGXX9lxbIA6POM="
 									},
 									"font": "Arial;13;0",
-									"left": 248,
+									"left": 240,
 									"top": 178,
 									"width": 21.68359375,
 									"height": 13,
-									"alpha": -0.4214193356007123,
-									"distance": 31.78049716414141,
+									"alpha": -0.3378782727656562,
+									"distance": 39.21734310225516,
 									"hostEdge": {
 										"$ref": "AAAAAAGXX9lxbIA9uFw="
 									},
@@ -1012,7 +1012,7 @@
 										"$ref": "AAAAAAGXX9l9yICAHjU="
 									},
 									"edgePosition": 2,
-									"text": "+shallow"
+									"text": "+deep"
 								},
 								{
 									"_type": "EdgeLabelView",
@@ -1190,34 +1190,6 @@
 							"headQualifiersCompartment": {
 								"$ref": "AAAAAAGXX9l9yICLFoQ="
 							}
-						},
-						{
-							"_type": "UMLTextView",
-							"_id": "AAAAAAGXZAjeTbUgKw0=",
-							"_parent": {
-								"$ref": "AAAAAAFF+qBtyKM79qY="
-							},
-							"font": "Arial;13;0",
-							"left": 512,
-							"top": 200,
-							"width": 38.18994140625,
-							"height": 25,
-							"autoResize": true,
-							"text": "{link}"
-						},
-						{
-							"_type": "UMLTextView",
-							"_id": "AAAAAAGXZAltpLXXjhY=",
-							"_parent": {
-								"$ref": "AAAAAAFF+qBtyKM79qY="
-							},
-							"font": "Arial;13;0",
-							"left": 240,
-							"top": 200,
-							"width": 38.18994140625,
-							"height": 25,
-							"autoResize": true,
-							"text": "{link}"
 						}
 					]
 				},
@@ -1273,7 +1245,6 @@
 								"reference": {
 									"$ref": "AAAAAAGXX9kGhX/iPMc="
 								},
-								"stereotype": "link",
 								"multiplicity": "1..4"
 							},
 							"end2": {
@@ -1342,8 +1313,7 @@
 								},
 								"reference": {
 									"$ref": "AAAAAAGXX9kqdoANFoQ="
-								},
-								"stereotype": "link"
+								}
 							},
 							"end2": {
 								"_type": "UMLAssociationEnd",

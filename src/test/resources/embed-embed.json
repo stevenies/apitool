@@ -1004,7 +1004,6 @@
 				}
 			},
 			"Vehicle": {
-				"description": "Type 'enum' (attribute 'badType') is not supported by OpenAPI",
 				"type": "object",
 				"properties": {
 					"vin": {
@@ -1012,9 +1011,6 @@
 					},
 					"color": {
 						"type": "string"
-					},
-					"badType": {
-						"type": "enum"
 					}
 				}
 			},
@@ -1033,9 +1029,6 @@
 					"color": {
 						"type": "string"
 					},
-					"badType": {
-						"type": "enum"
-					},
 					"wheel": {
 						"type": "array",
 						"items": {
@@ -1048,14 +1041,6 @@
 								},
 								"isAluminum": {
 									"type": "boolean"
-								},
-								"tire": {
-									"type": "object",
-									"properties": {
-										"manufacturer": {
-											"type": "string"
-										}
-									}
 								}
 							}
 						}

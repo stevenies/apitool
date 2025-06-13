@@ -1225,19 +1225,6 @@
 							"width": 73.7431640625,
 							"height": 25,
 							"text": "{embedAll}"
-						},
-						{
-							"_type": "UMLTextView",
-							"_id": "AAAAAAGXZAye8ow2g+k=",
-							"_parent": {
-								"$ref": "AAAAAAFF+qBtyKM79qY="
-							},
-							"font": "Arial;13;0",
-							"left": 480,
-							"top": 200,
-							"width": 73.7431640625,
-							"height": 25,
-							"text": "{embedAll}"
 						}
 					]
 				},
@@ -1371,8 +1358,7 @@
 								},
 								"reference": {
 									"$ref": "AAAAAAGXX9kqdoANFoQ="
-								},
-								"stereotype": "embedAll"
+								}
 							},
 							"end2": {
 								"_type": "UMLAssociationEnd",
