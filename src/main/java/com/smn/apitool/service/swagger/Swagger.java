@@ -30,11 +30,11 @@ public class Swagger {
 	final static String MARKER_SCHEMAS = "\">>>schemas\": \"\",";
 	final static String MARKER_ENTITY_TAG = ">>>entityTag";
 	final static String MARKER_ENTITY_NAME = ">>>entityName";
-	final static String MARKER_ENTITY_NAME_DEEP = ">>>entityNameDeep";
+	final static String MARKER_ENTITY_NAME_DEEP = ">>>deepEntityName";
 	final static String MARKER_ENTITY_ID = ">>>entityId";
-	final static String MARKER_ENTITY_ID_TYPE = ">>>entityIdType";
+	final static String MARKER_ENTITY_ID_TYPE = ">>>typeEntityId";
 	final static String MARKER_TARGET_NAME = ">>>targetName";
-	final static String MARKER_TARGET_NAME_DEEP = ">>>targetNameDeep";
+	final static String MARKER_TARGET_NAME_DEEP = ">>>deepTargetName";
 
 	public String generate(
 		API api,

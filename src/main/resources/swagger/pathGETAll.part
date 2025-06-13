@@ -34,7 +34,7 @@
 								"schema": {
 									"allOf": [
 										"$ref": "#/components/schemas/PageInfo",
-										"$ref": "#/components/schemas/>>>entityNameDeep"
+										"$ref": "#/components/schemas/>>>deepEntityName"
 									]
 								}
 							},

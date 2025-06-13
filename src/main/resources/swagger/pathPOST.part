@@ -9,7 +9,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/>>>entityNameDeep"
+								"$ref": "#/components/schemas/>>>deepEntityName"
 							}
 						}
 					}
@@ -20,7 +20,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/>>>entityNameDeep"
+									"$ref": "#/components/schemas/>>>deepEntityName"
 								}
 							}
 						}

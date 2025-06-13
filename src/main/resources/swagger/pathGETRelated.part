@@ -11,7 +11,7 @@
 						"description": "Id of the data resource to be queried",
 						"required": true,
 						"schema": {
-							"type": ">>>entityIdType"
+							"type": ">>>typeEntityId"
 						}
 					},
 					{
@@ -43,7 +43,7 @@
 								"schema": {
 									"allOf": [
 										"$ref": "#/components/schemas/PageInfo",
-										"$ref": "#/components/schemas/>>>targetNameDeep"
+										"$ref": "#/components/schemas/>>>deepTargetName"
 									]
 								}
 							},

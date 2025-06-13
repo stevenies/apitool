@@ -2,14 +2,14 @@
 				"tags": [
 					">>>entityTag"
 				],
-				"summary": "Search for instances of >>>entityName data resources matching the specified criteria",
+				"summary": "Search for >>>entityName data resources matching the specified criteria",
 				"description": "",
 				"requestBody": {
 					"description": "Data used to query matching >>>entityName data resources",
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/>>>entityNameDeep"
+								"$ref": "#/components/schemas/>>>deepEntityName"
 							}
 						}
 					}

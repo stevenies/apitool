@@ -11,7 +11,7 @@
 						"description": "Id of the data resource to be deleted",
 						"required": true,
 						"schema": {
-							"type": ">>>entityIdType"
+							"type": ">>>typeEntityId"
 						}
 					}
 				],

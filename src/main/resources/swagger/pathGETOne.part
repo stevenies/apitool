@@ -11,7 +11,7 @@
 						"description": "Id of the data resource to be returned",
 						"required": true,
 						"schema": {
-							"type": ">>>entityIdType"
+							"type": ">>>typeEntityId"
 						}
 					}
 				],
@@ -21,7 +21,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/>>>entityNameDeep"
+									"$ref": "#/components/schemas/>>>deepEntityName"
 								}
 							},
 						}

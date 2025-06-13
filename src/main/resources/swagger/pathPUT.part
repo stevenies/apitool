@@ -11,7 +11,7 @@
 						"description": "Id of the data resource to be updated",
 						"required": true,
 						"schema": {
-							"type": ">>>entityIdType"
+							"type": ">>>typeEntityId"
 						}
 					}
 				],
@@ -20,7 +20,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/>>>entityNameDeep"
+								"$ref": "#/components/schemas/>>>deepEntityName"
 							}
 						}
 					}
@@ -31,7 +31,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/>>>entityNameDeep"
+									"$ref": "#/components/schemas/>>>deepEntityName"
 								}
 							}
 						}
