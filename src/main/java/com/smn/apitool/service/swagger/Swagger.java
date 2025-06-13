@@ -139,7 +139,7 @@ public class Swagger {
 
 			// Create an Entity containing only attributes
 			buffer.append(this.indent(tabs)).append("\"").append(entityName).append("\": {\n");
-			
+
 			List<String> entityIssues = issues.get(entity);
 			if (entityIssues != null && entityIssues.size() > 0) {
 				StringBuilder issueBuffer = new StringBuilder();
@@ -153,7 +153,7 @@ public class Swagger {
 			} else {
 				++tabs;
 			}
-			
+
 			buffer.append(this.indent(tabs)).append("\"type\": \"object\",\n");
 			buffer.append(this.indent(tabs)).append("\"properties\": {\n");
 			buffer.append(this.makeProperties(++tabs, entity)).append("\n");
@@ -376,10 +376,17 @@ public class Swagger {
 				continue;
 			}
 
-			if (makeSEARCH && (buffer.length() > 0)) {
-				buffer.append(",\n");
+			if (makeSEARCH) {
+				if (buffer.length() > 0) {
+					buffer.append(",\n");
+				}
+				buffer.append(this.indent(tabs)).append("\"/").append(entityName).append("-$search\" : {\n");
+				buffer.append(this.makeSearchPost(entity)).append("\n");
+				buffer.append(this.indent(tabs)).append("},\n");
+				buffer.append(this.indent(tabs)).append("\"/").append(entityName).append("-$search/{searchId}\" : {\n");
+				buffer.append(this.makeSearchGet(entity)).append("\n");
+				buffer.append(this.indent(tabs)).append("}");
 			}
-			// TODO Implement
 
 			if (makePOST || makeGET) {
 				StringBuilder endpointBuffer = new StringBuilder();
@@ -445,6 +452,36 @@ public class Swagger {
 		}
 		return buffer.toString();
 
+	}
+
+	private String makeSearchPost(Entity entity) {
+		String entityName = entity.getName();
+		String entityType = entity.getType();
+
+		String resourceText = "";
+		try {
+			resourceText = FileUtil.readResource("/swagger/pathSEARCH_POST.part");
+		} catch (IOException e) {
+			System.err.println(e.getMessage());
+		}
+		resourceText = resourceText.replace(Swagger.MARKER_TAG, entityName);
+		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_NAME, entityName);
+		return resourceText.replace(Swagger.MARKER_ENTITY_TYPE, entityType);
+	}
+
+	private String makeSearchGet(Entity entity) {
+		String entityName = entity.getName();
+		String entityType = entity.getType();
+
+		String resourceText = "";
+		try {
+			resourceText = FileUtil.readResource("/swagger/pathSEARCH_GET.part");
+		} catch (IOException e) {
+			System.err.println(e.getMessage());
+		}
+		resourceText = resourceText.replace(Swagger.MARKER_TAG, entityName);
+		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_NAME, entityName);
+		return resourceText.replace(Swagger.MARKER_ENTITY_TYPE, entityType);
 	}
 
 	private String makePost(Entity entity) {
