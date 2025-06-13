@@ -381,23 +381,23 @@ public class Swagger {
 					buffer.append(",\n");
 				}
 				buffer.append(this.indent(tabs)).append("\"/").append(entityName).append("-$search\" : {\n");
-				buffer.append(this.makeSearchPost(entity)).append("\n");
+				buffer.append(this.makeEndpoint(entity, "/swagger/pathSEARCH_POST.part", false)).append("\n");
 				buffer.append(this.indent(tabs)).append("},\n");
 				buffer.append(this.indent(tabs)).append("\"/").append(entityName).append("-$search/{searchId}\" : {\n");
-				buffer.append(this.makeSearchGet(entity)).append("\n");
+				buffer.append(this.makeEndpoint(entity, "/swagger/pathSEARCH_GET.part", false)).append("\n");
 				buffer.append(this.indent(tabs)).append("}");
 			}
 
 			if (makePOST || makeGET) {
 				StringBuilder endpointBuffer = new StringBuilder();
 				if (makePOST) {
-					endpointBuffer.append(this.makePost(entity));
+					endpointBuffer.append(this.makeEndpoint(entity, "/swagger/pathPOST.part", false));
 				}
 				if (makeGET) {
 					if (endpointBuffer.length() > 0) {
 						endpointBuffer.append(",\n");
 					}
-					endpointBuffer.append(this.makeGetAll(entity));
+					endpointBuffer.append(this.makeEndpoint(entity, "/swagger/pathGETAll.part", false));
 				}
 
 				if (buffer.length() > 0) {
@@ -416,28 +416,28 @@ public class Swagger {
 
 				StringBuilder endpointBuffer = new StringBuilder();
 				if (makeGET) {
-					endpointBuffer.append(this.makeGetOne(entity));
+					endpointBuffer.append(this.makeEndpoint(entity, "/swagger/pathGETOne.part", true));
 				}
 
 				if (makePUT) {
 					if (endpointBuffer.length() > 0) {
 						endpointBuffer.append(",\n");
 					}
-					endpointBuffer.append(this.makePut(entity));
+					endpointBuffer.append(this.makeEndpoint(entity, "/swagger/pathPUT.part", true));
 				}
 
 				if (makePATCH) {
 					if (endpointBuffer.length() > 0) {
 						endpointBuffer.append(",\n");
 					}
-					endpointBuffer.append(this.makePatch(entity));
+					endpointBuffer.append(this.makeEndpoint(entity, "/swagger/pathPATCH.part", true));
 				}
 
 				if (makeDELETE) {
 					if (endpointBuffer.length() > 0) {
 						endpointBuffer.append(",\n");
 					}
-					endpointBuffer.append(this.makeDelete(entity));
+					endpointBuffer.append(this.makeEndpoint(entity, "/swagger/pathDELETE.part", true));
 				}
 
 				if (endpointBuffer.length() > 0) {
@@ -454,144 +454,30 @@ public class Swagger {
 
 	}
 
-	private String makeSearchPost(Entity entity) {
-		String entityName = entity.getName();
-		String entityType = entity.getType();
-
-		String resourceText = "";
-		try {
-			resourceText = FileUtil.readResource("/swagger/pathSEARCH_POST.part");
-		} catch (IOException e) {
-			System.err.println(e.getMessage());
-		}
-		resourceText = resourceText.replace(Swagger.MARKER_TAG, entityName);
-		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_NAME, entityName);
-		return resourceText.replace(Swagger.MARKER_ENTITY_TYPE, entityType);
-	}
-
-	private String makeSearchGet(Entity entity) {
-		String entityName = entity.getName();
-		String entityType = entity.getType();
-
-		String resourceText = "";
-		try {
-			resourceText = FileUtil.readResource("/swagger/pathSEARCH_GET.part");
-		} catch (IOException e) {
-			System.err.println(e.getMessage());
-		}
-		resourceText = resourceText.replace(Swagger.MARKER_TAG, entityName);
-		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_NAME, entityName);
-		return resourceText.replace(Swagger.MARKER_ENTITY_TYPE, entityType);
-	}
-
-	private String makePost(Entity entity) {
-		String entityName = entity.getName();
-		String entityType = entity.getType();
-
-		String resourceText = "";
-		try {
-			resourceText = FileUtil.readResource("/swagger/pathPOST.part");
-		} catch (IOException e) {
-			System.err.println(e.getMessage());
-		}
-		resourceText = resourceText.replace(Swagger.MARKER_TAG, entityName);
-		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_NAME, entityName);
-		return resourceText.replace(Swagger.MARKER_ENTITY_TYPE, entityType);
-	}
-
-	private String makeGetAll(Entity entity) {
-		String entityName = entity.getName();
-		String entityType = entity.getType();
-
-		String resourceText = "";
-		try {
-			resourceText = FileUtil.readResource("/swagger/pathGETAll.part");
-		} catch (IOException e) {
-			System.err.println(e.getMessage());
-		}
-		resourceText = resourceText.replace(Swagger.MARKER_TAG, entityName);
-		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_NAME, entityName);
-		return resourceText.replace(Swagger.MARKER_ENTITY_TYPE, entityType);
-	}
-
-	private String makeGetOne(Entity entity) {
+	private String makeEndpoint(Entity entity, String partFileURI, boolean needsId) {
 		String entityName = entity.getName();
 		String entityType = entity.getType();
 		Attribute entityId = entity.getExplicitId();
-		String entityIdName = entityId.getName();
-		String entityIdType = entityId.getType();
 
 		String resourceText = "";
 		try {
-			resourceText = FileUtil.readResource("/swagger/pathGETOne.part");
+			resourceText = FileUtil.readResource(partFileURI);
 		} catch (IOException e) {
 			System.err.println(e.getMessage());
 		}
+
 		resourceText = resourceText.replace(Swagger.MARKER_TAG, entityName);
 		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_NAME, entityName);
 		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_TYPE, entityType);
-		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_ID, entityIdName);
-		return resourceText.replace(Swagger.MARKER_ENTITY_ID_TYPE, entityIdType);
-	}
 
-	private String makePut(Entity entity) {
-		String entityName = entity.getName();
-		String entityType = entity.getType();
-		Attribute entityId = entity.getExplicitId();
-		String entityIdName = entityId.getName();
-		String entityIdType = entityId.getType();
+		if (needsId) {
+			String entityIdName = entityId.getName();
+			String entityIdType = entityId.getType();
 
-		String resourceText = "";
-		try {
-			resourceText = FileUtil.readResource("/swagger/pathPUT.part");
-		} catch (IOException e) {
-			System.err.println(e.getMessage());
+			resourceText = resourceText.replace(Swagger.MARKER_ENTITY_ID, entityIdName);
+			resourceText = resourceText.replace(Swagger.MARKER_ENTITY_ID_TYPE, entityIdType);
 		}
-		resourceText = resourceText.replace(Swagger.MARKER_TAG, entityName);
-		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_NAME, entityName);
-		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_TYPE, entityType);
-		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_ID, entityIdName);
-		return resourceText.replace(Swagger.MARKER_ENTITY_ID_TYPE, entityIdType);
-	}
-
-	private String makePatch(Entity entity) {
-		String entityName = entity.getName();
-		String entityType = entity.getType();
-		Attribute entityId = entity.getExplicitId();
-		String entityIdName = entityId.getName();
-		String entityIdType = entityId.getType();
-
-		String resourceText = "";
-		try {
-			resourceText = FileUtil.readResource("/swagger/pathPATCH.part");
-		} catch (IOException e) {
-			System.err.println(e.getMessage());
-		}
-		resourceText = resourceText.replace(Swagger.MARKER_TAG, entityName);
-		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_NAME, entityName);
-		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_TYPE, entityType);
-		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_ID, entityIdName);
-		return resourceText.replace(Swagger.MARKER_ENTITY_ID_TYPE, entityIdType);
-	}
-
-	private String makeDelete(Entity entity) {
-		String entityName = entity.getName();
-		String entityType = entity.getType();
-		Attribute entityId = entity.getExplicitId();
-		String entityIdName = entityId.getName();
-		String entityIdType = entityId.getType();
-
-		String resourceText = "";
-		try {
-			resourceText = FileUtil.readResource("/swagger/pathDELETE.part");
-		} catch (IOException e) {
-			System.err.println(e.getMessage());
-		}
-		resourceText = resourceText.replace(Swagger.MARKER_TAG, entityName);
-		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_NAME, entityName);
-		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_TYPE, entityType);
-		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_ID, entityIdName);
-		return resourceText.replace(Swagger.MARKER_ENTITY_ID_TYPE, entityIdType);
+		return resourceText;
 	}
 
 	private void addIssue(Map<Entity, List<String>> issues, Entity entity, String message) {
