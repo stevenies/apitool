@@ -37,22 +37,23 @@ public class Swagger {
 	final static String MARKER_TARGET_NAME_DEEP = ">>>deepTargetName";
 
 	public String generate(
-		API api,
-		String serverDomain,
-		String contextRoot,
-		boolean makePOST,
-		boolean makeGET,
-		boolean makePUT,
-		boolean makePATCH,
-		boolean makeDELETE,
-		boolean makeSEARCH,
-		Map<Entity, List<String>> issues)
-		throws IOException {
+			API api,
+			String serverDomain,
+			String contextRoot,
+			boolean makePOST,
+			boolean makeGET,
+			boolean makePUT,
+			boolean makePATCH,
+			boolean makeDELETE,
+			boolean makeSEARCH,
+			Map<Entity, List<String>> issues)
+			throws IOException {
 
 		// Read the Swagger template into memory
 		String swagger = null;
 		Resource resource = new ClassPathResource("/swagger/swagger.json");
-		try (InputStream inputStream = resource.getInputStream(); OutputStream outputStream = new ByteArrayOutputStream()) {
+		try (InputStream inputStream = resource.getInputStream();
+				OutputStream outputStream = new ByteArrayOutputStream()) {
 
 			// Copy input stream to output stream
 			byte[] byteBuffer = new byte[1024];
@@ -80,7 +81,8 @@ public class Swagger {
 		String tags = this.makeTags(tabs, api);
 		swagger = swagger.replace(Swagger.MARKER_TAGS, tags);
 
-		String paths = this.makePaths(tabs++, api, makePOST, makeGET, makePUT, makePATCH, makeDELETE, makeSEARCH, issues);
+		String paths = this.makePaths(tabs++, api, makePOST, makeGET, makePUT, makePATCH, makeDELETE, makeSEARCH,
+				issues);
 		swagger = swagger.replace(Swagger.MARKER_PATHS, paths);
 
 		String schemas = this.makeSchema(tabs--, api, issues);
@@ -97,7 +99,8 @@ public class Swagger {
 
 	private String makeServers(int tabs, String serverDomain, String contextRoot) {
 		StringBuilder buffer = new StringBuilder();
-		buffer.append(this.indent(tabs)).append("\"url\": \"https://").append(serverDomain).append("/").append(contextRoot).append("\"");
+		buffer.append(this.indent(tabs)).append("\"url\": \"https://").append(serverDomain).append("/")
+				.append(contextRoot).append("\"");
 		return buffer.toString();
 	}
 
@@ -165,7 +168,8 @@ public class Swagger {
 			buffer.append(this.indent(tabs)).append("\"").append(entityName).append("-Array").append("\": {\n");
 			buffer.append(this.indent(++tabs)).append("\"type\": \"array\",\n");
 			buffer.append(this.indent(tabs)).append("\"items\": {\n");
-			buffer.append(this.indent(++tabs)).append("\"$ref\": \"#/components/schemas/").append(entityName).append("\"\n");
+			buffer.append(this.indent(++tabs)).append("\"$ref\": \"#/components/schemas/").append(entityName)
+					.append("\"\n");
 			buffer.append(this.indent(--tabs)).append("}\n");
 			buffer.append(this.indent(--tabs)).append("},");
 
@@ -184,7 +188,8 @@ public class Swagger {
 				buffer.append(this.indent(tabs)).append("\"").append(entityName).append("-DeepArray").append("\": {\n");
 				buffer.append(this.indent(++tabs)).append("\"type\": \"array\",\n");
 				buffer.append(this.indent(tabs)).append("\"items\": {\n");
-				buffer.append(this.indent(++tabs)).append("\"$ref\": \"#/components/schemas/").append(entityName).append("-Deep\"\n");
+				buffer.append(this.indent(++tabs)).append("\"$ref\": \"#/components/schemas/").append(entityName)
+						.append("-Deep\"\n");
 				buffer.append(this.indent(--tabs)).append("}\n");
 				buffer.append(this.indent(--tabs)).append("},");
 			}
@@ -204,7 +209,8 @@ public class Swagger {
 					if (!firstSubtype) {
 						buffer.append(",\n");
 					}
-					buffer.append(this.indent(tabs)).append("\"$ref\": \"#/components/schemas/").append(subtypeName).append("\"");
+					buffer.append(this.indent(tabs)).append("\"$ref\": \"#/components/schemas/").append(subtypeName)
+							.append("\"");
 					firstSubtype = false;
 				}
 
@@ -213,10 +219,12 @@ public class Swagger {
 				buffer.append(this.indent(--tabs)).append("},\n");
 
 				// Create an array of subtype Schemas
-				buffer.append(this.indent(tabs)).append("\"").append(entityName).append("-SubtypesArray").append("\": {\n");
+				buffer.append(this.indent(tabs)).append("\"").append(entityName).append("-SubtypesArray")
+						.append("\": {\n");
 				buffer.append(this.indent(++tabs)).append("\"type\": \"array\",\n");
 				buffer.append(this.indent(tabs)).append("\"items\": {\n");
-				buffer.append(this.indent(++tabs)).append("\"$ref\": \"#/components/schemas/").append(entityName).append("-Subtypes\"\n");
+				buffer.append(this.indent(++tabs)).append("\"$ref\": \"#/components/schemas/").append(entityName)
+						.append("-Subtypes\"\n");
 				buffer.append(this.indent(--tabs)).append("}\n");
 				buffer.append(this.indent(--tabs)).append("},");
 			}
@@ -363,7 +371,8 @@ public class Swagger {
 		return buffer.toString();
 	}
 
-	private String makePaths(int tabs, API api, boolean makePOST, boolean makeGET, boolean makePUT, boolean makePATCH, boolean makeDELETE, boolean makeSEARCH, Map<Entity, List<String>> issues) {
+	private String makePaths(int tabs, API api, boolean makePOST, boolean makeGET, boolean makePUT, boolean makePATCH,
+			boolean makeDELETE, boolean makeSEARCH, Map<Entity, List<String>> issues) {
 		StringBuilder buffer = new StringBuilder();
 
 		List<Entity> entities = api.getEntities();
@@ -409,8 +418,11 @@ public class Swagger {
 				buffer.append(this.indent(tabs)).append("}");
 			}
 
-			if (entityId == null && (makeGET || makePUT || makePATCH || makeDELETE)) {
-				this.addIssue(issues, entity, "One or more endpoints were not generated due to the resource not defining an ID attribute");
+			if (entityId == null) {
+				if (makeGET || makePUT || makePATCH || makeDELETE) {
+					this.addIssue(issues, entity,
+							"One or more endpoints were not generated due to the resource not defining an ID attribute");
+				}
 
 			} else {
 				String entityIdName = entityId.getName();
@@ -447,7 +459,8 @@ public class Swagger {
 					if (buffer.length() > 0) {
 						buffer.append(",\n");
 					}
-					buffer.append(this.indent(tabs)).append("\"/").append(entityName).append("/{").append(entityIdName).append("}\" : {\n");
+					buffer.append(this.indent(tabs)).append("\"/").append(entityName).append("/{").append(entityIdName)
+							.append("}\" : {\n");
 					buffer.append(endpointBuffer);
 					buffer.append(this.indent(tabs)).append("}");
 				}
@@ -456,12 +469,12 @@ public class Swagger {
 					for (MVA relation : relations) {
 						String relationName = relation.getName();
 						String cardinality = relation.getCardinality();
-						
+
 						boolean needsEndpoint = relation.isMakeEndpoint();
 						if (!needsEndpoint) {
 							continue;
 						}
-						
+
 						boolean isSingleRelation = "1".equalsIgnoreCase(cardinality);
 						if (!isSingleRelation) {
 
@@ -476,7 +489,8 @@ public class Swagger {
 						if (buffer.length() > 0) {
 							buffer.append(",\n");
 						}
-						buffer.append(this.indent(tabs)).append("\"/").append(entityName).append("/{").append(entityIdName).append("}/").append(relationName).append("\" : {\n");
+						buffer.append(this.indent(tabs)).append("\"/").append(entityName).append("/{")
+								.append(entityIdName).append("}/").append(relationName).append("\" : {\n");
 						buffer.append(this.makeEndpoint(entity, "/swagger/pathGETRelated.part", relation));
 						buffer.append(this.indent(tabs)).append("}");
 					}

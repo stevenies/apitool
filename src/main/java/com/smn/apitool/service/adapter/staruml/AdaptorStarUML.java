@@ -114,8 +114,7 @@ public class AdaptorStarUML {
 					if (umlRelations != null) {
 						for (OwnedElement umlElement : umlRelations) {
 
-							if (umlElement instanceof UMLGeneralization) {
-								UMLGeneralization umlGeneralization = (UMLGeneralization) umlElement;
+							if (umlElement instanceof UMLGeneralization umlGeneralization) {
 
 								// Link the class to its superclass
 								Reference source = umlGeneralization.getSource();
@@ -126,8 +125,7 @@ public class AdaptorStarUML {
 
 								sourceEntity.setSupertype(targetEntity);
 
-							} else if (umlElement instanceof UMLAssociation) {
-								UMLAssociation umlAssociation = (UMLAssociation) umlElement;
+							} else if (umlElement instanceof UMLAssociation umlAssociation) {
 
 								// Define Multi-Valued Attributes representing the class's relations to other classes
 								UMLAssociationEnd umlEnd1 = umlAssociation.getEnd1();
