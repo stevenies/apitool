@@ -11,7 +11,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -26,8 +25,8 @@ public class UIController {
 	@Autowired
 	private Service service;
 
-	@GetMapping("/view")
-	public String hello(Model model) {
+	@GetMapping("/")
+	public String view(Model model) {
 		return "view";
 	}
 
@@ -51,7 +50,7 @@ public class UIController {
 		List<String> errors = new ArrayList<>();
 
 		String filename = file.getOriginalFilename();
-		if (file == null || StringUtils.isEmpty(filename)) {
+		if (file == null || StringUtil.isEmpty(filename)) {
 			errors.add("You must specify the filename of the API's information model diagram");
 			model.addAttribute("errors", errors);
 			return "view";

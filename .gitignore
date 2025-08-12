@@ -53,3 +53,10 @@ target/test-classes/link.json
 target/test-classes/link.mdj
 target/test-classes/none.json
 target/test-classes/none.mdj
+target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst
+target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst
+target/maven-status/maven-compiler-plugin/testCompile/default-testCompile/createdFiles.lst
+target/maven-status/maven-compiler-plugin/testCompile/default-testCompile/inputFiles.lst
+target/surefire-reports/com.smn.apitool.service.adapter.staruml.AdaptorStarUMLTest.txt
+target/surefire-reports/TEST-com.smn.apitool.service.adapter.staruml.AdaptorStarUMLTest.xml
+target/test-classes/com/smn/apitool/service/adapter/staruml/AdaptorStarUMLTest.class
