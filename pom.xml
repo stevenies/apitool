@@ -3,8 +3,10 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.smn</groupId>
-    <artifactId>apitool</artifactId>
+    <artifactId>restapitool</artifactId>
     <version>0.0.1-SNAPSHOT</version>
+
+    <packaging>war</packaging>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -13,6 +15,13 @@
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
     </properties>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.5.4</version>
+        <relativePath/>
+    </parent>
 
     <dependencies>
         <dependency>
@@ -27,6 +36,7 @@
 	    <dependency>
 	        <groupId>org.apache.tomcat.embed</groupId>
 	        <artifactId>tomcat-embed-jasper</artifactId>
+            <scope>provided</scope>     <!-- Remove to run as application -->
 	    </dependency>
         <dependency>
             <groupId>jakarta.servlet</groupId>
@@ -54,7 +64,7 @@
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
-                <version>${spring.boot.version}</version>
+                <version>3.5.4</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -62,7 +72,9 @@
     </dependencyManagement>
 
     <build>
+        <finalName>restapitool</finalName>
         <plugins>
+
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
@@ -81,6 +93,23 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.1.2</version>
             </plugin>
+
+            <plugin>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>3.4.0</version>
+                <configuration>
+                <webResources>
+                    <resource>
+                        <directory>src/main/resources</directory>
+                        <targetPath>WEB-INF</targetPath>
+                        <includes>
+                            <include>**/*</include>
+                        </includes>
+                    </resource>
+                </webResources>
+                </configuration>
+            </plugin>
+
         </plugins>
     </build>
 </project>
