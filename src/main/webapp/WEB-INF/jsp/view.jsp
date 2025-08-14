@@ -58,7 +58,7 @@
 			is the main design artifact defining the API's interface between the data provider and its clients from
 			a business perspective.
 		</p>
-		<p class="sectionHeader">What does this tool do?</p>
+		<p class="sectionHeader">What does the REST API Generator tool do?</p>
 		<p>
 			The REST API Generator provides two key capabilities to greatly reduce API development effort - 1) it
 			transforms a business domain model expressed as a UML class diagram into an API interface specification
@@ -110,9 +110,9 @@
 			business logic. The intent is to serve as a starting point for API developers to implement the business logic.
 		</p>
 		<p>
-			To generate the API's skeleton implementation code open the <a href="tool">API Generation Tool</a>, upload the OpenAPI
-			specification file, and then press the Implement API button. In response the tool will generate the API's skeleton
-			implementation files, package them into a ZIP file, and download the ZIP file to your local computer
+			To generate the API's skeleton implementation code open the <a href="tool" target="_blank">API Generation Tool</a>,
+			upload the OpenAPI specification file, and then press the Implement API button. In response the tool will generate
+			the API's skeleton implementation files, package them into a ZIP file, and download the ZIP file to your local computer
 		</p>
 		<p class="sectionHeader"><img src="" />Implement the API's business logic</p>
 		<p>
