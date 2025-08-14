@@ -20,8 +20,11 @@
 	});
 </script>
 <body>
-	<form id="formUploadInfoModel" action="/uploadInfoModel" enctype="multipart/form-data" method="post">
+	<form id="formUploadInfoModel" action="/uploadDomainModel" enctype="multipart/form-data" method="post">
 		<table>
+			<tr>
+				<td colspan="2">API Information</td>
+			</tr>
 			<tr>
 				<td>API Title:</td>
 				<td><input id="title" name="title" type="text" /></td>
@@ -35,19 +38,29 @@
 				<td><input id="version" name="version" type="text" /></td>
 			</tr>
 			<tr>
-				<td>StarUML Business Domain Model:</td>
+				<td colspan="2">Upload API Domain Model</td>
+			</tr>
+			<tr>
+				<td>Domain Model:</td>
 				<td><input id="file" name="file" type="file" /></td>
 			</tr>
 			<tr>
-				<td colspan="2">API Configuration Settings</td>
+				<td colspan="2">API Deployment Settings</td>
 			</tr>
 			<tr>
-				<td>Server Domain:</td>
+				<td>API Server Domain:</td>
 				<td><input id="serverDomain" name="serverDomain" type="text" /></td>
 			</tr>
 			<tr>
 				<td>API Context Root:</td>
 				<td><input id="contextRoot" name="contextRoot" type="text" /></td>
+			</tr>
+			<tr>
+				<td>API Port:</td>
+				<td><input id="port" name="port" type="text" /></td>
+			</tr>
+			<tr>
+				<td colspan="2">API Functionality</td>
 			</tr>
 			<tr>
 				<td>Generate SEARCH (query by example) endpoints:</td>

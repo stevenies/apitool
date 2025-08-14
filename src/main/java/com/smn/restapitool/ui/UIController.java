@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
-
 import com.smn.restapitool.model.API;
 import com.smn.restapitool.model.Entity;
 import com.smn.restapitool.service.Service;
@@ -26,12 +25,12 @@ public class UIController {
 	@Autowired
 	private Service service;
 
-	@GetMapping("/")
-	public String view(Model model) {
-		return "view";
+	@GetMapping("/viewAPISpecForm")
+	public String viewAPISpecForm(Model model) {
+		return "apiSpecForm";
 	}
 
-	@PostMapping("/uploadInfoModel")
+	@PostMapping("/uploadDomainModel")
 	public String uploadFile(
 		@RequestParam String title,
 		@RequestParam String description,
@@ -54,7 +53,7 @@ public class UIController {
 		if (file == null || StringUtil.isEmpty(filename)) {
 			errors.add("You must specify the filename of the API's information model diagram");
 			model.addAttribute("errors", errors);
-			return "view";
+			return "viewAPISpecForm";
 		}
 
 		if (StringUtil.isEmpty(title)) {
@@ -116,4 +115,10 @@ public class UIController {
 			return "view";
 		}
 	}
+
+	@GetMapping("/viewAPICodeForm")
+	public String viewAPICodeForm(Model model) {
+		return "apiCodeForm";
+	}
+
 }
