@@ -29,13 +29,18 @@
 					<td colspan="3"><div class="formHeader">API Information</div></td>
 				</tr>
 				<tr>
-					<td><label>Title:</label></td>
+					<td><label>Access Token<span class="required">*</span>:</label></td>
+					<td><input id="accessToken" name="accessToken" type="text" /></td>
+					<td class="formNote">Your access credential authorizing access to the REST API Generator tool.</td>
+				</tr>
+				<tr>
+					<td><label>API Title<span class="required">*</span>:</label></td>
 					<td><input id="title" name="title" type="text" /></td>
 					<td class="formNote">Title developers use to refer to the API.</td>
 				</tr>
 				<tr>
 					<td><label>API Description:</label></td>
-					<td><input id="description" name="description" type="text" /></td>
+					<td><textarea id="description" name="description" rows="4" cols="30"></textarea></td>
 					<td class="formNote">Brief description of the API's purpose and functionality.</td>
 				</tr>
 				<tr>
@@ -44,7 +49,7 @@
 					<td class="formNote">API version (e.g., 1.0).</td>
 				</tr>
 				<tr>
-					<td><label>Domain Model:</label></td>
+					<td><label>Business Domain Model<span class="required">*</span>:</label></td>
 					<td><input id="file" name="file" type="file" /></td>
 					<td class="formNote">StarUML file containing the API's business domain model.</td>
 				</tr>
@@ -64,7 +69,7 @@
 				<tr>
 					<td><label>Generate POST endpoints:</label></td>
 					<td><input id="makePOST" name="makePOST" type="checkbox" /></td>
-					<td class="formNote">Generate endpoints for creation of new resources.</td>
+					<td class="formNote">Generate endpoints for creation of new resource instances.</td>
 				</tr>
 				<tr>
 					<td><label>Generate PUT endpoints:</label></td>
@@ -79,25 +84,25 @@
 				<tr>
 					<td><label>Generate DELETE endpoints:</label></td>
 					<td><input id="makeDELETE" name="makeDELETE" type="checkbox" value="true" /></td>
-					<td class="formNote">Generate endpoints for deletion of resources.</td>
+					<td class="formNote">Generate endpoints for resource deletion.</td>
 				</tr>
 				<tr>
 					<td colspan="3"><div class="formHeader">API Deployment Settings</div></td>
 				</tr>
 				<tr>
-					<td><label>API Server Domain:</label></td>
+					<td><label>API Server Domain<span class="required">*</span>:</label></td>
 					<td><input id="serverDomain" name="serverDomain" type="text" /></td>
-					<td class="formNote">Domain where the API will be hosted (e.g., api.company.com).</td>
+					<td class="formNote">Domain where the API will be hosted<br>(e.g., api.company.com).</td>
 				</tr>
 				<tr>
-					<td><label>API Context Root:</label></td>
+					<td><label>API Context Root<span class="required">*</span>:</label></td>
 					<td><input id="contextRoot" name="contextRoot" type="text" /></td>
 					<td class="formNote">Context path prefix for the API's various endpoint URIs (e.g., /businessApi/...).</td>
 				</tr>
 				<tr>
 					<td><label>API Port:</label></td>
 					<td><input id="port" name="port" type="text" /></td>
-					<td class="formNote">Port on which the API server will run (e.g., 8080).</td>
+					<td class="formNote">Port on which the API server will run<br>(e.g., 8080).</td>
 				</tr>
 			</table>
 			<div class="errorPanel">${errors}</div>

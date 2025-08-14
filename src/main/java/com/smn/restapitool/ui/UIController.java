@@ -32,44 +32,72 @@ public class UIController {
 
 	@PostMapping("/uploadDomainModel")
 	public String uploadFile(
-		@RequestParam String title,
-		@RequestParam String description,
-		@RequestParam String version,
+		@RequestParam(required = false, defaultValue = "") String accessToken,
+		@RequestParam(required = false, defaultValue = "") String title,
+		@RequestParam(required = false, defaultValue = "") String description,
+		@RequestParam(required = false, defaultValue = "") String version,
 		@RequestParam MultipartFile file,
-		@RequestParam String serverDomain,
-		@RequestParam String contextRoot,
 		@RequestParam(required = false, defaultValue = "false") boolean makeSEARCH,
 		@RequestParam(required = false, defaultValue = "false") boolean makeGET,
 		@RequestParam(required = false, defaultValue = "false") boolean makePOST,
 		@RequestParam(required = false, defaultValue = "false") boolean makePUT,
 		@RequestParam(required = false, defaultValue = "false") boolean makePATCH,
 		@RequestParam(required = false, defaultValue = "false") boolean makeDELETE,
+		@RequestParam(required = false, defaultValue = "") String serverDomain,
+		@RequestParam(required = false, defaultValue = "") String contextRoot,
+		@RequestParam(required = false, defaultValue = "") String port,
 		HttpServletResponse response,
 		Model model) {
 
 		List<String> errors = new ArrayList<>();
 
-		String filename = file.getOriginalFilename();
-		if (file == null || StringUtil.isEmpty(filename)) {
-			errors.add("You must specify the filename of the API's information model diagram");
+		if (StringUtil.isEmpty(accessToken)) {
+			errors.add("You must specify your access token to gain access to the REST API Generator tool");
 			model.addAttribute("errors", errors);
-			return "viewAPISpecForm";
+			return "apiSpecForm";
+		}
+
+		this.validateAccessToken(accessToken, errors);
+		if (!errors.isEmpty()) {
+			model.addAttribute("errors", errors);
+			return "apiSpecForm";
 		}
 
 		if (StringUtil.isEmpty(title)) {
-			title = "Title TBD";
+			errors.add("You must specify the title developers use to refer to the API");
+			model.addAttribute("errors", errors);
+			return "apiSpecForm";
 		}
+
+		String filename = file.getOriginalFilename();
+		if (file == null || StringUtil.isEmpty(filename)) {
+			errors.add("You must specify the filename of the API's business domain model");
+			model.addAttribute("errors", errors);
+			return "apiSpecForm";
+		}
+
 		if (StringUtil.isEmpty(description)) {
 			description = "Description TBD";
 		}
+
 		if (StringUtil.isEmpty(version)) {
 			version = "1.0";
 		}
+
 		if (StringUtil.isEmpty(serverDomain)) {
-			serverDomain = "<domain>";
+			errors.add("You must specify the domain where the API will be hosted");
+			model.addAttribute("errors", errors);
+			return "apiSpecForm";
 		}
+
 		if (StringUtil.isEmpty(contextRoot)) {
-			contextRoot = "<contextRoot>";
+			errors.add("You must specify the context path for the API's various endpoint URIs");
+			model.addAttribute("errors", errors);
+			return "apiSpecForm";
+		}
+
+		if (StringUtil.isEmpty(port)) {
+			port = "443";
 		}
 
 		try {
@@ -113,6 +141,12 @@ public class UIController {
 			errors.add(t.getMessage());
 			model.addAttribute("errors", errors);
 			return "view";
+		}
+	}
+
+	private void validateAccessToken(String accessToken, List<String> errors) {
+		if (!"zzzsmn".equalsIgnoreCase(accessToken)) {
+			errors.add("Invalid access token");
 		}
 	}
 

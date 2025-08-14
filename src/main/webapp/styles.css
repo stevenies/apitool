@@ -5,7 +5,7 @@ body {
 }
 #page {
     background-color: #ffffff;
-    max-width: 800px;
+    max-width: 900px;
     margin: auto;
     padding: 30px;
     border-radius: 8px;
@@ -79,4 +79,9 @@ a:hover {
 }
 .actionPanel button{
     font-weight: bold;
+}
+.required {
+    font-size: 12px;
+    vertical-align: super;
+    color: red;
 }
