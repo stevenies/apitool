@@ -27,11 +27,20 @@ public class UIController {
 
 	@GetMapping("/viewAPISpecForm")
 	public String viewAPISpecForm(Model model) {
+		model.addAttribute("email", "");
+		model.addAttribute("accessToken", "");
+		model.addAttribute("title", "");
+		model.addAttribute("description", "Description TBD");
+		model.addAttribute("version", "1.0");
+		model.addAttribute("serverDomain", "");
+		model.addAttribute("contextRoot", "");
+		model.addAttribute("port", "443");
 		return "apiSpecForm";
 	}
 
 	@PostMapping("/uploadDomainModel")
 	public String uploadFile(
+		@RequestParam(required = false, defaultValue = "") String email,
 		@RequestParam(required = false, defaultValue = "") String accessToken,
 		@RequestParam(required = false, defaultValue = "") String title,
 		@RequestParam(required = false, defaultValue = "") String description,
@@ -51,53 +60,63 @@ public class UIController {
 
 		List<String> errors = new ArrayList<>();
 
-		if (StringUtil.isEmpty(accessToken)) {
-			errors.add("You must specify your access token to gain access to the REST API Generator tool");
-			model.addAttribute("errors", errors);
-			return "apiSpecForm";
+		if (StringUtil.isEmpty(email)) {
+			errors.add("You must enter your email address");
+		} else {
+			model.addAttribute("email", email);
+			if (!email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")) {
+				errors.add("Invalid email address format");
+			}
 		}
 
-		this.validateAccessToken(accessToken, errors);
-		if (!errors.isEmpty()) {
-			model.addAttribute("errors", errors);
-			return "apiSpecForm";
+		if (StringUtil.isEmpty(accessToken)) {
+			errors.add("You must specify your access token to gain access to the REST API Generator tool");
+		} else {
+			model.addAttribute("accessToken", accessToken);
+			this.validateAccessToken(accessToken, errors);
 		}
 
 		if (StringUtil.isEmpty(title)) {
 			errors.add("You must specify the title developers use to refer to the API");
-			model.addAttribute("errors", errors);
-			return "apiSpecForm";
+		} else {
+			model.addAttribute("title", title);
 		}
 
 		String filename = file.getOriginalFilename();
 		if (file == null || StringUtil.isEmpty(filename)) {
 			errors.add("You must specify the filename of the API's business domain model");
-			model.addAttribute("errors", errors);
-			return "apiSpecForm";
 		}
 
 		if (StringUtil.isEmpty(description)) {
 			description = "Description TBD";
 		}
+		model.addAttribute("description", description);
 
 		if (StringUtil.isEmpty(version)) {
 			version = "1.0";
 		}
+		model.addAttribute("version", version);
 
 		if (StringUtil.isEmpty(serverDomain)) {
 			errors.add("You must specify the domain where the API will be hosted");
-			model.addAttribute("errors", errors);
-			return "apiSpecForm";
+		} else {
+			model.addAttribute("serverDomain", serverDomain);
 		}
 
 		if (StringUtil.isEmpty(contextRoot)) {
 			errors.add("You must specify the context path for the API's various endpoint URIs");
-			model.addAttribute("errors", errors);
-			return "apiSpecForm";
+		} else {
+			model.addAttribute("contextRoot", contextRoot);
 		}
 
 		if (StringUtil.isEmpty(port)) {
 			port = "443";
+		}
+		model.addAttribute("port", port);
+
+		if (!errors.isEmpty()) {
+			model.addAttribute("errors", errors);
+			return "apiSpecForm";
 		}
 
 		try {
