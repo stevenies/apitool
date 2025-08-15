@@ -11,11 +11,11 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
-import com.smn.restapitool.model.API;
-import com.smn.restapitool.model.Attribute;
-import com.smn.restapitool.model.Entity;
-import com.smn.restapitool.model.MVA;
-import com.smn.restapitool.model.MVA.TRelationDepth;
+import com.smn.restapitool.model.uml.DomainModel;
+import com.smn.restapitool.model.uml.Attribute;
+import com.smn.restapitool.model.uml.Entity;
+import com.smn.restapitool.model.uml.MVA;
+import com.smn.restapitool.model.uml.MVA.TRelationDepth;
 import com.smn.restapitool.util.FileUtil;
 import com.smn.restapitool.util.StringUtil;
 
@@ -38,7 +38,7 @@ public class Swagger {
 	final static String MARKER_TARGET_NAME_DEEP = ">>>deepTargetName";
 
 	public String generate(
-			API api,
+			DomainModel api,
 			String serverDomain,
 			String contextRoot,
 			boolean makePOST,
@@ -105,7 +105,7 @@ public class Swagger {
 		return buffer.toString();
 	}
 
-	private String makeTags(int tabs, API api) {
+	private String makeTags(int tabs, DomainModel api) {
 		StringBuilder buffer = new StringBuilder();
 		List<Entity> entities = api.getEntities();
 		for (Entity entity : entities) {
@@ -128,7 +128,7 @@ public class Swagger {
 		return buffer.toString();
 	}
 
-	private String makeSchema(int tabs, API api, Map<Entity, List<String>> issues) {
+	private String makeSchema(int tabs, DomainModel api, Map<Entity, List<String>> issues) {
 		StringBuilder buffer = new StringBuilder();
 
 		boolean firstEntity = true;
@@ -372,7 +372,7 @@ public class Swagger {
 		return buffer.toString();
 	}
 
-	private String makePaths(int tabs, API api, boolean makePOST, boolean makeGET, boolean makePUT, boolean makePATCH,
+	private String makePaths(int tabs, DomainModel api, boolean makePOST, boolean makeGET, boolean makePUT, boolean makePATCH,
 			boolean makeDELETE, boolean makeSEARCH, Map<Entity, List<String>> issues) {
 		StringBuilder buffer = new StringBuilder();
 

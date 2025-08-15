@@ -13,8 +13,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
-import com.smn.restapitool.model.API;
-import com.smn.restapitool.model.Entity;
+
+import com.smn.restapitool.model.uml.DomainModel;
+import com.smn.restapitool.model.uml.Entity;
 import com.smn.restapitool.service.Service;
 import com.smn.restapitool.service.Service.DtoReadUMLFile;
 import com.smn.restapitool.util.StringUtil;
@@ -70,7 +71,7 @@ public class UIController {
 		}
 
 		if (StringUtil.isEmpty(accessToken)) {
-			errors.add("You must specify your access token to gain access to the REST API Generator tool");
+			errors.add("You must enter your access token to gain access to the REST API Generator tool");
 		} else {
 			model.addAttribute("accessToken", accessToken);
 			this.validateAccessToken(accessToken, errors);
@@ -104,7 +105,7 @@ public class UIController {
 		}
 
 		if (StringUtil.isEmpty(contextRoot)) {
-			errors.add("You must specify the context path for the API's various endpoint URIs");
+			errors.add("You must specify the context root for the API's various endpoint URIs");
 		} else {
 			model.addAttribute("contextRoot", contextRoot);
 		}
@@ -133,7 +134,7 @@ public class UIController {
 
 			// Create a new API instance.
 			List<Entity> entities = status.getEntities();
-			API api = new API(title, description, version, entities);
+			DomainModel api = new DomainModel(title, description, version, entities);
 
 			// Generate the API's swagger.
 			String swagger = this.service.generateSwagger(api, serverDomain, contextRoot, makePOST, makeGET, makePUT, makePATCH, makeDELETE, makeSEARCH, status.getIssues());

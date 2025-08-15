@@ -8,8 +8,8 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.smn.restapitool.model.API;
-import com.smn.restapitool.model.Entity;
+import com.smn.restapitool.model.uml.DomainModel;
+import com.smn.restapitool.model.uml.Entity;
 import com.smn.restapitool.service.adapter.staruml.AdaptorStarUML;
 import com.smn.restapitool.service.swagger.Swagger;
 import com.smn.restapitool.util.FileUtil;
@@ -65,7 +65,7 @@ public class Service {
 	}
 
 	public String generateSwagger(
-		API api,
+		DomainModel api,
 		String serverDomain,
 		String contextRoot,
 		boolean makePOST,

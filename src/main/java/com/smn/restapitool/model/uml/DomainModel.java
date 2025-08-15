@@ -1,16 +1,16 @@
-package com.smn.restapitool.model;
+package com.smn.restapitool.model.uml;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class API {
+public class DomainModel {
 
 	private String title;
 	private String description;
 	private String version;
 	private List<Entity> entities;
 
-	public API(String title, String description, String version, List<Entity> entities) {
+	public DomainModel(String title, String description, String version, List<Entity> entities) {
 		super();
 		this.title = title;
 		this.description = description;

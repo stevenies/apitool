@@ -1,4 +1,4 @@
-package com.smn.restapitool.model;
+package com.smn.restapitool.model.uml;
 
 import com.smn.restapitool.util.StringUtil;
 

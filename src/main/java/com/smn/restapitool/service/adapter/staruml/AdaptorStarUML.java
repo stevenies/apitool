@@ -2,10 +2,10 @@ package com.smn.restapitool.service.adapter.staruml;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.smn.restapitool.model.Attribute;
-import com.smn.restapitool.model.Entity;
-import com.smn.restapitool.model.MVA;
-import com.smn.restapitool.model.MVA.TRelationDepth;
+import com.smn.restapitool.model.uml.Attribute;
+import com.smn.restapitool.model.uml.Entity;
+import com.smn.restapitool.model.uml.MVA;
+import com.smn.restapitool.model.uml.MVA.TRelationDepth;
 import com.smn.restapitool.util.StringUtil;
 
 import java.util.ArrayList;

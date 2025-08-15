@@ -1,9 +1,9 @@
-package com.smn.restapitool.model;
+package com.smn.restapitool.model.uml;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.smn.restapitool.model.MVA.TRelationDepth;
+import com.smn.restapitool.model.uml.MVA.TRelationDepth;
 import com.smn.restapitool.util.StringUtil;
 
 public class Entity implements Comparable<Entity> {

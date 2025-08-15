@@ -80,6 +80,13 @@ a:hover {
 .actionPanel button{
     font-weight: bold;
 }
+.errorPanel {
+    width: 800px;
+    margin: auto;
+    margin-top: 20px;
+    padding: 10px; 
+    color: red;
+}
 .required {
     font-size: 12px;
     vertical-align: super;
