@@ -129,15 +129,15 @@
 					<td class="formNote">Port on which the API server will run<br>(e.g., 443).</td>
 				</tr>
 			</table>
-			<div class="errorPanel">
-				<c:if test="${not empty errors}">
+			<c:if test="${not empty errors}">
+				<div class="errorPanel">
 					<ul>
 						<c:forEach var="error" items="${errors}">
 							<li>${error}</li>
 						</c:forEach>
 					</ul>
-				</c:if>
-			</div>
+				</div>
+			</c:if>
 			<div class="actionPanel">
 				<button id="buttonSubmit">Generate API Specification</button>
 			</div>

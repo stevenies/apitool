@@ -68,25 +68,25 @@ public class UIController {
 		List<String> errors = new ArrayList<>();
 
 		if (StringUtil.isEmpty(nameFirst)) {
-			errors.add("You must enter your first name");
+			errors.add("Enter your first name");
 		} else {
 			model.addAttribute("nameFirst", nameFirst);
 		}
 
 		if (StringUtil.isEmpty(nameLast)) {
-			errors.add("You must enter your last name");
+			errors.add("Enter your last name");
 		} else {
 			model.addAttribute("nameLast", nameLast);
 		}
 
 		if (StringUtil.isEmpty(company)) {
-			errors.add("You must enter either the name of your company or 'self'");
+			errors.add("Either enter the name of your company or 'Self' if not employed");
 		} else {
 			model.addAttribute("company", company);
 		}
 
 		if (StringUtil.isEmpty(email)) {
-			errors.add("You must enter your email address");
+			errors.add("Enter your email address");
 		} else {
 			model.addAttribute("email", email);
 			if (!email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")) {
@@ -95,21 +95,23 @@ public class UIController {
 		}
 
 		if (StringUtil.isEmpty(accessToken)) {
-			errors.add("You must enter your access token to gain access to the REST API Generator tool");
+			errors.add("Enter your access token to gain access to the REST API Generator tool");
 		} else {
 			model.addAttribute("accessToken", accessToken);
-			this.validateAccessToken(accessToken, errors);
+			if (!this.service.userVerified(accessToken)) {
+				errors.add("Access token is either invalid or expired.");
+			}
 		}
 
 		if (StringUtil.isEmpty(title)) {
-			errors.add("You must specify the title developers use to refer to the API");
+			errors.add("Specify the title clients will use to refer to the API");
 		} else {
 			model.addAttribute("title", title);
 		}
 
 		String filename = file.getOriginalFilename();
 		if (file == null || StringUtil.isEmpty(filename)) {
-			errors.add("You must specify the filename of the API's business domain model");
+			errors.add("Specify the filename of the API's business domain model");
 		}
 
 		if (StringUtil.isEmpty(description)) {
@@ -123,13 +125,13 @@ public class UIController {
 		model.addAttribute("version", version);
 
 		if (StringUtil.isEmpty(serverDomain)) {
-			errors.add("You must specify the domain where the API will be hosted");
+			errors.add("Specify the domain where the API will be hosted");
 		} else {
 			model.addAttribute("serverDomain", serverDomain);
 		}
 
 		if (StringUtil.isEmpty(contextRoot)) {
-			errors.add("You must specify the context root for the API's various endpoint URIs");
+			errors.add("Specify the context root for the API's various endpoint URIs");
 		} else {
 			model.addAttribute("contextRoot", contextRoot);
 		}
@@ -185,12 +187,6 @@ public class UIController {
 			errors.add(t.getMessage());
 			model.addAttribute("errors", errors);
 			return "view";
-		}
-	}
-
-	private void validateAccessToken(String accessToken, List<String> errors) {
-		if (!"zzzsmn".equalsIgnoreCase(accessToken)) {
-			errors.add("Invalid access token");
 		}
 	}
 

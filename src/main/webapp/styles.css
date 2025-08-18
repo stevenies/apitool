@@ -85,7 +85,8 @@ a:hover {
     margin: auto;
     margin-top: 20px;
     padding: 10px; 
-    color: red;
+    color: black;
+    background-color: #ffd4d4;
 }
 .required {
     font-size: 12px;

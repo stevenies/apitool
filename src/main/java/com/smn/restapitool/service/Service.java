@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import com.smn.restapitool.model.uml.DomainModel;
 import com.smn.restapitool.model.uml.Entity;
+import com.smn.restapitool.persistence.UserRepository;
 import com.smn.restapitool.service.adapter.staruml.AdaptorStarUML;
 import com.smn.restapitool.service.swagger.Swagger;
 import com.smn.restapitool.util.FileUtil;
@@ -47,10 +48,18 @@ public class Service {
 	}
 
 	@Autowired
+	private UserRepository userRepository;
+
+	@Autowired
 	private AdaptorStarUML adaptorStarUML;
 
 	@Autowired
 	private Swagger swagger;
+
+	public boolean userVerified(String accessToken) {
+		boolean verified = this.userRepository.existsByAccessToken(accessToken);
+		return verified;
+	}
 
 	public DtoReadUMLFile readUMLFile(String filename, byte[] fileContent) {
 		String fileExtension = FileUtil.getExtension(filename);

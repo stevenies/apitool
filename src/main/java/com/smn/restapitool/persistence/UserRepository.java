@@ -46,7 +46,7 @@ public class UserRepository {
                     admin.setNameLast("Nies");
                     admin.setCompany("Self");
                     admin.setEmail("steveniesfl@gmail.com");
-                    admin.setAccessToken("smnzzz");
+                    admin.setAccessToken("smn01311959");
 
                     Calendar cal = Calendar.getInstance();
                     cal.add(Calendar.YEAR, 100);
@@ -64,17 +64,17 @@ public class UserRepository {
         }
     }
     
-    public User add(User user) {
-        if (user == null || user.getEmail() == null) {
-            throw new IllegalArgumentException("User and email must not be null");
+    public User add(User user) throws IllegalArgumentException {
+        if (user == null || user.getAccessToken() == null) {
+            throw new IllegalArgumentException("User and access token must not be null");
         }
-        userMap.put(user.getEmail(), user);
+        userMap.put(user.getAccessToken(), user);
         return user;
     }
 
-    public void remove(User user) {
-        if (user == null || user.getEmail() == null) {
-            throw new IllegalArgumentException("User and email must not be null");
+    public void remove(User user) throws IllegalArgumentException {
+        if (user == null || user.getAccessToken() == null) {
+            throw new IllegalArgumentException("User and access token must not be null");
         }
         userMap.remove(user.getEmail());
     }
@@ -91,12 +91,12 @@ public class UserRepository {
         return new ArrayList<>(userMap.values());
     }
 
-    public boolean existsByEmail(String email) {
+    public boolean existsByAccessToken(String email) {
         return userMap.containsKey(email);
     }
 
-    public User findByEmail(String email) {
-        return userMap.get(email);
+    public User findByAccessToken(String accessToken) {
+        return userMap.get(accessToken);
     }
 
     private void loadFromJsonFile() throws IOException {
