@@ -28,6 +28,9 @@ public class UIController {
 
 	@GetMapping("/viewAPISpecForm")
 	public String viewAPISpecForm(Model model) {
+		model.addAttribute("nameFirst", "");
+		model.addAttribute("nameLast", "");
+		model.addAttribute("company", "");
 		model.addAttribute("email", "");
 		model.addAttribute("accessToken", "");
 		model.addAttribute("title", "");
@@ -41,6 +44,9 @@ public class UIController {
 
 	@PostMapping("/uploadDomainModel")
 	public String uploadFile(
+		@RequestParam(required = false, defaultValue = "") String nameFirst,
+		@RequestParam(required = false, defaultValue = "") String nameLast,
+		@RequestParam(required = false, defaultValue = "") String company,
 		@RequestParam(required = false, defaultValue = "") String email,
 		@RequestParam(required = false, defaultValue = "") String accessToken,
 		@RequestParam(required = false, defaultValue = "") String title,
@@ -60,6 +66,24 @@ public class UIController {
 		Model model) {
 
 		List<String> errors = new ArrayList<>();
+
+		if (StringUtil.isEmpty(nameFirst)) {
+			errors.add("You must enter your first name");
+		} else {
+			model.addAttribute("nameFirst", nameFirst);
+		}
+
+		if (StringUtil.isEmpty(nameLast)) {
+			errors.add("You must enter your last name");
+		} else {
+			model.addAttribute("nameLast", nameLast);
+		}
+
+		if (StringUtil.isEmpty(company)) {
+			errors.add("You must enter either the name of your company or 'self'");
+		} else {
+			model.addAttribute("company", company);
+		}
 
 		if (StringUtil.isEmpty(email)) {
 			errors.add("You must enter your email address");

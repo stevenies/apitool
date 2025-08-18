@@ -30,6 +30,21 @@
 					<td colspan="3"><div class="formHeader">User Information</div></td>
 				</tr>
 				<tr>
+					<td><label>First Name<span class="required">*</span>:</label></td>
+					<td><input id="nameFirst" name="nameFirst" type="text" value="${nameFirst}" /></td>
+					<td class="formNote">Your first name.</td>
+				</tr>
+				<tr>
+					<td><label>Last Name<span class="required">*</span>:</label></td>
+					<td><input id="nameLast" name="nameLast" type="text" value="${nameLast}" /></td>
+					<td class="formNote">Your last name.</td>
+				</tr>
+				<tr>
+					<td><label>Company<span class="required">*</span>:</label></td>
+					<td><input id="company" name="company" type="text" value="${company}" /></td>
+					<td class="formNote">Name of your employer or "self"</td>
+				</tr>
+				<tr>
 					<td><label>Email<span class="required">*</span>:</label></td>
 					<td><input id="email" name="email" type="text" value="${email}" /></td>
 					<td class="formNote">Email address given when your account was registered.</td>

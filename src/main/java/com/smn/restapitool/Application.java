@@ -14,6 +14,11 @@ public class Application extends SpringBootServletInitializer {
     }
 
     public static void main(String[] args) {
+
+        System.getenv().forEach((key, value) -> 
+            System.out.println(key + " = " + value)
+        );        
+
         SpringApplication.run(Application.class, args);
     }
 }
