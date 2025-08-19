@@ -1,14 +1,7 @@
 package com.smn.restapitool.service;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
+import com.smn.restapitool.exception.ExceptionAccessTokenInUse;
+import com.smn.restapitool.exception.ExceptionUserExists;
 import com.smn.restapitool.model.ApiSpec;
 import com.smn.restapitool.model.User;
 import com.smn.restapitool.model.uml.DomainModel;
@@ -17,7 +10,16 @@ import com.smn.restapitool.persistence.UserRepository;
 import com.smn.restapitool.service.adapter.staruml.AdaptorStarUML;
 import com.smn.restapitool.service.swagger.Swagger;
 import com.smn.restapitool.util.FileUtil;
-
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 @Component
 public class Service {
 
@@ -59,8 +61,62 @@ public class Service {
 	@Autowired
 	private Swagger swagger;
 
+    public User createUser(String nameFirst, String nameLast, String company, String email, String accessPlan, String accessToken) throws ExceptionUserExists, ExceptionAccessTokenInUse {
+	
+		// Determine if the user already exists.
+		for (User aUser : this.userRepository.findAllUsers()) {
+			String aUserAccessToken = aUser.getAccessToken();
+			String aUserEmail = aUser.getEmail();
+			String aUserNameFirst = aUser.getNameFirst();
+			String aUserNameLast = aUser.getNameLast();
+			String aUserCompany = aUser.getCompany();
+		
+			if (aUserEmail.equalsIgnoreCase(email)) {
+				throw new ExceptionUserExists();
+			} else if (aUserNameFirst.equalsIgnoreCase(nameFirst) &&
+				aUserNameLast.equalsIgnoreCase(nameLast) &&
+				aUserCompany.equalsIgnoreCase(company)) {
+				throw new ExceptionUserExists();
+			} else if (aUserAccessToken.equalsIgnoreCase(accessToken)) {
+				throw new ExceptionAccessTokenInUse();
+			}
+		}
+
+		// Create a new user.	
+		User user = new User();
+		user.setNameFirst(nameFirst);
+		user.setNameLast(nameLast);
+		user.setCompany(company);
+		user.setEmail(email);
+		user.setAccessToken(accessToken);
+
+		// Compute the access expiration date.
+		Calendar cal = Calendar.getInstance();
+		switch (accessPlan.toLowerCase()) {
+			case "weekly":
+    			cal.add(Calendar.DAY_OF_YEAR, 7);
+				break;
+			case "monthly":
+    			cal.add(Calendar.DAY_OF_YEAR, 31);
+				break;
+			default:
+    			cal.add(Calendar.DAY_OF_YEAR, 1);
+				break;
+		}
+    	Date date = cal.getTime();
+		user.setAccessExpiration(date);
+
+		try {
+			this.userRepository.addUser(user);
+			this.userRepository.saveToJsonFile();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return user;
+    }
+	
 	public User findUser(String accessToken) {
-		User user = this.userRepository.findByAccessToken(accessToken);
+		User user = this.userRepository.findUserByAccessToken(accessToken);
 		return user;
 	}
 
@@ -132,4 +188,5 @@ public class Service {
 		}
 		apiSpec.deleteSwaggerFile();
 	}
+
 }

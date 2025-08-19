@@ -1,7 +1,27 @@
-body {
+BODY {
     margin: 20px;
     font-family: Verdana, sans-serif;
     background-color: #c8c8c8;
+}
+A {
+    color: #007BFF;
+    text-decoration: none;
+}
+A:hover {
+    text-decoration: underline;
+}
+BUTTON {
+    padding: 8px 16px;
+    font-size: 16px;
+    font-weight: bold;
+    color: white;
+    background-color: #156082;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+P {
+    margin: 0px 0px 12px 0px;
 }
 #page {
     background-color: #ffffff;
@@ -25,22 +45,10 @@ body {
     font-weight: bold;
     margin: 20px 0px 12px 0px;
 }
-p {
-    margin: 0px 0px 12px 0px;
-}
-a {
-    color: #007BFF;
-    text-decoration: none;
-}
-a:hover {
-    text-decoration: underline;
-}
-#logo img {
-    margin: auto
-}
-#logo img {
+#logo IMG {
     width: 700px; height: 400px;
     display: block;
+    margin: auto;
     margin-bottom: 20px;
 }
 .stepImage {
@@ -58,19 +66,58 @@ a:hover {
     background-color: #f0f0f0;
     border-bottom: 1px solid #ddd;
 }
-#formUploadInfoModel td {
+#formLogin TD {
     padding: 4px;
     vertical-align: top;
 }
-#formUploadInfoModel label {
+#formLogin LABEL {
     width: 100%;
     display: inline-block;
     padding-right: 4px;
     text-align: right;
     white-space: nowrap;
 }
-#formUploadInfoModel input[type="text"] {
+#formLogin INPUT[type="text"] {
     width: 240px;
+}
+#formLogin .actionPanel {
+    margin: 10px auto 20px auto;
+}
+#formRegister TD {
+    padding: 4px;
+    vertical-align: top;
+}
+#formRegister LABEL {
+    width: 100%;
+    display: inline-block;
+    padding-right: 4px;
+    text-align: right;
+    white-space: nowrap;
+}
+#formRegister INPUT[type="text"] {
+    width: 240px;
+}
+#formRegister .actionPanel {
+    margin: 10px auto 20px auto;
+}
+#apiSpecForm TD {
+    padding: 4px;
+    vertical-align: top;
+}
+#apiSpecForm LABEL {
+    width: 100%;
+    display: inline-block;
+    padding-right: 4px;
+    text-align: right;
+    white-space: nowrap;
+}
+#apiSpecForm INPUT[type="text"] {
+    width: 240px;
+}
+.required {
+    font-size: 12px;
+    vertical-align: super;
+    color: red;
 }
 .actionPanel {
     margin-top: 30px;
@@ -79,21 +126,6 @@ a:hover {
 }
 .actionPanel BUTTON {
     margin: 10px;
-}
-.required {
-    font-size: 12px;
-    vertical-align: super;
-    color: red;
-}
-BUTTON {
-    padding: 8px 16px;
-    font-size: 16px;
-    font-weight: bold;
-    color: white;
-    background-color: #156082;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
 }
 .errorPanel {
     width: 800px;

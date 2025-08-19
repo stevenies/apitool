@@ -1,8 +1,16 @@
 package com.smn.restapitool.ui;
 
+import com.smn.restapitool.exception.ExceptionAccessTokenInUse;
+import com.smn.restapitool.exception.ExceptionUserExists;
+import com.smn.restapitool.model.ApiSpec;
+import com.smn.restapitool.model.User;
+import com.smn.restapitool.model.uml.DomainModel;
+import com.smn.restapitool.model.uml.Entity;
+import com.smn.restapitool.service.Service;
+import com.smn.restapitool.service.Service.DtoReadUMLFile;
+import com.smn.restapitool.util.StringUtil;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.OutputStream;
@@ -15,20 +23,81 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
-
-import com.smn.restapitool.model.ApiSpec;
-import com.smn.restapitool.model.User;
-import com.smn.restapitool.model.uml.DomainModel;
-import com.smn.restapitool.model.uml.Entity;
-import com.smn.restapitool.service.Service;
-import com.smn.restapitool.service.Service.DtoReadUMLFile;
-import com.smn.restapitool.util.StringUtil;
-
 @Controller
 public class UIController {
 
 	@Autowired
 	private Service service;
+
+	@PostMapping("/register")
+	public String register(
+		@RequestParam(required = false, defaultValue = "") String nameFirst,
+		@RequestParam(required = false, defaultValue = "") String nameLast,
+		@RequestParam(required = false, defaultValue = "") String company,
+		@RequestParam(required = false, defaultValue = "") String email,
+		@RequestParam(required = false, defaultValue = "") String accessPlan,
+		@RequestParam(required = false, defaultValue = "") String accessToken,
+		HttpServletResponse response,
+        HttpSession session,
+		Model model) {
+
+		List<String> registrationErrors = new ArrayList<>();
+
+		// Verify that the required fields are provided.
+		if (StringUtil.isEmpty(nameFirst)) {
+			registrationErrors.add("Enter your first name");
+		} else {
+			nameFirst = StringUtil.trim(nameFirst);
+		}
+
+		if (StringUtil.isEmpty(nameLast)) {
+			registrationErrors.add("Enter your last name");
+		} else {
+			nameLast = StringUtil.trim(nameLast);
+		}
+
+		if (StringUtil.isEmpty(company)) {
+			registrationErrors.add("Enter your company name or 'Self' if not employed");
+		} else {
+			company = StringUtil.trim(company);
+		}
+
+		if (StringUtil.isEmpty(email) || !StringUtil.isValidEmail(email)) {
+			registrationErrors.add("Enter a valid email address");
+		} else {
+			email = StringUtil.trim(email);
+		}
+
+		if (StringUtil.isEmpty(accessToken)) {
+			registrationErrors.add("Specify an access token you wish to use for your account");
+		} else {
+			accessToken = StringUtil.trim(accessToken);
+		}
+
+		User user = null;
+		try {
+			user = this.service.createUser(nameFirst, nameLast, company, email, accessPlan, accessToken);
+		} catch (ExceptionUserExists e) {
+			registrationErrors.add("Another user with the same name or email address already exists");
+		} catch (ExceptionAccessTokenInUse e) {
+			registrationErrors.add("That access token is already in use");
+		} catch (Throwable t) {
+			registrationErrors.add("An unexpected error occurred: " + t.getMessage());
+		}
+
+		if (!registrationErrors.isEmpty()) {
+			model.addAttribute("registrationErrors", registrationErrors);
+			return "registration";
+		}
+
+		session.setAttribute("user", user);
+		model.addAttribute("user", user);
+
+		ApiSpec apiSpec = user.getApiSpec();
+		model.addAttribute("apiSpec", apiSpec);
+
+		return "apiSpecForm";
+	}
 
 	@PostMapping("/login")
 	public String login(
@@ -38,37 +107,31 @@ public class UIController {
         HttpSession session,
 		Model model) {
 
-		List<String> errors = new ArrayList<>();
+		List<String> loginErrors = new ArrayList<>();
 
 		// Verify that the required fields are provided.
-		if (StringUtil.isEmpty(email)) {
-			errors.add("Enter a valid email address");
-		} else if (!StringUtil.isValidEmail(email)) {
-			errors.add("Enter a valid email address");
+		if (StringUtil.isEmpty(email) || !StringUtil.isValidEmail(email)) {
+			loginErrors.add("Enter a valid email address");
 		}
 
 		if (StringUtil.isEmpty(accessToken)) {
-			errors.add("Enter the access token you received when your account was registered");
-		}
-
-		if (!errors.isEmpty()) {
-			model.addAttribute("errors", errors);
-			return "registration";
+			loginErrors.add("Enter the access token you received when your account was registered");
 		}
 
 		User user = this.service.findUser(accessToken);
 		if (user == null || !email.equals(user.getEmail())) {
-			errors.add("Either the email address or access token is invalid");
-			model.addAttribute("errors", errors);
+			loginErrors.add("Either the email address or access token is invalid");
+		}
+
+		if (!loginErrors.isEmpty()) {
+			model.addAttribute("loginErrors", loginErrors);
 			return "registration";
 		}
+
 		session.setAttribute("user", user);
 		model.addAttribute("user", user);
 
 		ApiSpec apiSpec = user.getApiSpec();
-		if (apiSpec == null) {
-			apiSpec = new ApiSpec();
-		}
 		model.addAttribute("apiSpec", apiSpec);
 
 		return "apiSpecForm";

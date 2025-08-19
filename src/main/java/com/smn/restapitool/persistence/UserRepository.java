@@ -53,7 +53,7 @@ public class UserRepository {
                     Date futureDate = cal.getTime();
                     admin.setAccessExpiration(futureDate);
 
-                    this.add(admin);
+                    this.addUser(admin);
                     this.saveToJsonFile();
             }
             System.out.println("UserRepository initialized!");
@@ -64,6 +64,41 @@ public class UserRepository {
         }
     }
     
+    public int numUsers() {
+        return userMap.size();
+    }
+
+    public User addUser(User user) throws IllegalArgumentException {
+        if (user == null || user.getAccessToken() == null) {
+            throw new IllegalArgumentException("User and access token must not be null");
+        }
+        userMap.put(user.getAccessToken(), user);
+        return user;
+    }
+
+    public void removeUser(User user) throws IllegalArgumentException {
+        if (user == null || user.getAccessToken() == null) {
+            throw new IllegalArgumentException("User and access token must not be null");
+        }
+        userMap.remove(user.getEmail());
+    }
+
+    public void removeAllUsers() {
+        userMap.clear();
+    }
+
+    public List<User> findAllUsers() {
+        return new ArrayList<>(userMap.values());
+    }
+
+    public boolean userExists(String accessToken) {
+        return userMap.containsKey(accessToken);
+    }
+
+    public User findUserByAccessToken(String accessToken) {
+        return userMap.get(accessToken);
+    }
+
     public File getUserStorageDir(User user) {
 
         // Synthesize a directory for this user.
@@ -79,41 +114,6 @@ public class UserRepository {
         return userDir;
     }
 
-    public User add(User user) throws IllegalArgumentException {
-        if (user == null || user.getAccessToken() == null) {
-            throw new IllegalArgumentException("User and access token must not be null");
-        }
-        userMap.put(user.getAccessToken(), user);
-        return user;
-    }
-
-    public void remove(User user) throws IllegalArgumentException {
-        if (user == null || user.getAccessToken() == null) {
-            throw new IllegalArgumentException("User and access token must not be null");
-        }
-        userMap.remove(user.getEmail());
-    }
-
-    public void removeAll() {
-        userMap.clear();
-    }
-
-    public int numUsers() {
-        return userMap.size();
-    }
-
-    public List<User> findAll() {
-        return new ArrayList<>(userMap.values());
-    }
-
-    public boolean existsByAccessToken(String email) {
-        return userMap.containsKey(email);
-    }
-
-    public User findByAccessToken(String accessToken) {
-        return userMap.get(accessToken);
-    }
-
     private void loadFromJsonFile() throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         List<User> users;
@@ -125,7 +125,7 @@ public class UserRepository {
             });
         }
         for (User user : users) {
-            this.add(user);
+            this.addUser(user);
         }
     }
 
@@ -133,7 +133,7 @@ public class UserRepository {
         ObjectMapper mapper = new ObjectMapper();
         mapper.enable(SerializationFeature.INDENT_OUTPUT);
 
-        List<User> users = this.findAll();
+        List<User> users = this.findAllUsers();
         users.sort((u1, u2) -> u1.getEmail().compareTo(u2.getEmail()));
 
         String javaWorkDir = System.getenv(JAVA_WORK_DIR);
