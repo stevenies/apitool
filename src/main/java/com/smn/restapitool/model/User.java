@@ -11,8 +11,8 @@ public class User implements Comparable<User> {
     private String accessToken = "";
     private Date accessExpiration;
 
-    private ApiSpec apiSpec;
-    private ApiCode apiCode;
+    private ApiSpec apiSpec = new ApiSpec();
+    private ApiCode apiCode = new ApiCode();
 
     public User() {
     }

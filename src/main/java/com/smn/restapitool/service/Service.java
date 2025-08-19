@@ -93,20 +93,20 @@ public class Service {
 
 		// Create a filesystem directory for the user's API file artifacts.
 		File userDir = this.userRepository.getUserStorageDir(user);
-		File apiSpecFile = new File(userDir, "api-spec.json");
+		File swaggerFile = new File(userDir, "api-spec.json");
 
 		// Delete a previously existing apiSpecFile.
-		if (apiSpecFile.exists()) {
-			FileUtil.deleteFile(apiSpecFile);
+		if (swaggerFile.exists()) {
+			FileUtil.deleteFile(swaggerFile);
 			user.setApiSpec(null);
 		}
 
 		// Generate the Swagger text and store it in the apiSpecFile.
 		String swaggerText = this.swagger.generate(api, serverDomain, contextRoot, makePOST, makeGET, makePUT, makePATCH, makeDELETE, makeSEARCH, issues);
-		FileUtil.writeTextToFile(swaggerText, apiSpecFile);
+		FileUtil.writeTextToFile(swaggerText, swaggerFile);
 
 		// Create the ApiSpec object
-		ApiSpec apiSpec = new ApiSpec(apiSpecFile);
+		ApiSpec apiSpec = new ApiSpec(swaggerFile);
 		apiSpec.setTitle(api.getTitle());
 		apiSpec.setDescription(api.getDescription());
 		apiSpec.setVersion(api.getVersion());
@@ -126,23 +126,10 @@ public class Service {
 		return apiSpec;
 	}
 
-	public void deleteApiSpec(User user) {
-		try {
-			if (user == null || user.getApiSpec() == null) {
-				return;
-			}
-
-			// Delete the API specification file.
-			ApiSpec apiSpec = user.getApiSpec();
-			File apiSpecFile = apiSpec.getApiSpecFile();
-			FileUtil.deleteFile(apiSpecFile);
-
-			// Remove the ApiSpec from the user.
-			user.setApiSpec(null);
-			this.userRepository.saveToJsonFile();
-
-		} catch (IOException e) {
-			e.printStackTrace();
+	public void deleteSwagger(ApiSpec apiSpec) {
+		if (apiSpec == null) {
+			return;
 		}
+		apiSpec.deleteSwaggerFile();
 	}
 }

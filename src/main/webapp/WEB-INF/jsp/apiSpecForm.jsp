@@ -13,10 +13,20 @@
 </head>
 <script type="text/javascript">
 	$(function() {
-		$("#buttonSubmit").click(function(event) {
+		$("#buttonGenerate").click(function(event) {
 			event.preventDefault(); // Prevent default form submission
-			$("#errors").html("");
-			$("#formUploadInfoModel").submit();
+			$("#action").val("generate");
+			$("#apiSpecForm").submit();
+			return false;
+		});
+		$("#buttonDownload").click(function(event) {
+			event.preventDefault(); // Prevent default form submission
+			$("#action").val("download");
+			$("#apiSpecForm").submit();
+			return false;
+		});
+		$("#buttonTailor").click(function(event) {
+			event.preventDefault(); // Prevent default form submission
 			return false;
 		});
 	});
@@ -24,7 +34,8 @@
 <body>
 	<div id="page">
 		<p class="title">API Specification Generator</p>
-		<form id="formUploadInfoModel" action="/uploadDomainModel" enctype="multipart/form-data" method="post">
+		<form id="apiSpecForm" action="/doApiSpecForm" enctype="multipart/form-data" method="post">
+			<input type="hidden" id="action" name="action" />
 			<table>
 				<tr>
 					<td colspan="3"><div class="formHeader">API Information</div></td>
@@ -40,7 +51,7 @@
 					<td class="formNote">Brief description of the API's purpose and functionality.</td>
 				</tr>
 				<tr>
-					<td><label>API Version:</label></td>
+					<td><label>API Version<span class="required">*</span>:</label></td>
 					<td><input id="version" name="version" type="text" value="${apiSpec.version}" /></td>
 					<td class="formNote">API version (e.g., 1.0).</td>
 				</tr>
@@ -54,32 +65,32 @@
 				</tr>
 				<tr>
 					<td><label>Generate SEARCH endpoints:</label></td>
-					<td><input id="makeSEARCH" name="makeSEARCH" type="checkbox" value="true" /></td>
+					<td><input id="makeSEARCH" name="makeSEARCH" type="checkbox" value="true" <c:if test="${apiSpec.makeSEARCH}">checked</c:if> /></td>
 					<td class="formNote">Generate endpoints for searching for resources based on example values.</td>
 				</tr>
 				<tr>
 					<td><label>Generate GET endpoints:</label></td>
-					<td><input id="makeGET" name="makeGET" type="checkbox" value="true" /></td>
+					<td><input id="makeGET" name="makeGET" type="checkbox" value="true" <c:if test="${apiSpec.makeGET}">checked</c:if> /></td>
 					<td class="formNote">Generate endpoints for retrieval of resources.</td>
 				</tr>
 				<tr>
 					<td><label>Generate POST endpoints:</label></td>
-					<td><input id="makePOST" name="makePOST" type="checkbox" /></td>
+					<td><input id="makePOST" name="makePOST" type="checkbox" <c:if test="${apiSpec.makePOST}">checked</c:if> /></td>
 					<td class="formNote">Generate endpoints for creation of new resource instances.</td>
 				</tr>
 				<tr>
 					<td><label>Generate PUT endpoints:</label></td>
-					<td><input id="makePUT" name="makePUT" type="checkbox" value="true" /></td>
+					<td><input id="makePUT" name="makePUT" type="checkbox" value="true" <c:if test="${apiSpec.makePUT}">checked</c:if> /></td>
 					<td class="formNote">Generate endpoints for full updates of existing resources.</td>
 				</tr>
 				<tr>
 					<td><label>Generate PATCH endpoints:</label></td>
-					<td><input id="makePATCH" name="makePATCH" type="checkbox" value="true" /></td>
+					<td><input id="makePATCH" name="makePATCH" type="checkbox" value="true" <c:if test="${apiSpec.makePATCH}">checked</c:if> /></td>
 					<td class="formNote">Generate endpoints for partial updates of existing resources.</td>
 				</tr>
 				<tr>
 					<td><label>Generate DELETE endpoints:</label></td>
-					<td><input id="makeDELETE" name="makeDELETE" type="checkbox" value="true" /></td>
+					<td><input id="makeDELETE" name="makeDELETE" type="checkbox" value="true" <c:if test="${apiSpec.makeDELETE}">checked</c:if> /></td>
 					<td class="formNote">Generate endpoints for resource deletion.</td>
 				</tr>
 				<tr>
@@ -110,14 +121,17 @@
 					</ul>
 				</div>
 			</c:if>
-			<c:if test="${not empty user.apiSpec}">
-				<div class="apiSpecPanel">
+			<c:if test="${apiSpec.valid}">
+				<div class="successPanel">
 					Generated specification for API "${apiSpec.title}" on ${apiSpec.dateGenerated}
 				</div>
 			</c:if>
 			<div class="actionPanel">
-				<button id="buttonSubmit">Generate API Specification</button>
-				<c:if test="${not empty user.apiSpec}">
+				<c:if test="${not apiSpec.valid}">
+					<button id="buttonGenerate">Generate API Specification</button>
+				</c:if>
+				<c:if test="${apiSpec.valid}">
+					<button id="buttonGenerate">Regenerate API Specification</button>
 					<button id="buttonDownload">Download API Specification</button>
 					<button id="buttonTailor">Tailor Endpoints</button>
 				</c:if>

@@ -20,4 +20,16 @@ public class StringUtil {
 		String emailRegex = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
 		return email != null && email.matches(emailRegex);
     }
+
+    public static boolean isValidVersion(String version) {
+		String versionRegex = "^\\d\\.\\d$";
+		return version != null && version.matches(versionRegex);
+    }
+
+    public static String trim(String title) {
+		if (title == null) {
+			return null;
+		}
+		return title.trim();
+    }
 }

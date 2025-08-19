@@ -1,11 +1,13 @@
 package com.smn.restapitool.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.smn.restapitool.util.FileUtil;
 import java.io.File;
 import java.util.Date;
 
 public class ApiSpec {
 
-    private File apiSpecFile; // File where the API spec's swagger text is stored
+    private File swaggerFile; // File where the API spec's swagger text is stored
     private Date dateGenerated;
 
     private String title = "";
@@ -24,20 +26,34 @@ public class ApiSpec {
     public ApiSpec() {
     }
 
-    public ApiSpec(File apiSpecFile) {
-        this.apiSpecFile = apiSpecFile;
+    public ApiSpec(File swaggerFile) {
+        this.swaggerFile = swaggerFile;
         this.dateGenerated = new Date();
     }
 
-    public File getApiSpecFile() {
-        return apiSpecFile;
+    @JsonIgnore
+    public boolean isValid() {
+        return swaggerFile != null && swaggerFile.exists();
     }
 
-    public void setApiSpecFile(File apiSpecFile) {
-        this.apiSpecFile = apiSpecFile;
+    public File getSwaggerFile() {
+        return swaggerFile;
     }
 
-    public String getTitle() {
+    public void setSwaggerFile(File swaggerFile) {
+        this.swaggerFile = swaggerFile;
+        this.dateGenerated = new Date();
+    }
+
+    public void deleteSwaggerFile() {
+        if (this.swaggerFile != null && this.swaggerFile.exists()) {
+            FileUtil.deleteFile(this.swaggerFile);
+        }
+        this.swaggerFile = null;
+        this.dateGenerated = null;
+    }
+
+   public String getTitle() {
         return title;
     }
 
@@ -135,10 +151,6 @@ public class ApiSpec {
     
     public Date getDateGenerated() {
         return dateGenerated;
-    }
-
-    public void setDateGenerated(Date dateGenerated) {
-        this.dateGenerated = dateGenerated;
     }
 
 }
