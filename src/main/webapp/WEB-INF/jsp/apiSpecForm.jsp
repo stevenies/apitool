@@ -27,49 +27,21 @@
 		<form id="formUploadInfoModel" action="/uploadDomainModel" enctype="multipart/form-data" method="post">
 			<table>
 				<tr>
-					<td colspan="3"><div class="formHeader">User Information</div></td>
-				</tr>
-				<tr>
-					<td><label>First Name<span class="required">*</span>:</label></td>
-					<td><input id="nameFirst" name="nameFirst" type="text" value="${nameFirst}" /></td>
-					<td class="formNote">Your first name.</td>
-				</tr>
-				<tr>
-					<td><label>Last Name<span class="required">*</span>:</label></td>
-					<td><input id="nameLast" name="nameLast" type="text" value="${nameLast}" /></td>
-					<td class="formNote">Your last name.</td>
-				</tr>
-				<tr>
-					<td><label>Company<span class="required">*</span>:</label></td>
-					<td><input id="company" name="company" type="text" value="${company}" /></td>
-					<td class="formNote">Name of your employer or "self"</td>
-				</tr>
-				<tr>
-					<td><label>Email<span class="required">*</span>:</label></td>
-					<td><input id="email" name="email" type="text" value="${email}" /></td>
-					<td class="formNote">Email address given when your account was registered.</td>
-				</tr>
-				<tr>
-					<td><label>Access Token<span class="required">*</span>:</label></td>
-					<td><input id="accessToken" name="accessToken" type="text" value="${accessToken}" /></td>
-					<td class="formNote">User access credential authorizing use of the REST API Generator tool.</td>
-				</tr>
-				<tr>
 					<td colspan="3"><div class="formHeader">API Information</div></td>
 				</tr>
 				<tr>
 					<td><label>API Title<span class="required">*</span>:</label></td>
-					<td><input id="title" name="title" type="text" value="${title}" /></td>
+					<td><input id="title" name="title" type="text" value="${apiSpec.title}" /></td>
 					<td class="formNote">Title developers use to refer to the API.</td>
 				</tr>
 				<tr>
 					<td><label>API Description:</label></td>
-					<td><textarea id="description" name="description" rows="4" cols="30">${description}</textarea></td>
+					<td><textarea id="description" name="description" rows="4" cols="30">${apiSpec.description}</textarea></td>
 					<td class="formNote">Brief description of the API's purpose and functionality.</td>
 				</tr>
 				<tr>
 					<td><label>API Version:</label></td>
-					<td><input id="version" name="version" type="text" value="${version}" /></td>
+					<td><input id="version" name="version" type="text" value="${apiSpec.version}" /></td>
 					<td class="formNote">API version (e.g., 1.0).</td>
 				</tr>
 				<tr>
@@ -115,17 +87,17 @@
 				</tr>
 				<tr>
 					<td><label>API Server Domain<span class="required">*</span>:</label></td>
-					<td><input id="serverDomain" name="serverDomain" type="text" value="${serverDomain}" /></td>
+					<td><input id="serverDomain" name="serverDomain" type="text" value="${apiSpec.serverDomain}" /></td>
 					<td class="formNote">Domain where the API will be hosted<br>(e.g., api.company.com).</td>
 				</tr>
 				<tr>
 					<td><label>API Context Root<span class="required">*</span>:</label></td>
-					<td><input id="contextRoot" name="contextRoot" type="text" value="${contextRoot}" /></td>
+					<td><input id="contextRoot" name="contextRoot" type="text" value="${apiSpec.contextRoot}" /></td>
 					<td class="formNote">Context path prefix for the API's various endpoint URIs (e.g., /businessApi/...).</td>
 				</tr>
 				<tr>
 					<td><label>API Port:</label></td>
-					<td><input id="port" name="port" type="text" value="${port}" /></td>
+					<td><input id="port" name="port" type="text" value="${apiSpec.port}" /></td>
 					<td class="formNote">Port on which the API server will run<br>(e.g., 443).</td>
 				</tr>
 			</table>
@@ -138,8 +110,17 @@
 					</ul>
 				</div>
 			</c:if>
+			<c:if test="${not empty user.apiSpec}">
+				<div class="apiSpecPanel">
+					Generated specification for API "${apiSpec.title}" on ${apiSpec.dateGenerated}
+				</div>
+			</c:if>
 			<div class="actionPanel">
 				<button id="buttonSubmit">Generate API Specification</button>
+				<c:if test="${not empty user.apiSpec}">
+					<button id="buttonDownload">Download API Specification</button>
+					<button id="buttonTailor">Tailor Endpoints</button>
+				</c:if>
 			</div>
 		</form>
 	</div>

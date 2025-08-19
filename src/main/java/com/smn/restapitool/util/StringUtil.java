@@ -15,4 +15,9 @@ public class StringUtil {
 		char lowerFirstChar = Character.toLowerCase(firstChar);
 		return lowerFirstChar + text.substring(1);
 	}
+
+    public static boolean isValidEmail(String email) {
+		String emailRegex = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
+		return email != null && email.matches(emailRegex);
+    }
 }

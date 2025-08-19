@@ -1,6 +1,5 @@
 package com.smn.restapitool.model;
 
-import java.io.File;
 import java.util.Date;
 
 public class User implements Comparable<User> {
@@ -12,23 +11,8 @@ public class User implements Comparable<User> {
     private String accessToken = "";
     private Date accessExpiration;
 
-    private String title = "";
-	private String description = "Description TBD";
-	private String version = "";
-	private boolean makeSEARCH;
-	private boolean makeGET;
-	private boolean makePOST;
-	private boolean makePUT;
-	private boolean makePATCH;
-	private boolean makeDELETE;
-	private String serverDomain = "";
-	private String contextRoot = "";
-	private String port = "443";
-
-    private File apiSpecFile;
-    private Date apiSpecFileDate;
-    private File apiCodeZipFile;
-    private Date apiCodeZipFileDate;
+    private ApiSpec apiSpec;
+    private ApiCode apiCode;
 
     public User() {
     }
@@ -81,135 +65,23 @@ public class User implements Comparable<User> {
         this.accessExpiration = accessExpiration;
     }
 
-    public File getApiSpecFile() {
-        return apiSpecFile;
+    public ApiSpec getApiSpec() {
+        return apiSpec;
     }
 
-    public void setApiSpecFile(File apiSpecFile) {
-        this.apiSpecFile = apiSpecFile;
+    public void setApiSpec(ApiSpec apiSpec) {
+        this.apiSpec = apiSpec;
     }
 
-    public Date getApiSpecFileDate() {
-        return apiSpecFileDate;
+    public ApiCode getApiCode() {
+        return apiCode;
     }
 
-    public void setApiSpecFileDate(Date apiSpecFileDate) {
-        this.apiSpecFileDate = apiSpecFileDate;
+    public void setApiCode(ApiCode apiCode) {
+        this.apiCode = apiCode;
     }
 
-    public File getApiCodeZipFile() {
-        return apiCodeZipFile;
-    }
-
-    public void setApiCodeZipFile(File apiCodeZipFile) {
-        this.apiCodeZipFile = apiCodeZipFile;
-    }
-
-    public Date getApiCodeZipFileDate() {
-        return apiCodeZipFileDate;
-    }
-
-    public void setApiCodeZipFileDate(Date apiCodeZipFileDate) {
-        this.apiCodeZipFileDate = apiCodeZipFileDate;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getVersion() {
-        return version;
-    }
-
-    public void setVersion(String version) {
-        this.version = version;
-    }
-
-    public boolean isMakeSEARCH() {
-        return makeSEARCH;
-    }
-
-    public void setMakeSEARCH(boolean makeSEARCH) {
-        this.makeSEARCH = makeSEARCH;
-    }
-
-    public boolean isMakeGET() {
-        return makeGET;
-    }
-
-    public void setMakeGET(boolean makeGET) {
-        this.makeGET = makeGET;
-    }
-
-    public boolean isMakePOST() {
-        return makePOST;
-    }
-
-    public void setMakePOST(boolean makePOST) {
-        this.makePOST = makePOST;
-    }
-
-    public boolean isMakePUT() {
-        return makePUT;
-    }
-
-    public void setMakePUT(boolean makePUT) {
-        this.makePUT = makePUT;
-    }
-
-    public boolean isMakePATCH() {
-        return makePATCH;
-    }
-
-    public void setMakePATCH(boolean makePATCH) {
-        this.makePATCH = makePATCH;
-    }
-
-    public boolean isMakeDELETE() {
-        return makeDELETE;
-    }
-
-    public void setMakeDELETE(boolean makeDELETE) {
-        this.makeDELETE = makeDELETE;
-    }
-
-    public String getServerDomain() {
-        return serverDomain;
-    }
-
-    public void setServerDomain(String serverDomain) {
-        this.serverDomain = serverDomain;
-    }
-
-    public String getContextRoot() {
-        return contextRoot;
-    }
-
-    public void setContextRoot(String contextRoot) {
-        this.contextRoot = contextRoot;
-    }
-
-    public String getPort() {
-        return port;
-    }
-
-    public void setPort(String port) {
-        this.port = port;
-    }
-    
-    @Override
+   @Override
     public int compareTo(User o) {
         return this.email.compareTo(o.email);
     }
@@ -241,9 +113,7 @@ public class User implements Comparable<User> {
 
     @Override
     public String toString() {
-        return "User [email=" + email + ", accessToken=" + accessToken + ", accessExpiration=" + accessExpiration
-                + ", apiSpecFile=" + apiSpecFile + ", apiSpecFileDate=" + apiSpecFileDate + ", apiCodeZipFile="
-                + apiCodeZipFile + ", apiCodeZipFileDate=" + apiCodeZipFileDate + "]";
+        return "User [email=" + email + ", accessToken=" + accessToken + ", accessExpiration=" + accessExpiration + "]";
     }
 
 }

@@ -64,6 +64,21 @@ public class UserRepository {
         }
     }
     
+    public File getUserStorageDir(User user) {
+
+        // Synthesize a directory for this user.
+        String dirName = user.getCompany() + "-" + user.getNameFirst() + "-" + user.getNameLast();
+        dirName = dirName.replaceAll("[^a-zA-Z0-9-_\\.]", "_");
+        dirName = dirName.replaceAll("_+", "_");
+        File userDir = new File(System.getenv(JAVA_WORK_DIR), dirName);
+
+        // Create the user's storage directory if it doesn't exist.
+        if (!userDir.exists()) {
+            userDir.mkdirs();
+        }
+        return userDir;
+    }
+
     public User add(User user) throws IllegalArgumentException {
         if (user == null || user.getAccessToken() == null) {
             throw new IllegalArgumentException("User and access token must not be null");

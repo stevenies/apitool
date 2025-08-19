@@ -185,3 +185,5 @@ target/classes/com/smn/restapitool/model/uml/MVA$TRelationDepth.class
 target/classes/com/smn/restapitool/model/User.class
 target/classes/com/smn/restapitool/persistence/UserRepository.class
 target/classes/com/smn/restapitool/persistence/UserRepository$1.class
+target/classes/com/smn/restapitool/model/ApiCode.class
+target/classes/com/smn/restapitool/model/ApiSpec.class

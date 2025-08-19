@@ -1,5 +1,6 @@
 package com.smn.restapitool.service;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,6 +9,8 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.smn.restapitool.model.ApiSpec;
+import com.smn.restapitool.model.User;
 import com.smn.restapitool.model.uml.DomainModel;
 import com.smn.restapitool.model.uml.Entity;
 import com.smn.restapitool.persistence.UserRepository;
@@ -56,9 +59,9 @@ public class Service {
 	@Autowired
 	private Swagger swagger;
 
-	public boolean userVerified(String accessToken) {
-		boolean verified = this.userRepository.existsByAccessToken(accessToken);
-		return verified;
+	public User findUser(String accessToken) {
+		User user = this.userRepository.findByAccessToken(accessToken);
+		return user;
 	}
 
 	public DtoReadUMLFile readUMLFile(String filename, byte[] fileContent) {
@@ -73,19 +76,73 @@ public class Service {
 		return new DtoReadUMLFile("Information model file has an unknown file type");
 	}
 
-	public String generateSwagger(
+	public ApiSpec generateSwagger(
+		User user,
 		DomainModel api,
-		String serverDomain,
-		String contextRoot,
 		boolean makePOST,
 		boolean makeGET,
 		boolean makePUT,
 		boolean makePATCH,
 		boolean makeDELETE,
 		boolean makeSEARCH,
+		String serverDomain,
+		String contextRoot,
+		String port,
 		Map<Entity, List<String>> issues)
 		throws IOException {
 
-		return this.swagger.generate(api, serverDomain, contextRoot, makePOST, makeGET, makePUT, makePATCH, makeDELETE, makeSEARCH, issues);
+		// Create a filesystem directory for the user's API file artifacts.
+		File userDir = this.userRepository.getUserStorageDir(user);
+		File apiSpecFile = new File(userDir, "api-spec.json");
+
+		// Delete a previously existing apiSpecFile.
+		if (apiSpecFile.exists()) {
+			FileUtil.deleteFile(apiSpecFile);
+			user.setApiSpec(null);
+		}
+
+		// Generate the Swagger text and store it in the apiSpecFile.
+		String swaggerText = this.swagger.generate(api, serverDomain, contextRoot, makePOST, makeGET, makePUT, makePATCH, makeDELETE, makeSEARCH, issues);
+		FileUtil.writeTextToFile(swaggerText, apiSpecFile);
+
+		// Create the ApiSpec object
+		ApiSpec apiSpec = new ApiSpec(apiSpecFile);
+		apiSpec.setTitle(api.getTitle());
+		apiSpec.setDescription(api.getDescription());
+		apiSpec.setVersion(api.getVersion());
+		apiSpec.setMakePOST(makePOST);
+		apiSpec.setMakeGET(makeGET);
+		apiSpec.setMakePUT(makePUT);
+		apiSpec.setMakePATCH(makePATCH);
+		apiSpec.setMakeDELETE(makeDELETE);
+		apiSpec.setMakeSEARCH(makeSEARCH);
+		apiSpec.setServerDomain(serverDomain);
+		apiSpec.setContextRoot(contextRoot);
+		apiSpec.setPort(port);
+
+		// Indicate that the user generated a new ApiSpec.
+		user.setApiSpec(apiSpec);
+		this.userRepository.saveToJsonFile();
+		return apiSpec;
+	}
+
+	public void deleteApiSpec(User user) {
+		try {
+			if (user == null || user.getApiSpec() == null) {
+				return;
+			}
+
+			// Delete the API specification file.
+			ApiSpec apiSpec = user.getApiSpec();
+			File apiSpecFile = apiSpec.getApiSpecFile();
+			FileUtil.deleteFile(apiSpecFile);
+
+			// Remove the ApiSpec from the user.
+			user.setApiSpec(null);
+			this.userRepository.saveToJsonFile();
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }

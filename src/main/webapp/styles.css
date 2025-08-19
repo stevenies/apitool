@@ -77,8 +77,23 @@ a:hover {
     font-weight: bold;
     text-align: center;
 }
-.actionPanel button{
+.actionPanel BUTTON {
+    margin: 10px;
+}
+.required {
+    font-size: 12px;
+    vertical-align: super;
+    color: red;
+}
+BUTTON {
+    padding: 8px 16px;
+    font-size: 16px;
     font-weight: bold;
+    color: white;
+    background-color: #156082;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
 }
 .errorPanel {
     width: 800px;
@@ -88,17 +103,11 @@ a:hover {
     color: black;
     background-color: #ffd4d4;
 }
-.required {
-    font-size: 12px;
-    vertical-align: super;
-    color: red;
-}
-button {
-    padding: 8px 16px;
-    font-size: 16px;
-    color: white;
-    background-color: #156082;
-    border: none;
+.apiSpecPanel {
+    margin: 40px 0px 20px 0px;
+    padding: 10px;
+    background-color: #bffaba;
+    border: 1px solid #b2ebf2;
     border-radius: 8px;
-    cursor: pointer;
+    text-align: center;
 }

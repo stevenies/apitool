@@ -1,6 +1,8 @@
 package com.smn.restapitool.util;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -33,5 +35,19 @@ public class FileUtil {
 		String extension = dot >= 0 ? filename.substring(dot + 1) : "";
 		return extension;
 	}
+
+    public static void writeTextToFile(String text, File apiSpecFile) throws IOException {
+		try (OutputStream outputStream = new FileOutputStream(apiSpecFile)) {
+			outputStream.write(text.getBytes());
+		}
+    }
+
+    public static void deleteFile(File file) {
+		if (file != null && file.exists()) {
+			if (!file.delete()) {	
+				System.err.println("Failed to delete file: " + file.getAbsolutePath());
+			}
+		}
+    }
 
 }
