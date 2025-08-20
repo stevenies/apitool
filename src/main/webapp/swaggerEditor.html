@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Tailor API Endpoints</title>
+    <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@5.10.5/swagger-ui.css" />
+    <style>
+        html, body { height: 100%; margin: 0; padding: 0; }
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+        .panel {
+            flex: 1;
+            overflow: auto;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+        }
+        .editor-toolbar {
+            background: #f0f0f0;
+            padding: 8px;
+            border-bottom: 1px solid #ccc;
+            display: flex;
+            gap: 8px;
+        }
+        .editor-area {
+            flex: 1;
+            padding: 8px;
+            background: #fff;
+            resize: none;
+            width: 100%;
+            border: none;
+            font-size: 16px;
+            font-family: monospace;
+        }
+        .search-bar {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        #swagger-ui { height: 100vh; }
+    </style>
+    <script src="https://unpkg.com/swagger-ui-dist@5.10.5/swagger-ui-bundle.js"></script>
+    <script>
+        window.onload = function() {
+            const ui = SwaggerUIBundle({
+                url: "/apiSpecFile",
+                dom_id: '#swagger-ui',
+                presets: [
+                    SwaggerUIBundle.presets.apis,
+                    SwaggerUIBundle.SwaggerUIStandalonePreset
+                ],
+                layout: "BaseLayout"
+            });
+            window.ui = ui;
+        };
+    </script>
+</head>
+<body>
+    <div class="container">
+        <div class="panel" id="left-panel">
+            <div class="editor-toolbar">
+                <button onclick="updateText()">Update</button>
+                <div class="search-bar">
+                    <input type="text" id="searchInput" placeholder="Search...">
+                    <button onclick="searchText()">Find</button>
+                </div>
+            </div>
+            <textarea id="editor" class="editor-area" spellcheck="false"></textarea>
+        </div>
+        <div class="panel" id="right-panel">
+            <div id="swagger-ui" style="padding:16px;"></div>
+        </div>
+    </div>
+    <script>
+        function updateText() {
+            alert('Update action triggered. You can implement save logic here.');
+        }
+
+        function searchText() {
+            const editor = document.getElementById('editor');
+            const searchValue = document.getElementById('searchInput').value;
+            const text = editor.value;
+            const index = text.indexOf(searchValue);
+            if (index !== -1 && searchValue) {
+                editor.focus();
+                editor.setSelectionRange(index, index + searchValue.length);
+            } else {
+                alert('Text not found.');
+            }
+        }
+    </script>
+</body>

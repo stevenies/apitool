@@ -27,7 +27,7 @@
 		});
 		$("#buttonTailor").click(function(event) {
 			event.preventDefault(); // Prevent default form submission
-	 		window.open("/viewSwaggerEditor", '_blank');
+	 		window.open("/swaggerEditor.html", '_blank');
 		return false;
 		});
 	});

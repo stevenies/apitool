@@ -322,7 +322,7 @@ public class UIController {
 		}
 	}
 
-	public String downloadApiSpec(User user, HttpServletResponse response) {
+	private String downloadApiSpec(User user, HttpServletResponse response) {
 		try {
 			ApiSpec apiSpec = user.getApiSpec();
 			File swaggerFile = apiSpec.getSwaggerFile();
@@ -345,7 +345,7 @@ public class UIController {
 		return null; // Indicate that the response has been handled
 	}
 
-    @GetMapping("/getApiSpecFile")
+    @GetMapping("/apiSpecFile")
     public ResponseEntity<InputStreamResource> getApiSpecFile(HttpSession session) {
 
 		User user = null;
@@ -380,25 +380,5 @@ public class UIController {
             return ResponseEntity.notFound().build();
 		}
      }
-
-	@GetMapping("/viewSwaggerEditor")
-	public String viewSwaggerEditor(HttpSession session, Model model) {
-		User user = null;
-		if (session != null && !session.isNew()) {
-            user = (User) session.getAttribute("user");
-        }
-		boolean isAccessAllowed = user != null && user.getAccessToken() != null && !user.getAccessToken().isEmpty();
-		if (!isAccessAllowed) {
-			return "registration";
-		}
-		model.addAttribute("user", user);
-		return "swaggerEditor";
-	}
-
-	@GetMapping("/viewAPICodeForm")
-	public String viewAPICodeForm(Model model) {
-		// TODO Implement logic to view the API code generation form.
-		return "apiCodeForm";
-	}
 
 }
