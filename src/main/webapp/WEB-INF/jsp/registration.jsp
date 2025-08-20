@@ -86,7 +86,7 @@
 				<tr>
 					<td><label>Access Plan<span class="required">*</span>:</label></td>
 					<td><input type="radio" id="accessPlanFree" name="accessPlan" value="free" checked>Trial (Free)</input></td>
-					<td>Unlimited tool usage during the testing Beta period.</td>
+					<td>Unlimited tool usage during the tool's Beta test period.</td>
 				</tr>
 <!--
 					<td>Unlimited tool usage for a single 24 hour period.</td>

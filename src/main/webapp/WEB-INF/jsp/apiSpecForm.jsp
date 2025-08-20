@@ -27,7 +27,8 @@
 		});
 		$("#buttonTailor").click(function(event) {
 			event.preventDefault(); // Prevent default form submission
-			return false;
+	 		window.open("/viewSwaggerEditor", '_blank');
+		return false;
 		});
 	});
 </script>
@@ -133,7 +134,7 @@
 				<c:if test="${apiSpec.valid}">
 					<button id="buttonGenerate">Regenerate API Specification</button>
 					<button id="buttonDownload">Download API Specification</button>
-					<button id="buttonTailor">Tailor Endpoints</button>
+					<button id="buttonTailor">Tailor API Endpoints</button>
 				</c:if>
 			</div>
 		</form>

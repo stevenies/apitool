@@ -13,10 +13,16 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.springframework.http.MediaType;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -85,7 +91,7 @@ public class UIController {
 			registrationErrors.add("An unexpected error occurred: " + t.getMessage());
 		}
 
-		if (!registrationErrors.isEmpty()) {
+		if (user == null || !registrationErrors.isEmpty()) {
 			model.addAttribute("registrationErrors", registrationErrors);
 			return "registration";
 		}
@@ -123,7 +129,7 @@ public class UIController {
 			loginErrors.add("Either the email address or access token is invalid");
 		}
 
-		if (!loginErrors.isEmpty()) {
+		if (user == null || !loginErrors.isEmpty()) {
 			model.addAttribute("loginErrors", loginErrors);
 			return "registration";
 		}
@@ -146,7 +152,7 @@ public class UIController {
             user = (User) session.getAttribute("user");
         }
 		boolean isAccessAllowed = user != null && user.getAccessToken() != null && !user.getAccessToken().isEmpty();
-		if (!isAccessAllowed) {
+		if (user == null || !isAccessAllowed) {
 			return "registration";
 		}
 
@@ -339,8 +345,59 @@ public class UIController {
 		return null; // Indicate that the response has been handled
 	}
 
+    @GetMapping("/getApiSpecFile")
+    public ResponseEntity<InputStreamResource> getApiSpecFile(HttpSession session) {
+
+		User user = null;
+		if (session != null && !session.isNew()) {
+            user = (User) session.getAttribute("user");
+        }
+		boolean isAccessAllowed = user != null && user.getAccessToken() != null && !user.getAccessToken().isEmpty();
+		if (user == null || !isAccessAllowed) {
+            return ResponseEntity.notFound().build();
+		}
+
+		// Obtain the filesystem path to the API specification file.
+		ApiSpec apiSpec = user.getApiSpec();
+		if (apiSpec == null || !apiSpec.isValid()) {
+			return ResponseEntity.notFound().build();
+		}
+		File swaggerFile = apiSpec.getSwaggerFile();
+        if (!swaggerFile.exists()) {
+            return ResponseEntity.notFound().build();
+        }
+
+		// Stream the file's contents to the caller.
+        InputStreamResource resource;
+		try {
+			resource = new InputStreamResource(new FileInputStream(swaggerFile));
+			return ResponseEntity.ok()
+				.contentLength(swaggerFile.length())
+				.contentType(MediaType.APPLICATION_JSON)
+				.body(resource);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+            return ResponseEntity.notFound().build();
+		}
+     }
+
+	@GetMapping("/viewSwaggerEditor")
+	public String viewSwaggerEditor(HttpSession session, Model model) {
+		User user = null;
+		if (session != null && !session.isNew()) {
+            user = (User) session.getAttribute("user");
+        }
+		boolean isAccessAllowed = user != null && user.getAccessToken() != null && !user.getAccessToken().isEmpty();
+		if (!isAccessAllowed) {
+			return "registration";
+		}
+		model.addAttribute("user", user);
+		return "swaggerEditor";
+	}
+
 	@GetMapping("/viewAPICodeForm")
 	public String viewAPICodeForm(Model model) {
+		// TODO Implement logic to view the API code generation form.
 		return "apiCodeForm";
 	}
 

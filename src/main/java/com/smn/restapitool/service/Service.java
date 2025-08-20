@@ -100,7 +100,7 @@ public class Service {
     			cal.add(Calendar.DAY_OF_YEAR, 31);
 				break;
 			default:
-    			cal.add(Calendar.DAY_OF_YEAR, 1);
+    			cal.add(Calendar.DAY_OF_YEAR, 100000);	// TODO: Change this to a reasonable date when the Beta test ends.
 				break;
 		}
     	Date date = cal.getTime();
