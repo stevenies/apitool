@@ -20,21 +20,23 @@ import com.fasterxml.jackson.core.type.TypeReference;
 @Component
 public class UserRepository {
 
-    private static final String JAVA_WORK_DIR = "JAVA_WORK_DIR"; // Environment variable for Java working directory
-    private static final String filePath = "users.json"; // Path to the persisted UserRepository JSON file
+    private static final String JAVA_USER_DIR = "JAVA_USER_DIR"; // Environment variable for Java working directory
+    private static final String TOOL_DIR = "RestApiGenerator"; // Environment variable for the working directory used by the REST API Generator tool
+    private static final String USERS_FILENAME = "users.json"; // Path to the persisted UserRepository JSON file
 
     private final Map<String, User> userMap = new ConcurrentHashMap<>();
 
     @PostConstruct
     public void init() {
         try {
-            String javaWorkDir = System.getenv(JAVA_WORK_DIR);
-            if (javaWorkDir == null) {
-                System.out.println("Environment variable " + JAVA_WORK_DIR + " is not set.");
+            String javaUserDir = System.getenv(JAVA_USER_DIR);
+            if (javaUserDir == null) {
+                System.out.println("Environment variable " + JAVA_USER_DIR + " is not set.");
             } else {
-                System.out.println("Java working directory: " + javaWorkDir);
+                System.out.println("Java user directory: " + javaUserDir);
 
-                String jsonFilePath = new File(javaWorkDir, filePath).getAbsolutePath();
+                File restApiGenDir = new File(javaUserDir, TOOL_DIR);
+                String jsonFilePath = new File(restApiGenDir, USERS_FILENAME).getAbsolutePath();
                 File userFile = new File(jsonFilePath);
 
                 if (userFile.exists()) {
@@ -102,10 +104,12 @@ public class UserRepository {
     public File getUserStorageDir(User user) {
 
         // Synthesize a directory for this user.
-        String dirName = user.getCompany() + "-" + user.getNameFirst() + "-" + user.getNameLast();
-        dirName = dirName.replaceAll("[^a-zA-Z0-9-_\\.]", "_");
-        dirName = dirName.replaceAll("_+", "_");
-        File userDir = new File(System.getenv(JAVA_WORK_DIR), dirName);
+        String javaUserDir = System.getenv(JAVA_USER_DIR);
+        File restApiGenDir = new File(javaUserDir, TOOL_DIR);
+        String userDirName = user.getCompany() + "-" + user.getNameFirst() + "-" + user.getNameLast();
+        userDirName = userDirName.replaceAll("[^a-zA-Z0-9-_\\.]", "_");
+        userDirName = userDirName.replaceAll("_+", "_");
+        File userDir = new File(restApiGenDir, userDirName);
 
         // Create the user's storage directory if it doesn't exist.
         if (!userDir.exists()) {
@@ -118,8 +122,9 @@ public class UserRepository {
         ObjectMapper mapper = new ObjectMapper();
         List<User> users;
 
-        String javaWorkDir = System.getenv(JAVA_WORK_DIR);
-        String jsonFilePath = new File(javaWorkDir, filePath).getAbsolutePath();
+        String javaUserDir = System.getenv(JAVA_USER_DIR);
+        File restApiGenDir = new File(javaUserDir, TOOL_DIR);
+        String jsonFilePath = new File(restApiGenDir, USERS_FILENAME).getAbsolutePath();
         try (FileReader reader = new FileReader(jsonFilePath)) {
             users = mapper.readValue(reader, new TypeReference<List<User>>() {
             });
@@ -136,8 +141,9 @@ public class UserRepository {
         List<User> users = this.findAllUsers();
         users.sort((u1, u2) -> u1.getEmail().compareTo(u2.getEmail()));
 
-        String javaWorkDir = System.getenv(JAVA_WORK_DIR);
-        String jsonFilePath = new File(javaWorkDir, filePath).getAbsolutePath();
+        String javaUserDir = System.getenv(JAVA_USER_DIR);
+        File restApiGenDir = new File(javaUserDir, TOOL_DIR);
+        String jsonFilePath = new File(restApiGenDir, USERS_FILENAME).getAbsolutePath();
         try (FileWriter writer = new FileWriter(jsonFilePath)) {
             mapper.writeValue(writer, users);
         }
