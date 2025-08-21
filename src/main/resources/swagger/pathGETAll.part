@@ -33,11 +33,11 @@
 							"application/json": {
 								"schema": {
 									"allOf": [
-										"$ref": "#/components/schemas/PageInfo",
-										"$ref": "#/components/schemas/>>>deepEntityName"
+										{"$ref": "#/components/schemas/PageInfo"},
+										{"$ref": "#/components/schemas/>>>deepEntityName"}
 									]
 								}
-							},
+							}
 						}
 					},
 					"400": {

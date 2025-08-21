@@ -14,8 +14,10 @@ import jakarta.servlet.http.HttpSession;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,6 +29,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 @Controller
@@ -380,5 +383,41 @@ public class UIController {
             return ResponseEntity.notFound().build();
 		}
      }
+
+	@PostMapping("/apiSpecFile")
+	public ResponseEntity<String> saveApiSpecFile(
+			@RequestBody String content,
+			HttpSession session) {
+
+		User user = null;
+		if (session != null && !session.isNew()) {
+			user = (User) session.getAttribute("user");
+		}
+		boolean isAccessAllowed = user != null && user.getAccessToken() != null && !user.getAccessToken().isEmpty();
+		if (user == null || !isAccessAllowed) {
+			return ResponseEntity.status(403).body("Unauthorized");
+		}
+
+		// Obtain the filesystem path to the API specification file.
+		ApiSpec apiSpec = user.getApiSpec();
+		if (apiSpec == null || !apiSpec.isValid()) {
+			return ResponseEntity.notFound().build();
+		}
+		File swaggerFile = apiSpec.getSwaggerFile();
+        if (!swaggerFile.exists()) {
+            return ResponseEntity.notFound().build();
+        }
+
+		// Save the uploaded text to the specified file (adjust path as needed)
+		try {
+			Path filePath = swaggerFile.toPath();
+			Files.createDirectories(filePath.getParent());
+			Files.writeString(filePath, content, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+			return ResponseEntity.ok("File saved successfully.");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(500).body("Failed to save file: " + e.getMessage());
+		}
+	}
 
 }

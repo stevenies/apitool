@@ -118,11 +118,11 @@
 							"application/json": {
 								"schema": {
 									"allOf": [
-										"$ref": "#/components/schemas/PageInfo",
-										"$ref": "#/components/schemas/Tire-Array"
+										{"$ref": "#/components/schemas/PageInfo"},
+										{"$ref": "#/components/schemas/Tire-Array"}
 									]
 								}
-							},
+							}
 						}
 					},
 					"400": {
@@ -262,11 +262,11 @@
 							"application/json": {
 								"schema": {
 									"allOf": [
-										"$ref": "#/components/schemas/PageInfo",
-										"$ref": "#/components/schemas/Vehicle-DeepArray"
+										{"$ref": "#/components/schemas/PageInfo"},
+										{"$ref": "#/components/schemas/Vehicle-DeepArray"}
 									]
 								}
-							},
+							}
 						}
 					},
 					"400": {
@@ -334,7 +334,7 @@
 								"schema": {
 									"$ref": "#/components/schemas/Vehicle-DeepArray"
 								}
-							},
+							}
 						}
 					},
 					"400": {
@@ -541,7 +541,7 @@
 				],
 				"responses": {
 					"201": {
-						"description": "Successful operation",
+						"description": "Successful operation"
 					},
 					"400": {
 						"description": "Bad Request"

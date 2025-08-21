@@ -12,7 +12,7 @@
             height: 100vh;
             font-family: Arial, sans-serif;
         }
-        .container {
+        #container {
             display: flex;
             height: 100vh;
         }
@@ -25,14 +25,14 @@
             display: flex;
             flex-direction: column;
         }
-        .editor-toolbar {
+        #editor-toolbar {
             background: #f0f0f0;
             padding: 8px;
             border-bottom: 1px solid #ccc;
             display: flex;
             gap: 8px;
         }
-        .editor-area {
+        #editor {
             flex: 1;
             padding: 8px;
             background: #fff;
@@ -41,7 +41,7 @@
             font-size: 16px;
             font-family: monospace;
         }
-        .search-bar {
+        #search-bar {
             margin-left: auto;
             display: flex;
             align-items: center;
@@ -53,7 +53,22 @@
     <script>
 
         function saveEdits() {
-            alert('Update action triggered. You can implement save logic here.');
+            const url = "/apiSpecFile";
+            const text = document.getElementById('editor').value;
+            fetch(url, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "text/plain"
+                },
+                body: text
+            })
+            .then(response => {
+                if (!response.ok) throw new Error("Failed to save API spec updates");
+                window.location.href = window.location.pathname + "?nocache=" + new Date().getTime();
+            })
+            .catch(error => {
+                alert("Error saving API spec updates: " + error);
+            });
         }
 
         function download() {
@@ -61,7 +76,7 @@
             const filename = "apiSpec.json";
             fetch(url)
                 .then(response => {
-                    if (!response.ok) throw new Error("Could not download file");
+                    if (!response.ok) throw new Error("Could not download the API spec");
                     return response.text();
                 })
                 .then(text => {
@@ -75,22 +90,18 @@
                     URL.revokeObjectURL(link.href);
                 })
                 .catch(error => {
-                    alert("Failed to download content: " + error);
+                    alert("Failed to download the API spec: " + error);
                 });
         }
 
         function searchText() {
             const editor = document.getElementById('editor');
             const searchValue = document.getElementById('searchInput').value;
+
             const text = editor.value;
-            const startIndex = editor.selectionEnd;
-            if (startIndex < 0) {
-                startIndex = 0;
-            } else if (startIndex >= text.length) {
-                alert('Reached the end of the document.');
-                return;
-            }
+            const startIndex = editor.selectionStart === editor.selectionEnd ? 0 : editor.selectionEnd;
             const index = text.indexOf(searchValue, startIndex);
+
             if (index >= 0 && searchValue) {
                 editor.focus();
                 editor.setSelectionRange(index, index + searchValue.length);
@@ -106,7 +117,6 @@
             const end = textArea.selectionEnd;
 
             // Calculate the position of the selected text
-            // Create a temporary div to measure scroll position
             const text = textArea.value.substring(0, start);
             const lines = text.split('\n');
             const lineHeight = parseInt(window.getComputedStyle(textArea).lineHeight, 10) || 16;
@@ -140,28 +150,31 @@
 
             const editor = document.getElementById('editor');
             const saveButton = document.querySelector('button[onclick="saveEdits()"]');
-            if (editor && saveButton) {
+            const downloadButton = document.querySelector('button[onclick="download()"]');
+            if (editor && saveButton && downloadButton) {
                 editor.addEventListener('input', function() {
                     saveButton.disabled = false;
+                    downloadButton.disabled = true;
                 });
                 saveButton.disabled = true;
+                downloadButton.disabled = false;
             }
         };
 
     </script>
 </head>
 <body>
-    <div class="container">
+    <div id="container">
         <div class="panel" id="left-panel">
-            <div class="editor-toolbar">
+            <div id="editor-toolbar">
                 <button onclick="saveEdits()">Save</button>
                 <button onclick="download()">Download</button>
-                <div class="search-bar">
+                <div id="search-bar">
                     <input type="text" id="searchInput" placeholder="Search...">
                     <button onclick="searchText()">Find</button>
                 </div>
             </div>
-            <textarea id="editor" class="editor-area" spellcheck="false"></textarea>
+            <textarea id="editor" spellcheck="false"></textarea>
         </div>
         <div class="panel" id="right-panel">
             <div id="swagger-ui" style="padding:16px;"></div>

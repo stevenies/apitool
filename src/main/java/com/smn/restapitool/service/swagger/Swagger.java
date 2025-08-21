@@ -210,8 +210,8 @@ public class Swagger {
 					if (!firstSubtype) {
 						buffer.append(",\n");
 					}
-					buffer.append(this.indent(tabs)).append("\"$ref\": \"#/components/schemas/").append(subtypeName)
-							.append("\"");
+					buffer.append(this.indent(tabs)).append("{\"$ref\": \"#/components/schemas/").append(subtypeName)
+							.append("\"}");
 					firstSubtype = false;
 				}
 

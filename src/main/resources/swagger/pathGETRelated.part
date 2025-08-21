@@ -42,11 +42,11 @@
 							"application/json": {
 								"schema": {
 									"allOf": [
-										"$ref": "#/components/schemas/PageInfo",
-										"$ref": "#/components/schemas/>>>deepTargetName"
+										{"$ref": "#/components/schemas/PageInfo"},
+										{"$ref": "#/components/schemas/>>>deepTargetName"}
 									]
 								}
-							},
+							}
 						}
 					},
 					"400": {

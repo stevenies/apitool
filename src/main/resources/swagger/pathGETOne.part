@@ -23,7 +23,7 @@
 								"schema": {
 									"$ref": "#/components/schemas/>>>deepEntityName"
 								}
-							},
+							}
 						}
 					},
 					"400": {
