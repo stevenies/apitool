@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.smn</groupId>
-    <artifactId>restapitool</artifactId>
+    <artifactId>restapigenerator</artifactId>
     <version>0.0.1-SNAPSHOT</version>
 
     <packaging>war</packaging>
@@ -77,7 +77,7 @@
     </dependencyManagement>
 
     <build>
-        <finalName>restapitool</finalName>
+        <finalName>restapigenerator</finalName>
         <plugins>
 
             <plugin>

@@ -8,7 +8,7 @@
             "type": "java",
             "name": "Application",
             "request": "launch",
-            "mainClass": "com.smn.restapitool.Application",
+            "mainClass": "com.smn.restapigenerator.Application",
             "projectName": "apitool",
             "env": {
                 "JAVA_USER_DIR": "C:\\Users\\steve\\JavaWorkDir"
