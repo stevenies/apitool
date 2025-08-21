@@ -28,7 +28,7 @@
 <body>
 	<div id="page">
 		<p class="title">API Specification Generator</p>
-		<form id="formLogin" action="/login" enctype="multipart/form-data" method="post">
+		<form id="formLogin" action="login" enctype="multipart/form-data" method="post">
 			<table>
 				<tr>
 					<td colspan="3"><div class="formHeader">Registered Users</div></td>
@@ -58,7 +58,7 @@
 				<button id="buttonLogin">Login</button>
 			</div>
 		</form>
-		<form id="formRegister" action="/register" enctype="multipart/form-data" method="post">
+		<form id="formRegister" action="register" enctype="multipart/form-data" method="post">
 			<table>
 				<tr>
 					<td colspan="3"><div class="formHeader">New Users</div></td>

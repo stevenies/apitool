@@ -20,7 +20,7 @@
 	});
 </script>
 <body>
-	<form id="formUploadInfoModel" action="/uploadDomainModel" enctype="multipart/form-data" method="post">
+	<form id="formUploadInfoModel" action="uploadDomainModel" enctype="multipart/form-data" method="post">
 		<table>
 			<tr>
 				<td colspan="2">API Information</td>

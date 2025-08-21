@@ -27,7 +27,7 @@
 		});
 		$("#buttonTailor").click(function(event) {
 			event.preventDefault(); // Prevent default form submission
-	 		window.open("/swaggerEditor.html", '_blank');
+	 		window.open("swaggerEditor.html", '_blank');
 		return false;
 		});
 	});
@@ -35,7 +35,7 @@
 <body>
 	<div id="page">
 		<p class="title">API Specification Generator</p>
-		<form id="apiSpecForm" action="/doApiSpecForm" enctype="multipart/form-data" method="post">
+		<form id="apiSpecForm" action="doApiSpecForm" enctype="multipart/form-data" method="post">
 			<input type="hidden" id="action" name="action" />
 			<table>
 				<tr>
