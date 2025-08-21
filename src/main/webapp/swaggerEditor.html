@@ -37,7 +37,6 @@
             padding: 8px;
             background: #fff;
             resize: none;
-            width: 100%;
             border: none;
             font-size: 16px;
             font-family: monospace;
@@ -52,8 +51,84 @@
     </style>
     <script src="https://unpkg.com/swagger-ui-dist@5.10.5/swagger-ui-bundle.js"></script>
     <script>
+
+        function saveEdits() {
+            alert('Update action triggered. You can implement save logic here.');
+        }
+
+        function download() {
+            const url = "/apiSpecFile";
+            const filename = "apiSpec.json";
+            fetch(url)
+                .then(response => {
+                    if (!response.ok) throw new Error("Could not download file");
+                    return response.text();
+                })
+                .then(text => {
+                    const blob = new Blob([text], { type: "application/json" });
+                    const link = document.createElement("a");
+                    link.href = URL.createObjectURL(blob);
+                    link.download = filename;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    URL.revokeObjectURL(link.href);
+                })
+                .catch(error => {
+                    alert("Failed to download content: " + error);
+                });
+        }
+
+        function searchText() {
+            const editor = document.getElementById('editor');
+            const searchValue = document.getElementById('searchInput').value;
+            const text = editor.value;
+            const startIndex = editor.selectionEnd;
+            if (startIndex < 0) {
+                startIndex = 0;
+            } else if (startIndex >= text.length) {
+                alert('Reached the end of the document.');
+                return;
+            }
+            const index = text.indexOf(searchValue, startIndex);
+            if (index >= 0 && searchValue) {
+                editor.focus();
+                editor.setSelectionRange(index, index + searchValue.length);
+                scrollToSelection(editor);
+            } else {
+                alert('Text not found.');
+            }
+        }
+
+        function scrollToSelection(textArea) {
+            // Only works if the textarea is focused and selection is set
+            const start = textArea.selectionStart;
+            const end = textArea.selectionEnd;
+
+            // Calculate the position of the selected text
+            // Create a temporary div to measure scroll position
+            const text = textArea.value.substring(0, start);
+            const lines = text.split('\n');
+            const lineHeight = parseInt(window.getComputedStyle(textArea).lineHeight, 10) || 16;
+            const scrollTop = (lines.length - 1) * lineHeight;
+
+            textArea.scrollTop = scrollTop;
+        }
+
         window.onload = function() {
-            const ui = SwaggerUIBundle({
+            fetch("/apiSpecFile")
+                .then(response => {
+                    if (!response.ok) throw new Error("Network response was not ok");
+                    return response.text();
+                })
+                .then(text => {
+                    document.getElementById('editor').value = text;
+                })
+                .catch(error => {
+                    alert("Failed to load API Spec content: " + error);
+                });
+
+            window.ui = SwaggerUIBundle({
                 url: "/apiSpecFile",
                 dom_id: '#swagger-ui',
                 presets: [
@@ -62,15 +137,25 @@
                 ],
                 layout: "BaseLayout"
             });
-            window.ui = ui;
+
+            const editor = document.getElementById('editor');
+            const saveButton = document.querySelector('button[onclick="saveEdits()"]');
+            if (editor && saveButton) {
+                editor.addEventListener('input', function() {
+                    saveButton.disabled = false;
+                });
+                saveButton.disabled = true;
+            }
         };
+
     </script>
 </head>
 <body>
     <div class="container">
         <div class="panel" id="left-panel">
             <div class="editor-toolbar">
-                <button onclick="updateText()">Update</button>
+                <button onclick="saveEdits()">Save</button>
+                <button onclick="download()">Download</button>
                 <div class="search-bar">
                     <input type="text" id="searchInput" placeholder="Search...">
                     <button onclick="searchText()">Find</button>
@@ -82,22 +167,4 @@
             <div id="swagger-ui" style="padding:16px;"></div>
         </div>
     </div>
-    <script>
-        function updateText() {
-            alert('Update action triggered. You can implement save logic here.');
-        }
-
-        function searchText() {
-            const editor = document.getElementById('editor');
-            const searchValue = document.getElementById('searchInput').value;
-            const text = editor.value;
-            const index = text.indexOf(searchValue);
-            if (index !== -1 && searchValue) {
-                editor.focus();
-                editor.setSelectionRange(index, index + searchValue.length);
-            } else {
-                alert('Text not found.');
-            }
-        }
-    </script>
 </body>

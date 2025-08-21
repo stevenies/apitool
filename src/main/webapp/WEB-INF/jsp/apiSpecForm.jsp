@@ -65,11 +65,6 @@
 					<td colspan="3"><div class="formHeader">API Functionality</div></td>
 				</tr>
 				<tr>
-					<td><label>Generate SEARCH endpoints:</label></td>
-					<td><input id="makeSEARCH" name="makeSEARCH" type="checkbox" value="true" <c:if test="${apiSpec.makeSEARCH}">checked</c:if> /></td>
-					<td class="formNote">Generate endpoints for searching for resources based on example values.</td>
-				</tr>
-				<tr>
 					<td><label>Generate GET endpoints:</label></td>
 					<td><input id="makeGET" name="makeGET" type="checkbox" value="true" <c:if test="${apiSpec.makeGET}">checked</c:if> /></td>
 					<td class="formNote">Generate endpoints for retrieval of resources.</td>
@@ -93,6 +88,11 @@
 					<td><label>Generate DELETE endpoints:</label></td>
 					<td><input id="makeDELETE" name="makeDELETE" type="checkbox" value="true" <c:if test="${apiSpec.makeDELETE}">checked</c:if> /></td>
 					<td class="formNote">Generate endpoints for resource deletion.</td>
+				</tr>
+				<tr>
+					<td><label>Generate SEARCH endpoints:</label></td>
+					<td><input id="makeSEARCH" name="makeSEARCH" type="checkbox" value="true" <c:if test="${apiSpec.makeSEARCH}">checked</c:if> /></td>
+					<td class="formNote">Generate endpoints for searching for resources based on example values.</td>
 				</tr>
 				<tr>
 					<td colspan="3"><div class="formHeader">API Deployment Settings</div></td>
