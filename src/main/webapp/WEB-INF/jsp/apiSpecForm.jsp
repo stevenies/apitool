@@ -4,7 +4,7 @@
 <html>
 <head>
 	<meta charset="ISO-8859-1">
-	<title>REST API Generator Tool</title>
+	<title>Generate API Specification</title>
 	<link rel="stylesheet" type="text/css" href="styles.css">
 	<script src="downloadApiSpec.js"></script>
 	<script type="text/javascript">
@@ -18,10 +18,15 @@
 
 		window.onload = function() {
 			installOnClickHandler("buttonGenerate", function(event) {
+				event.preventDefault(); // Prevent default form submission
 
 				const formData = new FormData();
 
 				const fileInput = document.getElementById('file');
+				if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
+					alert("Please select a file containing the API's domain model.");
+					return false;
+				}
 				formData.append("domainModel", fileInput.files[0]);
 
 				const jsonObject = {};
@@ -39,13 +44,15 @@
 					body: formData
 				})
 				.then(response => {
-					if (!response.ok) throw new Error("Upload failed");
+					if (!response.ok) throw new Error("API spec generation failed");
+				})
+				.then((result) => {
+					window.location.href = "viewApiSpecForm?nocache=" + new Date().getTime();
 				})
 				.catch(error => {
 					alert("Error: " + error);
 				});
 
-				event.preventDefault(); // Prevent default form submission
 				return false;
 			});
 
