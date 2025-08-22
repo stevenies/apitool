@@ -3,40 +3,70 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <html>
 <head>
-<meta charset="ISO-8859-1">
-<title>REST API Generator Tool</title>
-<link rel="stylesheet" type="text/css" href="styles.css">
-<script src="https://code.jquery.com/jquery-3.7.1.js"
-	integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
-	crossorigin="anonymous">
-</script>
+	<meta charset="ISO-8859-1">
+	<title>REST API Generator Tool</title>
+	<link rel="stylesheet" type="text/css" href="styles.css">
+	<script src="downloadApiSpec.js"></script>
+	<script type="text/javascript">
+
+		function installOnClickHandler(buttonId, handlerFunction) {
+			const button = document.getElementById(buttonId);
+			if (button) {
+				button.onclick = handlerFunction;
+			}
+		}
+
+		window.onload = function() {
+			installOnClickHandler("buttonGenerate", function(event) {
+
+				const formData = new FormData();
+
+				const fileInput = document.getElementById('file');
+				formData.append("domainModel", fileInput.files[0]);
+
+				const jsonObject = {};
+				jsonObject['action'] = 'generate';
+
+				const apiSpecForm = document.getElementById('apiSpecForm');
+				const formFields = new FormData(apiSpecForm);
+				for (const [key, value] of formFields.entries()) {
+					jsonObject[key] = value;
+				}
+				formData.append('formFields', JSON.stringify(jsonObject));
+
+				fetch("doApiSpecForm", {
+					method: "POST",
+					body: formData
+				})
+				.then(response => {
+					if (!response.ok) throw new Error("Upload failed");
+				})
+				.catch(error => {
+					alert("Error: " + error);
+				});
+
+				event.preventDefault(); // Prevent default form submission
+				return false;
+			});
+
+			installOnClickHandler("buttonDownload", function(event) {
+				event.preventDefault(); // Prevent default form submission
+				downloadApiSpec();
+				return false;
+			});
+
+			installOnClickHandler("buttonTailor", function(event) {
+				event.preventDefault(); // Prevent default form submission
+				window.open("swaggerEditor.html", '_blank');
+			return false;
+			});
+		};
+	</script>
 </head>
-<script type="text/javascript">
-	$(function() {
-		$("#buttonGenerate").click(function(event) {
-			event.preventDefault(); // Prevent default form submission
-			$("#action").val("generate");
-			$("#apiSpecForm").submit();
-			return false;
-		});
-		$("#buttonDownload").click(function(event) {
-			event.preventDefault(); // Prevent default form submission
-			$("#action").val("download");
-			$("#apiSpecForm").submit();
-			return false;
-		});
-		$("#buttonTailor").click(function(event) {
-			event.preventDefault(); // Prevent default form submission
-	 		window.open("swaggerEditor.html", '_blank');
-		return false;
-		});
-	});
-</script>
 <body>
 	<div id="page">
 		<p class="title">API Specification Generator</p>
-		<form id="apiSpecForm" action="doApiSpecForm" enctype="multipart/form-data" method="post">
-			<input type="hidden" id="action" name="action" />
+		<form id="apiSpecForm">
 			<table>
 				<tr>
 					<td colspan="3"><div class="formHeader">API Information</div></td>
@@ -71,7 +101,7 @@
 				</tr>
 				<tr>
 					<td><label>Generate POST endpoints:</label></td>
-					<td><input id="makePOST" name="makePOST" type="checkbox" <c:if test="${apiSpec.makePOST}">checked</c:if> /></td>
+					<td><input id="makePOST" name="makePOST" type="checkbox" value="true" <c:if test="${apiSpec.makePOST}">checked</c:if> /></td>
 					<td class="formNote">Generate endpoints for creation of new resource instances.</td>
 				</tr>
 				<tr>

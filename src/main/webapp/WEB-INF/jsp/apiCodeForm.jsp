@@ -2,23 +2,19 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
-<meta charset="ISO-8859-1">
-<title>REST API Generation Tool</title>
-<script src="https://code.jquery.com/jquery-3.7.1.js"
-	integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
-	crossorigin="anonymous">
-</script>
-</head>
-<script type="text/javascript">
-	$(function() {
-		$("#buttonSubmit").click(function(event) {
-			event.preventDefault(); // Prevent default form submission
-			$("#errors").html("");
-			$("#formUploadInfoModel").submit();
-			return false;
+	<meta charset="ISO-8859-1">
+	<title>REST API Generation Tool</title>
+	<script type="text/javascript">
+		$(function() {
+			$("#buttonSubmit").click(function(event) {
+				event.preventDefault(); // Prevent default form submission
+				$("#errors").html("");
+				$("#formUploadInfoModel").submit();
+				return false;
+			});
 		});
-	});
-</script>
+	</script>
+</head>
 <body>
 	<form id="formUploadInfoModel" action="uploadDomainModel" enctype="multipart/form-data" method="post">
 		<table>

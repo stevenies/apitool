@@ -24,6 +24,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.smn.restapigenerator.exception.ExceptionAccessTokenInUse;
 import com.smn.restapigenerator.exception.ExceptionUserExists;
 import com.smn.restapigenerator.model.ApiSpec;
@@ -171,20 +173,8 @@ public class UIController {
 
 	@PostMapping("/doApiSpecForm")
 	public String doApiSpecForm (
-		@RequestParam String action,
-		@RequestParam(required = false, defaultValue = "") String title,
-		@RequestParam(required = false, defaultValue = "") String description,
-		@RequestParam(required = false, defaultValue = "") String version,
-		@RequestParam MultipartFile file,
-		@RequestParam(required = false, defaultValue = "false") boolean makeSEARCH,
-		@RequestParam(required = false, defaultValue = "false") boolean makeGET,
-		@RequestParam(required = false, defaultValue = "false") boolean makePOST,
-		@RequestParam(required = false, defaultValue = "false") boolean makePUT,
-		@RequestParam(required = false, defaultValue = "false") boolean makePATCH,
-		@RequestParam(required = false, defaultValue = "false") boolean makeDELETE,
-		@RequestParam(required = false, defaultValue = "") String serverDomain,
-		@RequestParam(required = false, defaultValue = "") String contextRoot,
-		@RequestParam(required = false, defaultValue = "") String port,
+		@RequestParam MultipartFile domainModel,
+		@RequestParam String formFields,
 		HttpServletResponse response,
         HttpSession session,
 		Model model) {
@@ -200,25 +190,51 @@ public class UIController {
 		}
 		model.addAttribute("user", user);
 
-		List<String> errors = new ArrayList<>();
-		switch (action) {
-			case "generate": {
-				return this.generateApiSpec(
-					user, title, description, version, file, makeSEARCH, makeGET, makePOST, makePUT, makePATCH,
-					makeDELETE, serverDomain, contextRoot, port, model, errors);
+        try {
+            // Parse the JSON object containing the various form fields.
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode jsonNode = mapper.readTree(formFields);
+
+            String action = jsonNode.get("action").asText();
+            String title = jsonNode.get("title").asText();
+            String description = jsonNode.get("description").asText();
+			String version = jsonNode.get("version").asText();
+			boolean makeGET = Boolean.valueOf(jsonNode.get("makeGET").asText());
+			boolean makePOST = Boolean.valueOf(jsonNode.get("makePOST").asText());
+			boolean makePUT = Boolean.valueOf(jsonNode.get("makePUT").asText());
+			boolean makePATCH = Boolean.valueOf(jsonNode.get("makePATCH").asText());
+			boolean makeDELETE = Boolean.valueOf(jsonNode.get("makeDELETE").asText());
+			boolean makeSEARCH = Boolean.valueOf(jsonNode.get("makeSEARCH").asText());
+			String serverDomain = jsonNode.get("serverDomain").asText();
+			String contextRoot = jsonNode.get("contextRoot").asText();
+			String port = jsonNode.get("port").asText();
+
+			List<String> errors = new ArrayList<>();
+			switch (action) {
+				case "generate": {
+					this.generateApiSpec(
+						user, title, description, version, domainModel, makeSEARCH, makeGET, makePOST, makePUT, makePATCH,
+						makeDELETE, serverDomain, contextRoot, port, model, errors);
+					return "apiSpecForm";
+				}
+				case "download": {
+					this.downloadApiSpec(user, response);
+					return null; // Indicate that the response has been handled
+				}
+				default: {
+					errors.add("Invalid action specified");
+					model.addAttribute("errors", errors);
+					return "apiSpecForm";
+				}
 			}
-			case "download": {
-				return this.downloadApiSpec(user, response);
-			}
-			default: {
-				errors.add("Invalid action specified");
-				model.addAttribute("errors", errors);
-				return "apiSpecForm";
-			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			model.addAttribute("errors", List.of("Failed to process form data: " + e.getMessage()));
+			return "apiSpecForm";
 		}
 	}
 
-	private String generateApiSpec(
+	private void generateApiSpec(
 		User user,
 		String title,
 		String description,
@@ -293,7 +309,7 @@ public class UIController {
 
 		if (user == null || !errors.isEmpty()) {
 			model.addAttribute("errors", errors);
-			return "apiSpecForm";
+			return;
 		}
 
 		// Generate the API specification.
@@ -305,7 +321,7 @@ public class UIController {
 			if (error != null) {
 				errors.add(error);
 				model.addAttribute("errors", errors);
-				return "apiSpecForm";
+				return;
 			}
 
 			// Create a new Domain Model instance populated with entities from the UML file.
@@ -315,18 +331,16 @@ public class UIController {
 			// Process the domain model to generate the API's swagger.
 			apiSpec = this.service.generateSwagger(user, domainModel, makePOST, makeGET, makePUT, makePATCH, makeDELETE, makeSEARCH, serverDomain, contextRoot, port, status.getIssues());
 			model.addAttribute("apiSpec", apiSpec);
-			return "apiSpecForm";
 
 		} catch (Throwable t) {
 			t.printStackTrace();
 
 			errors.add(t.getMessage());
 			model.addAttribute("errors", errors);
-			return "apiSpecForm";
 		}
 	}
 
-	private String downloadApiSpec(User user, HttpServletResponse response) {
+	private void downloadApiSpec(User user, HttpServletResponse response) {
 		try {
 			ApiSpec apiSpec = user.getApiSpec();
 			File swaggerFile = apiSpec.getSwaggerFile();
@@ -346,7 +360,6 @@ public class UIController {
 		} catch (Throwable t) {
 			t.printStackTrace();
 		}
-		return null; // Indicate that the response has been handled
 	}
 
     @GetMapping("/apiSpecFile")

@@ -3,28 +3,40 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <html>
 <head>
-<meta charset="ISO-8859-1">
-<title>REST API Generator Tool</title>
-<link rel="stylesheet" type="text/css" href="styles.css">
-<script src="https://code.jquery.com/jquery-3.7.1.js"
-	integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
-	crossorigin="anonymous">
-</script>
+	<meta charset="ISO-8859-1">
+	<title>REST API Generator Tool</title>
+	<link rel="stylesheet" type="text/css" href="styles.css">
+	<script type="text/javascript">
+
+		function installOnClickHandler(buttonId, handlerFunction) {
+			const button = document.getElementById(buttonId);
+			if (button) {
+				button.onclick = handlerFunction;
+			}
+		}
+
+		function submitForm(formId) {
+			const form = document.getElementById(formId);
+			if (form) {
+				form.submit();
+			}
+		}
+		
+		window.onload = function() {
+			installOnClickHandler("buttonLogin", function(event) {
+				event.preventDefault();
+				submitForm("formLogin");
+				return false;
+			});
+			installOnClickHandler("buttonRegister", function(event) {
+				event.preventDefault();
+				submitForm("formRegister");
+				return false;
+			});
+		};
+
+	</script>
 </head>
-<script type="text/javascript">
-	$(function() {
-		$("#buttonLogin").click(function(event) {
-			event.preventDefault();
-			$("#formLogin").submit();
-			return false;
-		});
-		$("#buttonRegister").click(function(event) {
-			event.preventDefault();
-			$("#formRegister").submit();
-			return false;
-		});
-	});
-</script>
 <body>
 	<div id="page">
 		<p class="title">API Specification Generator</p>
