@@ -28,6 +28,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.smn.restapigenerator.exception.ExceptionAccessTokenInUse;
 import com.smn.restapigenerator.exception.ExceptionUserExists;
+import com.smn.restapigenerator.model.ApiCode;
 import com.smn.restapigenerator.model.ApiSpec;
 import com.smn.restapigenerator.model.User;
 import com.smn.restapigenerator.model.uml.DomainModel;
@@ -35,6 +36,8 @@ import com.smn.restapigenerator.model.uml.Entity;
 import com.smn.restapigenerator.service.Service;
 import com.smn.restapigenerator.service.Service.DtoReadUMLFile;
 import com.smn.restapigenerator.util.StringUtil;
+import com.smn.restapigenerator.util.ZipUtil;
+
 @Controller
 public class UIController {
 
@@ -185,7 +188,7 @@ public class UIController {
             user = (User) session.getAttribute("user");
         }
 		boolean isAccessAllowed = user != null && user.getAccessToken() != null && !user.getAccessToken().isEmpty();
-		if (!isAccessAllowed) {
+		if (user == null || !isAccessAllowed) {
 			return "registration";
 		}
 		model.addAttribute("user", user);
@@ -218,7 +221,9 @@ public class UIController {
 					return "apiSpecForm";
 				}
 				case "download": {
-					this.downloadApiSpec(user, response);
+					ApiSpec apiSpec = user.getApiSpec();
+					File swaggerFile = apiSpec.getSwaggerFile();
+					this.downloadFile(user, swaggerFile, response);
 					return null; // Indicate that the response has been handled
 				}
 				default: {
@@ -340,11 +345,9 @@ public class UIController {
 		}
 	}
 
-	private void downloadApiSpec(User user, HttpServletResponse response) {
+	private void downloadFile(User user, File file, HttpServletResponse response) {
 		try {
-			ApiSpec apiSpec = user.getApiSpec();
-			File swaggerFile = apiSpec.getSwaggerFile();
-			try (FileInputStream inputStream = new FileInputStream(swaggerFile); OutputStream outputStream = response.getOutputStream()) {
+			try (FileInputStream inputStream = new FileInputStream(file); OutputStream outputStream = response.getOutputStream()) {
 
 				response.setContentType("application/json");
 				response.setHeader("Content-Disposition", "attachment; filename=apiSpec.json");
@@ -431,6 +434,93 @@ public class UIController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(500).body("Failed to save file: " + e.getMessage());
+		}
+	}
+
+	@GetMapping("/viewApiCodeForm")
+	public String viewAPICodeForm(HttpSession session, Model model) {
+
+		// Verify that the user session is valid.
+		User user = null;
+		if (session != null && !session.isNew()) {
+            user = (User) session.getAttribute("user");
+        }
+		boolean isAccessAllowed = user != null && user.getAccessToken() != null && !user.getAccessToken().isEmpty();
+		if (user == null || !isAccessAllowed) {
+			return "registration";
+		}
+		model.addAttribute("user", user);
+
+		ApiSpec apiSpec = user.getApiSpec();
+		model.addAttribute("apiSpec", apiSpec);
+
+ 		ApiCode apiCode = user.getApiCode();
+		if (apiCode == null) {
+			apiCode = new ApiCode();
+		}
+		model.addAttribute("apiCode", apiCode);
+		return "apiCodeForm";
+	}
+
+	@PostMapping("/doApiCodeForm")
+	public String doApiCodeForm (
+		@RequestParam String formFields,
+		HttpServletResponse response,
+        HttpSession session,
+		Model model) {
+
+		// Verify that the user session is valid.
+		User user = null;
+		if (session != null && !session.isNew()) {
+            user = (User) session.getAttribute("user");
+        }
+		boolean isAccessAllowed = user != null && user.getAccessToken() != null && !user.getAccessToken().isEmpty();
+		if (user == null || !isAccessAllowed) {
+			return "registration";
+		}
+		model.addAttribute("user", user);
+
+		ApiSpec apiSpec = user.getApiSpec();
+		model.addAttribute("apiSpec", apiSpec);
+
+        try {
+            // Parse the JSON object containing the various form fields.
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode jsonNode = mapper.readTree(formFields);
+
+            String action = jsonNode.get("action").asText();
+            // String language = jsonNode.get("Language").asText();
+			String language = "java";
+
+			List<String> errors = new ArrayList<>();
+			switch (action) {
+				case "generate": {
+					ApiCode apiCode = this.service.generateCode(user, language);
+					model.addAttribute("apiCode", apiCode);
+					return "apiCodeForm";
+				}
+				case "download": {
+					ApiCode apiCode = user.getApiCode();
+					File apiCodeDir = apiCode.getApiCodeDirFile();
+	
+					// Create a ZIP file from the API code directory
+					File zipFile = new File(apiCodeDir.getParentFile(), "apiCode.zip");
+					ZipUtil.zipDirectory(apiCodeDir, zipFile);
+
+					// Download the ZIP file
+					this.downloadFile(user, zipFile, response);
+					return null; // Indicate that the response has been handled
+				}
+				default: {
+					errors.add("Invalid action specified");
+					model.addAttribute("errors", errors);
+					return "apiCodeForm";
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			model.addAttribute("errors", List.of("Failed to process form data: " + e.getMessage()));
+			return "apiCodeForm";
 		}
 	}
 

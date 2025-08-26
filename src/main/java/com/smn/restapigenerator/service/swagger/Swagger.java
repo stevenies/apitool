@@ -37,6 +37,7 @@ public class Swagger {
 	final static String MARKER_TARGET_NAME = ">>>targetName";
 	final static String MARKER_TARGET_NAME_DEEP = ">>>deepTargetName";
 
+
 	public String generate(
 			DomainModel api,
 			String serverDomain,
@@ -87,7 +88,11 @@ public class Swagger {
 		swagger = swagger.replace(Swagger.MARKER_PATHS, paths);
 
 		String schemas = this.makeSchema(tabs--, api, issues);
-		return swagger.replace(Swagger.MARKER_SCHEMAS, schemas);
+		swagger = swagger.replace(Swagger.MARKER_SCHEMAS, schemas);
+
+		// The FOSS component used by the API code generator cannot accept tabs.  Thus convert tabs to spaces.
+		swagger = swagger.replace("\t", "  ");
+		return swagger;
 	}
 
 	private String indent(int tabs) {

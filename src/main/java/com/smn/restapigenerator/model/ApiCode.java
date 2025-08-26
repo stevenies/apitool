@@ -3,29 +3,45 @@ package com.smn.restapigenerator.model;
 import java.io.File;
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public class ApiCode {
 
-    private File apiZipFile; // iip file containing the generated API code
+    private String language = "java"; // Programming language for the API implementation
+    private File apiCodeDir; // Directory containing the generated API code
     private Date dateGenerated;
 
     public ApiCode() {
     }
 
-    public ApiCode(File apiZipFile) {
-        this.apiZipFile = apiZipFile;
+    public ApiCode(File apiCodeDir) {
+        this.apiCodeDir = apiCodeDir;
         this.dateGenerated = new Date();
     }
 
-    public File getApiZipFile() {
-        return apiZipFile;
+    @JsonIgnore
+    public boolean isValid() {
+        return this.apiCodeDir != null && this.apiCodeDir.exists();
     }
 
-    public void setApiZipFile(File apiZipFile) {
-        this.apiZipFile = apiZipFile;
+    public String getLanguage() {
+        return this.language;
+    }
+
+    public void setLanguage(String language) {
+        this.language = language;
+    }
+
+    public File getApiCodeDirFile() {
+        return this.apiCodeDir;
+    }
+
+    public void setApiCodeDir(File apiCodeDir) {
+        this.apiCodeDir = apiCodeDir;
     }
 
     public Date getDateGenerated() {
-        return dateGenerated;
+        return this.dateGenerated;
     }
 
     public void setDateGenerated(Date dateGenerated) {

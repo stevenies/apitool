@@ -8,11 +8,16 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.openapitools.codegen.ClientOptInput;
+import org.openapitools.codegen.DefaultGenerator;
+import org.openapitools.codegen.config.CodegenConfigurator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.smn.restapigenerator.exception.ExceptionAccessTokenInUse;
 import com.smn.restapigenerator.exception.ExceptionUserExists;
+import com.smn.restapigenerator.model.ApiCode;
 import com.smn.restapigenerator.model.ApiSpec;
 import com.smn.restapigenerator.model.User;
 import com.smn.restapigenerator.model.uml.DomainModel;
@@ -188,6 +193,45 @@ public class Service {
 			return;
 		}
 		apiSpec.deleteSwaggerFile();
+	}
+
+	public ApiCode generateCode(User user, String language) throws IOException {
+
+		// Create a filesystem directory for the user's API code artifacts.
+		File userDir = this.userRepository.getUserStorageDir(user);
+		File tempCodeDir = new File(userDir, "apiCode");
+
+		// Delete a previously existing code directory.
+		if (tempCodeDir.exists()) {
+			FileUtil.deleteFile(tempCodeDir);
+			user.setApiCode(null);
+		}
+		tempCodeDir.mkdirs();
+
+		// Generate the Swagger text and store it in the apiSpecFile.
+		ApiSpec apiSpec = user.getApiSpec();
+		File swaggerFile = apiSpec.getSwaggerFile();
+
+		// Configure Swagger Codegen
+		CodegenConfigurator configurator = new CodegenConfigurator();
+        configurator.setGeneratorName("java"); 
+		// configurator.addAdditionalProperty("library", "spring-boot"); 
+		String swaggerFileURI = swaggerFile.toString().replace("\\", "/");
+		configurator.setInputSpec(swaggerFileURI);
+		String tempCodeDirURI = tempCodeDir.toString().replace("\\", "/");
+		configurator.setOutputDir(tempCodeDirURI);
+
+		// Generate code
+		ClientOptInput clientOptInput = configurator.toClientOptInput();
+		new DefaultGenerator().opts(clientOptInput).generate();
+
+		// Create the ApiCode object
+		ApiCode apiCode = new ApiCode(tempCodeDir);
+
+		// Indicate that the user generated the API's skeleton implementation code.
+		user.setApiCode(apiCode);
+		this.userRepository.saveToJsonFile();
+		return apiCode;
 	}
 
 }

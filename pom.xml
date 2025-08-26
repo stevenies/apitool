@@ -61,6 +61,11 @@
             <artifactId>junit-jupiter</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.openapitools</groupId>
+            <artifactId>openapi-generator</artifactId>
+            <version>7.15.0</version>
+        </dependency>
     </dependencies>
 
     <dependencyManagement>
