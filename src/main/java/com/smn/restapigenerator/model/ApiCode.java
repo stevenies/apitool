@@ -32,12 +32,17 @@ public class ApiCode {
         this.language = language;
     }
 
-    public File getApiCodeDirFile() {
+    public File getApiCodeDir() {
         return this.apiCodeDir;
     }
 
     public void setApiCodeDir(File apiCodeDir) {
         this.apiCodeDir = apiCodeDir;
+    }
+
+    @JsonIgnore
+    public File getApiCodeZip() {
+        return this.apiCodeDir == null ? null : new File(this.apiCodeDir.getParentFile(), "apiCode.zip");
     }
 
     public Date getDateGenerated() {

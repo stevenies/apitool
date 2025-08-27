@@ -6,7 +6,7 @@
 	<meta charset="ISO-8859-1">
 	<title>Generate API Specification</title>
 	<link rel="stylesheet" type="text/css" href="styles.css">
-	<script src="downloadApiSpec.js"></script>
+	<script src="downloadFile.js"></script>
 	<script type="text/javascript">
 
 		function installOnClickHandler(buttonId, handlerFunction) {
@@ -23,11 +23,9 @@
 				const formData = new FormData();
 
 				const fileInput = document.getElementById('file');
-				if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
-					alert("Please select a file containing the API's domain model.");
-					return false;
+				if (fileInput && fileInput.files && fileInput.files.length > 0) {
+					formData.append("domainModel", fileInput.files[0]);
 				}
-				formData.append("domainModel", fileInput.files[0]);
 
 				const jsonObject = {};
 				jsonObject['action'] = 'generate';
@@ -44,7 +42,6 @@
 					body: formData
 				})
 				.then(response => {
-					if (!response.ok) throw new Error("API spec generation failed");
 				})
 				.then((result) => {
 					window.location.href = "viewApiSpecForm?nocache=" + new Date().getTime();
@@ -58,14 +55,16 @@
 
 			installOnClickHandler("buttonDownload", function(event) {
 				event.preventDefault(); // Prevent default form submission
-				downloadApiSpec();
+				const url = "apiSpecFile";
+				const filename = "apiSpec.json";
+				downloadFile(url, filename);
 				return false;
 			});
 
 			installOnClickHandler("buttonTailor", function(event) {
 				event.preventDefault(); // Prevent default form submission
 				window.open("swaggerEditor.html", '_blank');
-			return false;
+				return false;
 			});
 		};
 	</script>

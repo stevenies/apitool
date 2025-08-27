@@ -11,6 +11,7 @@ import java.util.Map;
 
 import org.openapitools.codegen.ClientOptInput;
 import org.openapitools.codegen.DefaultGenerator;
+import org.openapitools.codegen.SpecValidationException;
 import org.openapitools.codegen.config.CodegenConfigurator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -195,7 +196,7 @@ public class Service {
 		apiSpec.deleteSwaggerFile();
 	}
 
-	public ApiCode generateCode(User user, String language) throws IOException {
+	public ApiCode generateCode(User user, String language, List<String> issues) throws IOException {
 
 		// Create a filesystem directory for the user's API code artifacts.
 		File userDir = this.userRepository.getUserStorageDir(user);
@@ -222,15 +223,23 @@ public class Service {
 		configurator.setOutputDir(tempCodeDirURI);
 
 		// Generate code
-		ClientOptInput clientOptInput = configurator.toClientOptInput();
-		new DefaultGenerator().opts(clientOptInput).generate();
+		ApiCode apiCode = new ApiCode();
+		try {
+			ClientOptInput clientOptInput = configurator.toClientOptInput();
+			new DefaultGenerator().opts(clientOptInput).generate();
 
-		// Create the ApiCode object
-		ApiCode apiCode = new ApiCode(tempCodeDir);
+			// Indicate that the user generated the API's skeleton implementation code.
+			apiCode = new ApiCode(tempCodeDir);
+			user.setApiCode(apiCode);
+			this.userRepository.saveToJsonFile();
 
-		// Indicate that the user generated the API's skeleton implementation code.
-		user.setApiCode(apiCode);
-		this.userRepository.saveToJsonFile();
+		} catch (SpecValidationException e) {
+			issues.addAll(e.getErrors());
+
+		} catch (Throwable t) {
+			t.printStackTrace();
+			issues.add("Unexpected error occurred during code generation");
+		}
 		return apiCode;
 	}
 

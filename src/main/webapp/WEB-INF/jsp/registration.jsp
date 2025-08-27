@@ -60,7 +60,7 @@
 			<c:if test="${not empty loginErrors}">
 				<div class="errorPanel">
 					<ul>
-						<c:forEach var="error" items="${loginErrors}">
+						<c:forEach var="error" items="${errors}">
 							<li>${error}</li>
 						</c:forEach>
 					</ul>
@@ -69,6 +69,7 @@
 			<div class="actionPanel">
 				<button id="buttonLogin">Login</button>
 			</div>
+			<input type="hidden" name="referrer" value="${referrer}" />
 		</form>
 		<form id="formRegister" action="register" enctype="multipart/form-data" method="post">
 			<table>
@@ -130,6 +131,7 @@
 			<div class="actionPanel">
 				<button id="buttonRegister">Register</button>
 			</div>
+			<input type="hidden" name="referrer" value="${referrer}" />
 		</form>
 	</div>
 </body>

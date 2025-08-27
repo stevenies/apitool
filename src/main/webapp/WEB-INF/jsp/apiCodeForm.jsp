@@ -6,7 +6,7 @@
 	<meta charset="ISO-8859-1">
 	<title>Generate API Skeleton Code</title>
 	<link rel="stylesheet" type="text/css" href="styles.css">
-	<script src="downloadApiSpec.js"></script>
+	<script src="downloadFile.js"></script>
 	<script type="text/javascript">
 
 		function installOnClickHandler(buttonId, handlerFunction) {
@@ -51,7 +51,9 @@
 
 			installOnClickHandler("buttonDownload", function(event) {
 				event.preventDefault(); // Prevent default form submission
-				downloadApiSpec();
+				const url = "apiCodeZipFile";
+				const filename = "apiCode.zip";
+				downloadFile(url, filename);
 				return false;
 			});
 		};
@@ -68,7 +70,7 @@
 				<tr>
 					<td><label>Language<span class="required">*</span>:</label></td>
 					<td><input id="language" name="language" type="text" value="${apiCode.language}" /></td>
-					<td class="formNote">Programming language for the API implementation (e.g., Java, JavaScript).</td>
+					<td class="formNote">Programming language for the API's implementation code (e.g., Java, Python).</td>
 				</tr>
 			</table>
 			<c:if test="${not empty errors}">

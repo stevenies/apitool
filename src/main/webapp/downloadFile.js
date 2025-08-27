@@ -1,13 +1,10 @@
-function downloadApiSpec() {
-    const url = "apiSpecFile";
-    const filename = "apiSpec.json";
-    fetch(url)
+function downloadFile(url, filename) {
+     fetch(url)
         .then(response => {
-            if (!response.ok) throw new Error("Could not download the API spec");
-            return response.text();
+            if (!response.ok) throw new Error(filename);
+            return response.blob();
         })
-        .then(text => {
-            const blob = new Blob([text], { type: "application/json" });
+        .then(blob => {
             const link = document.createElement("a");
             link.href = URL.createObjectURL(blob);
             link.download = filename;
@@ -17,7 +14,7 @@ function downloadApiSpec() {
             URL.revokeObjectURL(link.href);
         })
         .catch(error => {
-            alert("Failed to download the API spec: " + error);
+            alert("Download failed: " + error);
         });
 }
 

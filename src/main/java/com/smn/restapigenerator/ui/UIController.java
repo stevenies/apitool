@@ -1,16 +1,34 @@
 package com.smn.restapigenerator.ui;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.net.HttpHeaders;
+import com.smn.restapigenerator.exception.ExceptionAccessTokenInUse;
+import com.smn.restapigenerator.exception.ExceptionUserExists;
+import com.smn.restapigenerator.model.ApiCode;
+import com.smn.restapigenerator.model.ApiSpec;
+import com.smn.restapigenerator.model.User;
+import com.smn.restapigenerator.model.uml.DomainModel;
+import com.smn.restapigenerator.model.uml.Entity;
+import com.smn.restapigenerator.service.Service;
+import com.smn.restapigenerator.service.Service.DtoReadUMLFile;
+import com.smn.restapigenerator.util.StringUtil;
+import com.smn.restapigenerator.util.ZipUtil;
+
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import org.springframework.http.MediaType;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,20 +41,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
-
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.smn.restapigenerator.exception.ExceptionAccessTokenInUse;
-import com.smn.restapigenerator.exception.ExceptionUserExists;
-import com.smn.restapigenerator.model.ApiCode;
-import com.smn.restapigenerator.model.ApiSpec;
-import com.smn.restapigenerator.model.User;
-import com.smn.restapigenerator.model.uml.DomainModel;
-import com.smn.restapigenerator.model.uml.Entity;
-import com.smn.restapigenerator.service.Service;
-import com.smn.restapigenerator.service.Service.DtoReadUMLFile;
-import com.smn.restapigenerator.util.StringUtil;
-import com.smn.restapigenerator.util.ZipUtil;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 @Controller
 public class UIController {
@@ -52,39 +57,39 @@ public class UIController {
 		@RequestParam(required = false, defaultValue = "") String email,
 		@RequestParam(required = false, defaultValue = "") String accessPlan,
 		@RequestParam(required = false, defaultValue = "") String accessToken,
-		HttpServletResponse response,
-        HttpSession session,
-		Model model) {
+		HttpSession session,
+		HttpServletResponse response) {
 
-		List<String> registrationErrors = new ArrayList<>();
+		List<String> errors = new ArrayList<>();
+		session.setAttribute("registrationErrors", errors);
 
 		// Verify that the required fields are provided.
 		if (StringUtil.isEmpty(nameFirst)) {
-			registrationErrors.add("Enter your first name");
+			errors.add("Enter your first name");
 		} else {
 			nameFirst = StringUtil.trim(nameFirst);
 		}
 
 		if (StringUtil.isEmpty(nameLast)) {
-			registrationErrors.add("Enter your last name");
+			errors.add("Enter your last name");
 		} else {
 			nameLast = StringUtil.trim(nameLast);
 		}
 
 		if (StringUtil.isEmpty(company)) {
-			registrationErrors.add("Enter your company name or 'Self' if not employed");
+			errors.add("Enter your company name or 'Self' if not employed");
 		} else {
 			company = StringUtil.trim(company);
 		}
 
 		if (StringUtil.isEmpty(email) || !StringUtil.isValidEmail(email)) {
-			registrationErrors.add("Enter a valid email address");
+			errors.add("Enter a valid email address");
 		} else {
 			email = StringUtil.trim(email);
 		}
 
 		if (StringUtil.isEmpty(accessToken)) {
-			registrationErrors.add("Specify an access token you wish to use for your account");
+			errors.add("Specify an access token you wish to use for your account");
 		} else {
 			accessToken = StringUtil.trim(accessToken);
 		}
@@ -93,150 +98,308 @@ public class UIController {
 		try {
 			user = this.service.createUser(nameFirst, nameLast, company, email, accessPlan, accessToken);
 		} catch (ExceptionUserExists e) {
-			registrationErrors.add("Another user with the same name or email address already exists");
+			errors.add("Another user with the same name or email address already exists");
 		} catch (ExceptionAccessTokenInUse e) {
-			registrationErrors.add("That access token is already in use");
+			errors.add("That access token is already in use");
 		} catch (Throwable t) {
-			registrationErrors.add("An unexpected error occurred: " + t.getMessage());
+			errors.add("An unexpected error occurred: " + t.getMessage());
 		}
 
-		if (user == null || !registrationErrors.isEmpty()) {
-			model.addAttribute("registrationErrors", registrationErrors);
+		if (user == null || !errors.isEmpty()) {
 			return "registration";
+		} else {
+			ApiSpec apiSpec = user.getApiSpec();
+			ApiCode apiCode = user.getApiCode();
+
+			session.setAttribute("user", user);
+			session.setAttribute("apiSpec", apiSpec);
+			session.setAttribute("apiCode", apiCode);
+
+			String referrer = (String) session.getAttribute("referrer");
+			return "viewApiCodeForm".equalsIgnoreCase(referrer) ? "apiCodeForm" : "apiSpecForm";
 		}
-
-		session.setAttribute("user", user);
-		model.addAttribute("user", user);
-
-		ApiSpec apiSpec = user.getApiSpec();
-		model.addAttribute("apiSpec", apiSpec);
-
-		return "apiSpecForm";
 	}
 
 	@PostMapping("/login")
 	public String login(
 		@RequestParam(required = false, defaultValue = "") String email,
 		@RequestParam(required = false, defaultValue = "") String accessToken,
-		HttpServletResponse response,
-        HttpSession session,
-		Model model) {
+		HttpSession session,
+		HttpServletResponse response) {
 
-		List<String> loginErrors = new ArrayList<>();
+		List<String> errors = new ArrayList<>();
+		session.setAttribute("loginErrors", errors);
 
 		// Verify that the required fields are provided.
 		if (StringUtil.isEmpty(email) || !StringUtil.isValidEmail(email)) {
-			loginErrors.add("Enter a valid email address");
+			errors.add("Enter a valid email address");
 		}
 
 		if (StringUtil.isEmpty(accessToken)) {
-			loginErrors.add("Enter the access token you received when your account was registered");
+			errors.add("Enter the access token you received when your account was registered");
 		}
 
 		User user = this.service.findUser(accessToken);
 		if (user == null || !email.equals(user.getEmail())) {
-			loginErrors.add("Either the email address or access token is invalid");
+			errors.add("Either the email address or access token is invalid");
 		}
 
-		if (user == null || !loginErrors.isEmpty()) {
-			model.addAttribute("loginErrors", loginErrors);
+		if (user == null || !errors.isEmpty()) {
 			return "registration";
+		} else {
+			ApiSpec apiSpec = user.getApiSpec();
+			ApiCode apiCode = user.getApiCode();
+
+			session.setAttribute("user", user);
+			session.setAttribute("apiSpec", apiSpec);
+			session.setAttribute("apiCode", apiCode);
+
+			String referrer = (String) session.getAttribute("referrer");
+			return "viewApiCodeForm".equalsIgnoreCase(referrer) ? "apiCodeForm" : "apiSpecForm";
 		}
-
-		session.setAttribute("user", user);
-		model.addAttribute("user", user);
-
-		ApiSpec apiSpec = user.getApiSpec();
-		model.addAttribute("apiSpec", apiSpec);
-
-		return "apiSpecForm";
 	}
 
 	@GetMapping("/viewApiSpecForm")
-	public String viewAPISpecForm(HttpSession session, Model model) {
+	public String viewAPISpecForm(Model model, HttpSession session) {
 
 		// Verify that the user session is valid.
-		User user = null;
-		if (session != null && !session.isNew()) {
-            user = (User) session.getAttribute("user");
-        }
-		boolean isAccessAllowed = user != null && user.getAccessToken() != null && !user.getAccessToken().isEmpty();
-		if (user == null || !isAccessAllowed) {
+		User user = (User) session.getAttribute("user");
+		if (user == null || user.getAccessToken() == null || user.getAccessToken().isEmpty()) {
+			session.setAttribute("referrer", "viewAPISpecForm");
 			return "registration";
 		}
 
 		ApiSpec apiSpec = user.getApiSpec();
-		if (apiSpec == null) {
-			apiSpec = new ApiSpec();
-		}
-		model.addAttribute("user", user);
-		model.addAttribute("apiSpec", apiSpec);
+
+		session.setAttribute("user", user);
+		session.setAttribute("apiSpec", apiSpec);
 		return "apiSpecForm";
 	}
 
 	@PostMapping("/doApiSpecForm")
-	public String doApiSpecForm (
-		@RequestParam MultipartFile domainModel,
+	public void doApiSpecForm (
+		@RequestParam(required = false) MultipartFile domainModel,
 		@RequestParam String formFields,
-		HttpServletResponse response,
-        HttpSession session,
-		Model model) {
+		HttpSession session,
+		HttpServletResponse response) {
+
+		List<String> errors = new ArrayList<>();
+		session.setAttribute("errors", errors);
 
 		// Verify that the user session is valid.
-		User user = null;
-		if (session != null && !session.isNew()) {
-            user = (User) session.getAttribute("user");
-        }
-		boolean isAccessAllowed = user != null && user.getAccessToken() != null && !user.getAccessToken().isEmpty();
-		if (user == null || !isAccessAllowed) {
-			return "registration";
+		User user = (User) session.getAttribute("user");
+		if (user == null || user.getAccessToken() == null || user.getAccessToken().isEmpty()) {
+			response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+			return;
 		}
-		model.addAttribute("user", user);
 
         try {
             // Parse the JSON object containing the various form fields.
             ObjectMapper mapper = new ObjectMapper();
             JsonNode jsonNode = mapper.readTree(formFields);
 
-            String action = jsonNode.get("action").asText();
-            String title = jsonNode.get("title").asText();
-            String description = jsonNode.get("description").asText();
-			String version = jsonNode.get("version").asText();
-			boolean makeGET = Boolean.valueOf(jsonNode.get("makeGET").asText());
-			boolean makePOST = Boolean.valueOf(jsonNode.get("makePOST").asText());
-			boolean makePUT = Boolean.valueOf(jsonNode.get("makePUT").asText());
-			boolean makePATCH = Boolean.valueOf(jsonNode.get("makePATCH").asText());
-			boolean makeDELETE = Boolean.valueOf(jsonNode.get("makeDELETE").asText());
-			boolean makeSEARCH = Boolean.valueOf(jsonNode.get("makeSEARCH").asText());
-			String serverDomain = jsonNode.get("serverDomain").asText();
-			String contextRoot = jsonNode.get("contextRoot").asText();
-			String port = jsonNode.get("port").asText();
+            String action = this.jsonToString(jsonNode, "action");
+            String title = this.jsonToString(jsonNode, "title");
+            String description = this.jsonToString(jsonNode, "description");
+			String version = this.jsonToString(jsonNode, "version");
+			boolean makeGET = this.jsonToBoolean(jsonNode, "makeGET");
+			boolean makePOST = this.jsonToBoolean(jsonNode, "makePOST");
+			boolean makePUT = this.jsonToBoolean(jsonNode, "makePUT");
+			boolean makePATCH = this.jsonToBoolean(jsonNode, "makePATCH");
+			boolean makeDELETE = this.jsonToBoolean(jsonNode, "makeDELETE");
+			boolean makeSEARCH = this.jsonToBoolean(jsonNode, "makeSEARCH");
+			String serverDomain = this.jsonToString(jsonNode, "serverDomain");
+			String contextRoot = this.jsonToString(jsonNode, "contextRoot");
+			String port = this.jsonToString(jsonNode, "port");
 
-			List<String> errors = new ArrayList<>();
 			switch (action) {
 				case "generate": {
 					this.generateApiSpec(
 						user, title, description, version, domainModel, makeSEARCH, makeGET, makePOST, makePUT, makePATCH,
-						makeDELETE, serverDomain, contextRoot, port, model, errors);
-					return "apiSpecForm";
-				}
-				case "download": {
-					ApiSpec apiSpec = user.getApiSpec();
-					File swaggerFile = apiSpec.getSwaggerFile();
-					this.downloadFile(user, swaggerFile, response);
-					return null; // Indicate that the response has been handled
+						makeDELETE, serverDomain, contextRoot, port, errors);
+					response.setStatus(errors.size() == 0 ? HttpServletResponse.SC_OK : HttpServletResponse.SC_BAD_REQUEST);
+					break;
 				}
 				default: {
 					errors.add("Invalid action specified");
-					model.addAttribute("errors", errors);
-					return "apiSpecForm";
+					response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+					break;
 				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			model.addAttribute("errors", List.of("Failed to process form data: " + e.getMessage()));
-			return "apiSpecForm";
+			errors.add(e.getMessage());
+			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 		}
+	}
+
+	@GetMapping("/viewApiCodeForm")
+	public String viewAPICodeForm(HttpSession session) {
+
+		// Verify that the user session is valid.
+		User user = (User) session.getAttribute("user");
+		if (user == null || user.getAccessToken() == null || user.getAccessToken().isEmpty()) {
+			session.setAttribute("referrer", "viewAPICodeForm");
+			return "registration";
+		}
+
+		ApiSpec apiSpec = user.getApiSpec();
+ 		ApiCode apiCode = user.getApiCode();
+
+		session.setAttribute("user", user);
+		session.setAttribute("apiSpec", apiSpec);
+		session.setAttribute("apiCode", apiCode);
+		return "apiCodeForm";
+	}
+
+	@PostMapping("/doApiCodeForm")
+	public void doApiCodeForm (
+		@RequestParam String formFields,
+		HttpSession session,
+		HttpServletResponse response) {
+
+		List<String> errors = new ArrayList<>();
+		session.setAttribute("errors", errors);
+
+		// Verify that the user session is valid.
+		User user = (User) session.getAttribute("user");
+		if (user == null || user.getAccessToken() == null || user.getAccessToken().isEmpty()) {
+			response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+			return;
+		}
+
+        try {
+            // Parse the JSON object containing the various form fields.
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode jsonNode = mapper.readTree(formFields);
+
+            String action = this.jsonToString(jsonNode, "action");
+            // String language = this.jsonToString(jsonNode, "Language");
+			String language = "java";
+
+			switch (action) {
+				case "generate": {
+					ApiCode apiCode = this.service.generateCode(user, language, errors);
+					session.setAttribute("apiCode", apiCode);
+					response.setStatus(HttpServletResponse.SC_OK);
+					break;
+				}
+				default: {
+					errors.add("Invalid action specified");
+					response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+					break;
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			session.setAttribute("errors", List.of("Failed to process form data: " + e.getMessage()));
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+		}
+	}
+
+    @GetMapping("/apiSpecFile")
+    public ResponseEntity<InputStreamResource> getApiSpecFile(HttpSession session) {
+
+		User user = (User) session.getAttribute("user");
+		if (user == null || user.getAccessToken() == null || user.getAccessToken().isEmpty()) {
+            return ResponseEntity.notFound().build();
+		}
+
+		// Obtain the filesystem path to the API specification file.
+		ApiSpec apiSpec = user.getApiSpec();
+		if (!apiSpec.isValid()) {
+			return ResponseEntity.notFound().build();
+		}
+		File swaggerFile = apiSpec.getSwaggerFile();
+        if (!swaggerFile.exists()) {
+            return ResponseEntity.notFound().build();
+        }
+
+		// Stream the file's contents to the caller.
+        InputStreamResource resource;
+		try {
+			resource = new InputStreamResource(new FileInputStream(swaggerFile));
+			return ResponseEntity.ok()
+				.contentLength(swaggerFile.length())
+				.contentType(MediaType.APPLICATION_JSON)
+				.body(resource);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+            return ResponseEntity.notFound().build();
+		}
+     }
+
+	@PostMapping("/apiSpecFile")
+	public ResponseEntity<String> saveApiSpecFile(@RequestBody String content, HttpSession session) {
+
+		User user = (User) session.getAttribute("user");
+		if (user == null || user.getAccessToken() == null || user.getAccessToken().isEmpty()) {
+			return ResponseEntity.status(HttpServletResponse.SC_FORBIDDEN).body("Unauthorized");
+		}
+
+		// Obtain the filesystem path to the API specification file.
+		ApiSpec apiSpec = user.getApiSpec();
+		if (!apiSpec.isValid()) {
+			return ResponseEntity.notFound().build();
+		}
+		File swaggerFile = apiSpec.getSwaggerFile();
+        if (!swaggerFile.exists()) {
+            return ResponseEntity.notFound().build();
+        }
+
+		// Save the uploaded text to the specified file (adjust path as needed)
+		try {
+			Path filePath = swaggerFile.toPath();
+			Files.createDirectories(filePath.getParent());
+			Files.writeString(filePath, content, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+			return ResponseEntity.ok("File saved successfully.");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(500).body("Failed to save file: " + e.getMessage());
+		}
+	}
+
+    @GetMapping("/apiCodeZipFile")
+    public ResponseEntity<StreamingResponseBody> apiCodeZipFile(HttpSession session) {
+
+		User user = (User) session.getAttribute("user");
+		if (user == null || user.getAccessToken() == null || user.getAccessToken().isEmpty()) {
+            return ResponseEntity.notFound().build();
+		}
+
+		// Obtain the filesystem path to the API code zip file.
+		ApiCode apiCode = user.getApiCode();
+		if (!apiCode.isValid()) {
+			return ResponseEntity.notFound().build();
+		}
+		File apiCodeDir = apiCode.getApiCodeDir();
+        if (!apiCodeDir.exists()) {
+            return ResponseEntity.notFound().build();
+		}
+
+		// Stream the directory as a ZIP file.
+		StreamingResponseBody stream = outputStream -> {
+			try (ZipOutputStream zos = new ZipOutputStream(outputStream)) {
+				ZipUtil.zipDirectoryRecursive(apiCodeDir, apiCodeDir.getName(), zos);
+				zos.finish();
+			}
+		};
+		return ResponseEntity.ok()
+				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + apiCodeDir.getName() + ".zip\"")
+				.contentType(MediaType.APPLICATION_OCTET_STREAM)
+				.body(stream);
+	}
+
+	private boolean jsonToBoolean(JsonNode parentJsonNode, String fieldName) {
+		JsonNode fieldJsonNode = parentJsonNode.get(fieldName);
+		String value = fieldJsonNode != null ? fieldJsonNode.asText() : "";
+		return Boolean.parseBoolean(value);
+	}
+
+	private String jsonToString(JsonNode parentJsonNode, String fieldName) {
+		JsonNode fieldJsonNode = parentJsonNode.get(fieldName);
+		String value = fieldJsonNode != null ? fieldJsonNode.asText() : "";
+		return value;
 	}
 
 	private void generateApiSpec(
@@ -254,13 +417,10 @@ public class UIController {
 		String serverDomain,
 		String contextRoot,
 		String port,
-		Model model,
-		List<String> errors) {
+		List<String> errors) throws IOException {
 	
-		ApiSpec apiSpec = user.getApiSpec();
-		model.addAttribute("apiSpec", apiSpec);
-
 		// Delete a previously generated Swagger file, if any.
+		ApiSpec apiSpec = user.getApiSpec();
 		this.service.deleteSwagger(apiSpec);
 
 		// Verify that the required fields are provided.
@@ -279,8 +439,8 @@ public class UIController {
 		}
 		apiSpec.setVersion(version);
 
-		String filename = file.getOriginalFilename();
-		if (file == null || StringUtil.isEmpty(filename)) {
+		String filename = file == null ? "" : file.getOriginalFilename();
+		if (StringUtil.isEmpty(filename)) {
 			errors.add("Select the file containing the API's business domain model");
 		}
 
@@ -313,215 +473,23 @@ public class UIController {
 		apiSpec.setPort(port);
 
 		if (user == null || !errors.isEmpty()) {
-			model.addAttribute("errors", errors);
 			return;
 		}
 
-		// Generate the API specification.
-		try {
-
-			// Read the information model into memory.
-			DtoReadUMLFile status = this.service.readUMLFile(filename, file.getBytes());
-			String error = status.getError();
-			if (error != null) {
-				errors.add(error);
-				model.addAttribute("errors", errors);
-				return;
-			}
-
-			// Create a new Domain Model instance populated with entities from the UML file.
-			List<Entity> entities = status.getEntities();
-			DomainModel domainModel = new DomainModel(title, description, version, entities);
-
-			// Process the domain model to generate the API's swagger.
-			apiSpec = this.service.generateSwagger(user, domainModel, makePOST, makeGET, makePUT, makePATCH, makeDELETE, makeSEARCH, serverDomain, contextRoot, port, status.getIssues());
-			model.addAttribute("apiSpec", apiSpec);
-
-		} catch (Throwable t) {
-			t.printStackTrace();
-
-			errors.add(t.getMessage());
-			model.addAttribute("errors", errors);
-		}
-	}
-
-	private void downloadFile(User user, File file, HttpServletResponse response) {
-		try {
-			try (FileInputStream inputStream = new FileInputStream(file); OutputStream outputStream = response.getOutputStream()) {
-
-				response.setContentType("application/json");
-				response.setHeader("Content-Disposition", "attachment; filename=apiSpec.json");
-
-				byte[] buffer = new byte[1024];
-				int bytesRead;
-				while ((bytesRead = inputStream.read(buffer)) != -1) {
-					outputStream.write(buffer, 0, bytesRead);
-				}
-				response.flushBuffer();
-			}
-
-		} catch (Throwable t) {
-			t.printStackTrace();
-		}
-	}
-
-    @GetMapping("/apiSpecFile")
-    public ResponseEntity<InputStreamResource> getApiSpecFile(HttpSession session) {
-
-		User user = null;
-		if (session != null && !session.isNew()) {
-            user = (User) session.getAttribute("user");
-        }
-		boolean isAccessAllowed = user != null && user.getAccessToken() != null && !user.getAccessToken().isEmpty();
-		if (user == null || !isAccessAllowed) {
-            return ResponseEntity.notFound().build();
+		// Read the information model into memory.
+		DtoReadUMLFile status = this.service.readUMLFile(filename, file.getBytes());
+		String error = status.getError();
+		if (error != null) {
+			errors.add(error);
+			return;
 		}
 
-		// Obtain the filesystem path to the API specification file.
-		ApiSpec apiSpec = user.getApiSpec();
-		if (apiSpec == null || !apiSpec.isValid()) {
-			return ResponseEntity.notFound().build();
-		}
-		File swaggerFile = apiSpec.getSwaggerFile();
-        if (!swaggerFile.exists()) {
-            return ResponseEntity.notFound().build();
-        }
+		// Create a new Domain Model instance populated with entities from the UML file.
+		List<Entity> entities = status.getEntities();
+		DomainModel domainModel = new DomainModel(title, description, version, entities);
 
-		// Stream the file's contents to the caller.
-        InputStreamResource resource;
-		try {
-			resource = new InputStreamResource(new FileInputStream(swaggerFile));
-			return ResponseEntity.ok()
-				.contentLength(swaggerFile.length())
-				.contentType(MediaType.APPLICATION_JSON)
-				.body(resource);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-            return ResponseEntity.notFound().build();
-		}
-     }
-
-	@PostMapping("/apiSpecFile")
-	public ResponseEntity<String> saveApiSpecFile(
-			@RequestBody String content,
-			HttpSession session) {
-
-		User user = null;
-		if (session != null && !session.isNew()) {
-			user = (User) session.getAttribute("user");
-		}
-		boolean isAccessAllowed = user != null && user.getAccessToken() != null && !user.getAccessToken().isEmpty();
-		if (user == null || !isAccessAllowed) {
-			return ResponseEntity.status(403).body("Unauthorized");
-		}
-
-		// Obtain the filesystem path to the API specification file.
-		ApiSpec apiSpec = user.getApiSpec();
-		if (apiSpec == null || !apiSpec.isValid()) {
-			return ResponseEntity.notFound().build();
-		}
-		File swaggerFile = apiSpec.getSwaggerFile();
-        if (!swaggerFile.exists()) {
-            return ResponseEntity.notFound().build();
-        }
-
-		// Save the uploaded text to the specified file (adjust path as needed)
-		try {
-			Path filePath = swaggerFile.toPath();
-			Files.createDirectories(filePath.getParent());
-			Files.writeString(filePath, content, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
-			return ResponseEntity.ok("File saved successfully.");
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ResponseEntity.status(500).body("Failed to save file: " + e.getMessage());
-		}
-	}
-
-	@GetMapping("/viewApiCodeForm")
-	public String viewAPICodeForm(HttpSession session, Model model) {
-
-		// Verify that the user session is valid.
-		User user = null;
-		if (session != null && !session.isNew()) {
-            user = (User) session.getAttribute("user");
-        }
-		boolean isAccessAllowed = user != null && user.getAccessToken() != null && !user.getAccessToken().isEmpty();
-		if (user == null || !isAccessAllowed) {
-			return "registration";
-		}
-		model.addAttribute("user", user);
-
-		ApiSpec apiSpec = user.getApiSpec();
-		model.addAttribute("apiSpec", apiSpec);
-
- 		ApiCode apiCode = user.getApiCode();
-		if (apiCode == null) {
-			apiCode = new ApiCode();
-		}
-		model.addAttribute("apiCode", apiCode);
-		return "apiCodeForm";
-	}
-
-	@PostMapping("/doApiCodeForm")
-	public String doApiCodeForm (
-		@RequestParam String formFields,
-		HttpServletResponse response,
-        HttpSession session,
-		Model model) {
-
-		// Verify that the user session is valid.
-		User user = null;
-		if (session != null && !session.isNew()) {
-            user = (User) session.getAttribute("user");
-        }
-		boolean isAccessAllowed = user != null && user.getAccessToken() != null && !user.getAccessToken().isEmpty();
-		if (user == null || !isAccessAllowed) {
-			return "registration";
-		}
-		model.addAttribute("user", user);
-
-		ApiSpec apiSpec = user.getApiSpec();
-		model.addAttribute("apiSpec", apiSpec);
-
-        try {
-            // Parse the JSON object containing the various form fields.
-            ObjectMapper mapper = new ObjectMapper();
-            JsonNode jsonNode = mapper.readTree(formFields);
-
-            String action = jsonNode.get("action").asText();
-            // String language = jsonNode.get("Language").asText();
-			String language = "java";
-
-			List<String> errors = new ArrayList<>();
-			switch (action) {
-				case "generate": {
-					ApiCode apiCode = this.service.generateCode(user, language);
-					model.addAttribute("apiCode", apiCode);
-					return "apiCodeForm";
-				}
-				case "download": {
-					ApiCode apiCode = user.getApiCode();
-					File apiCodeDir = apiCode.getApiCodeDirFile();
-	
-					// Create a ZIP file from the API code directory
-					File zipFile = new File(apiCodeDir.getParentFile(), "apiCode.zip");
-					ZipUtil.zipDirectory(apiCodeDir, zipFile);
-
-					// Download the ZIP file
-					this.downloadFile(user, zipFile, response);
-					return null; // Indicate that the response has been handled
-				}
-				default: {
-					errors.add("Invalid action specified");
-					model.addAttribute("errors", errors);
-					return "apiCodeForm";
-				}
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			model.addAttribute("errors", List.of("Failed to process form data: " + e.getMessage()));
-			return "apiCodeForm";
-		}
+		// Process the domain model to generate the API's swagger.
+		apiSpec = this.service.generateSwagger(user, domainModel, makePOST, makeGET, makePUT, makePATCH, makeDELETE, makeSEARCH, serverDomain, contextRoot, port, status.getIssues());
 	}
 
 }

@@ -20,35 +20,36 @@ public class ZipUtil {
      */
     public static void zipDirectory(File sourceDir, File zipFile) throws IOException {
         try (ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(zipFile))) {
-            zipFileRecursive(sourceDir, sourceDir.getName(), zos);
+            zipDirectoryRecursive(sourceDir, sourceDir.getName(), zos);
         }
     }
 
-    private static void zipFileRecursive(File fileToZip, String fileName, ZipOutputStream zos) throws IOException {
-        if (fileToZip.isHidden()) {
-            return;
-        }
-        if (fileToZip.isDirectory()) {
-            File[] children = fileToZip.listFiles();
-            if (children == null || children.length == 0) {
-                zos.putNextEntry(new ZipEntry(fileName + "/"));
-                zos.closeEntry();
-            } else {
-                for (File childFile : children) {
-                    zipFileRecursive(childFile, fileName + "/" + childFile.getName(), zos);
-                }
-            }
-            return;
-        }
-        try (FileInputStream fis = new FileInputStream(fileToZip)) {
-            ZipEntry zipEntry = new ZipEntry(fileName);
-            zos.putNextEntry(zipEntry);
-            byte[] bytes = new byte[1024];
-            int length;
-            while ((length = fis.read(bytes)) >= 0) {
-                zos.write(bytes, 0, length);
-            }
-        }
-    }
+	public static void zipDirectoryRecursive(File fileToZip, String fileName, ZipOutputStream zos) throws IOException {
+		if (fileToZip.isHidden()) {
+			return;
+		}
+		if (fileToZip.isDirectory()) {
+			File[] children = fileToZip.listFiles();
+			if (children == null || children.length == 0) {
+				zos.putNextEntry(new ZipEntry(fileName + "/"));
+				zos.closeEntry();
+			} else {
+				for (File childFile : children) {
+					zipDirectoryRecursive(childFile, fileName + "/" + childFile.getName(), zos);
+				}
+			}
+			return;
+		}
+		try (FileInputStream fis = new FileInputStream(fileToZip)) {
+			ZipEntry zipEntry = new ZipEntry(fileName);
+			zos.putNextEntry(zipEntry);
+			byte[] bytes = new byte[1024];
+			int length;
+			while ((length = fis.read(bytes)) >= 0) {
+				zos.write(bytes, 0, length);
+			}
+			zos.closeEntry();
+		}
+	}
 
 }
