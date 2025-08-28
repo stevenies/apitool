@@ -44,54 +44,51 @@
 		</p>
 		<p class="sectionHeader">What are the steps to create a new REST API?</p>
 		<p>
-			The process of creating a new REST API using the REST API Generator consists of the following six steps:
-			<ol>
-				<li>Obtain an access token enabling you to utilize the REST API Generator.</li>
-				<li>Create a business domain model expressed as a UML class diagram.</li>
-				<li>Generate the API's OpenAPI interface specification.</li>
-				<li>Tailor the API's specification to remove unwanted endpoints.</li>
-				<li>Generate the API's skeleton implementation.</li>
-				<li>Implement the API's business logic.</li>
-			</ol>
+			Developing a REST API employs a standard software development lifecycle as shown in the following diagram.  The ideation
+			phase identifies the business need for the API and defines the API's business value proposition.<br>A key artifact produced
+			during this phase is the API's business domain model identifying the API's data resources transferred over the API.
+			The second phase, API Design, develops the API's client interface specification defining the API's callable endpoints and
+			request/response formats.  The API interface specification is then used to generate the API's skeleton implementation
+			code resulting in an operational API but containing stubs for the business logic.  Finally the third phase, API
+			Implementation, replaces the endpoint stubs with the API's business logic to complete the API's implementation.
+			<img id="apiBuildSteps" src="images/apiBuildSteps.png" />
+			The following paragraphs explain the steps performed during each phase in more detail.
 		</p>
-		<p class="sectionHeader"><img class="stepImage" src="images/step1.png" />Obtain an access token</p>
-		<p>
-			To use the REST API Generator you must first obtain an access token. The access token enables access to the REST API
-			Generator tool for a specified time period.  View the various <a href="accessPlan.html" target="_blank">access plans</a>
-			offered to select one that best meets your needs.
-		</p>
-		<p class="sectionHeader"><img class="stepImage" src="images/step2.png" />Create the business domain model</p>
+		<p class="sectionHeader">Step <img class="stepImage" src="images/step1.png" /> - Create the business domain model</p>
 		<p>
 			Use the <a href="https://staruml.io/" target="_blank">StarUML</a> modeling tool to create a UML class diagram
-			representing the API's business domain model. The business domain model should identify the data resources
-			exposed by the API, resource attributes, and relationships between resources.  Once the business domain model
-			has been created save it to your local computer using StarUML's native <code>.mdj</code> file format.
+			representing the API's <a href="domainModelOverview.html" target="_blank">business domain model</a>. The business
+			domain model should identify the data resources to be transferred over the API, the resource attributes, and
+			relationships between resources.  Once the business domain model has been created save it to your local computer
+			using StarUML's native <code>.mdj</code> file format.
 		</p>
-		<p class="sectionHeader"><img class="stepImage" src="images/step3.png" />Generate the API's OpenAPI interface specification</p>
+		<p class="sectionHeader">Step <img class="stepImage" src="images/step2.png" /> - Generate the API's OpenAPI interface specification</p>
 		<p>
 			Open the <a href="viewApiSpecForm" target="_blank">API Spec Generator tool</a>, upload the StarUML <code>.mdj</code>
 			file containing the API's business domain model, and then press the Generate API button. In response the tool will
-			generate the API's specification document and download it to your local computer.
+			generate the API's specification document defining the API's client interface.
 		</p>
-		<p class="sectionHeader"><img class="stepImage" src="images/step4.png" />Tailor the API's specification to remove unwanted endpoints</p>
+		<p class="sectionHeader">Step <img class="stepImage" src="images/step3.png" /> - Tailor the API's specification to remove unwanted endpoints</p>
 		<p>	
-			After the API interface specification has been generated and downloaded it can then be tailored to remove unwanted
-			endpoints. For example, if the business domain model does not require a DELETE endpoint for a particular resource
-			then the DELETE endpoint can be removed from the API specification.
+			The API Generator tool generates an OpenAPI specification document defining standard sets of CRUD (Create, Read, Update,
+			Delete) callable endpoints for each data resource. Once the specification has been generated it can then be tailored to remove
+			unwanted endpoints. For example, if the business domain model does not require resource deletion capaibilities then the
+			DELETE endpoints can be removed from the API specification.
 		</p>
-		<p class="sectionHeader"><img class="stepImage" src="images/step5.png" />Generate the API's skeleton implementation</p>
+		<p class="sectionHeader">Step <img class="stepImage" src="images/step4.png" /> - Generate the API's skeleton implementation</p>
 		<p>
-			After the API's specification has been tailored it can then be used to generate code comprising the API's skeleton
+			After the API's specification has been tailored it can be used to generate code comprising the API's skeleton
 			implementation. The skeleton implementation is a fully functional API that can receive requests from the client and
-			return default responses.  The API is considered a skeleton implementation in that it contains stubs for the
-			business logic. The intent is to serve as a starting point for API developers to implement the business logic.
+			return default responses.  The API is considered a skeleton implementation in that it contains service components
+			containing stubs for the business logic. The intent is to serve as a starting point for API developers to implement
+			the business logic.
 		</p>
 		<p>
 			To generate the API's skeleton implementation code open the <a href="viewApiCodeForm" target="_blank">API Code Generator tool</a>,
-			upload the OpenAPI specification file, and then press the Implement API button. In response the tool will generate the
-			API's skeleton implementation files, package them into a ZIP file, and download the ZIP file to your local computer
+			and then press the Implement API button. In response the tool generates code comprising the API's model objects,
+			controller endpoints for processing client requests, and service components containing stubs for the business logic.
 		</p>
-		<p class="sectionHeader"><img class="stepImage" src="images/step6.png" />Implement the API's business logic</p>
+		<p class="sectionHeader">Step <img class="stepImage" src="images/step5.png" /> - Implement the API's business logic</p>
 		<p>
 			Once the API's skeleton implementation is generated it is then ready to be used as a starting point for API developers
 			to implement the business logic.  The skeleton implementation provides a quick-start code base that significantly
