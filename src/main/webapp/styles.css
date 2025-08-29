@@ -46,10 +46,12 @@ P {
     margin: 20px 0px 12px 0px;
 }
 #logo IMG {
-    width: 700px; height: 400px;
+    width: 560px;
     display: block;
     margin: auto;
-    margin-bottom: 20px;
+    margin-bottom: 40px;
+    padding: 32px;
+    border: 1px solid #808080;
 }
 #apiBuildSteps {
     width: 900px;
