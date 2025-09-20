@@ -52,7 +52,7 @@
 					<td class="formNote">Email address given when your account was registered.</td>
 				</tr>
 				<tr>
-					<td><label>Access Token<span class="required">*</span>:</label></td>
+					<td><label>Password<span class="required">*</span>:</label></td>
 					<td><input id="accessToken" name="accessToken" type="text" /></td>
 					<td class="formNote">Security credential authorizing use of the REST API Generator.</td>
 				</tr>
@@ -60,7 +60,7 @@
 			<c:if test="${not empty loginErrors}">
 				<div class="errorPanel">
 					<ul>
-						<c:forEach var="error" items="${errors}">
+						<c:forEach var="error" items="${loginErrors}">
 							<li>${error}</li>
 						</c:forEach>
 					</ul>
@@ -97,6 +97,11 @@
 					<td class="formNote">Your email address.</td>
 				</tr>
 				<tr>
+					<td><label>Password<span class="required">*</span>:</label></td>
+					<td><input id="accessToken" name="accessToken" type="text" /></td>
+					<td class="formNote">Specify a password for use as a security credential for this account.</td>
+				</tr>
+				<tr>
 					<td><label>Access Plan<span class="required">*</span>:</label></td>
 					<td><input type="radio" id="accessPlanFree" name="accessPlan" value="free" checked>Trial (Free)</input></td>
 					<td>Unlimited tool usage during the tool's Beta test period.</td>
@@ -113,11 +118,6 @@
 					<td>Unlimited tool usage during a period of one month.</td>
 				</tr>
 -->
-				<tr>
-					<td><label>Access Token<span class="required">*</span>:</label></td>
-					<td><input id="accessToken" name="accessToken" type="text" /></td>
-					<td class="formNote">Specify an access token for use as a security credential for this account.</td>
-				</tr>
 			</table>
 			<c:if test="${not empty registrationErrors}">
 				<div class="errorPanel">

@@ -87,7 +87,7 @@ public class UIController {
 		}
 
 		if (StringUtil.isEmpty(accessToken)) {
-			errors.add("Specify an access token you wish to use for your account");
+			errors.add("Specify a password you wish to use for your account");
 		} else {
 			accessToken = StringUtil.trim(accessToken);
 		}
@@ -98,7 +98,7 @@ public class UIController {
 		} catch (ExceptionUserExists e) {
 			errors.add("Another user with the same name or email address already exists");
 		} catch (ExceptionAccessTokenInUse e) {
-			errors.add("That access token is already in use");
+			errors.add("That password is already in use");
 		} catch (Throwable t) {
 			errors.add("An unexpected error occurred: " + t.getMessage());
 		}
@@ -134,12 +134,15 @@ public class UIController {
 		}
 
 		if (StringUtil.isEmpty(accessToken)) {
-			errors.add("Enter the access token you received when your account was registered");
+			errors.add("Enter the password you specified when your account was registered");
 		}
 
-		User user = this.service.findUser(accessToken);
-		if (user == null || !email.equals(user.getEmail())) {
-			errors.add("Either the email address or access token is invalid");
+		User user = null;
+		if (errors.isEmpty()) {
+			user = this.service.findUser(accessToken);
+			if (user == null || !email.equals(user.getEmail())) {
+				errors.add("Either the email address or password is invalid");
+			}
 		}
 
 		if (user == null || !errors.isEmpty()) {
