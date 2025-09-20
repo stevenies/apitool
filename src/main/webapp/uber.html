@@ -10,42 +10,42 @@
         <img id="uberLogo" src="images/uberApp.jpg" />
         <p class="title">Uber API Strategy</p>
         <p>
-            Uber stitched together best-in-class third-party APIs for the system "commodity" components (maps, messaging, email receipts, payments)
-            and put its own dispatch logic behind a unified internal API gateway. That combo let small development teams ship a polished app fast
+            Uber utilized best-in-class third-party APIs for the system "commodity" components (maps, messaging, email receipts, payments)
+            and put its own dispatch logic behind a unified internal API gateway. That design enabled small development teams to ship a polished app quickly
             without needing to reinvent infrastructure.
         </p>
-        <p><b>What component APIs were reused on day one</b></p>
+        <p><b>Third-party APIs were utilized on day one</b></p>
         <p>
             <ul>
-                <li>Maps & routing: Uber embedded Google Maps APIs for in-app maps, geocoding, ETAs, and navigation-critical functionality they didn't need to build themselves.</li>
-                <li>SMS/voice & number masking: Using Twilio's APIs, Uber sent ride status texts and enabled anonymized rider-driver calling.  The result was production-ready communication capabilities in a few lines of code.</li>
+                <li>Maps & routing: Uber embedded Google Maps APIs for in-app maps, geocoding, ETAs, and navigation - critical functionality they didn't need to build themselves.</li>
+                <li>SMS/voice & number masking: Using Twilio's APIs, Uber sent ride status texts and enabled anonymized rider-driver calling.  The result was production-ready communication capabilities in just a few lines of code.</li>
                 <li>Email receipts: Uber used transactional email APIs (e.g., SendGrid) so receipts land reliably and render consistently across clients.</li>
                 <li>Payments: Instead of building card processing, Uber integrated Braintree/PayPal to tokenize cards, authorize/settle charges, and expand globally (multi-currency, new methods) as they scaled.</li>
             </ul>
         </p>
-        <p><b>How the system business logic was organized for development efficiency</b></p>
+        <p><b>System business logic was organized for development efficiency</b></p>
         <p>
             Uber placed an API gateway in front of its microservices that gave the mobile app one clean entry point while the
             backend grew into many domain services (trips, users, pricing, etc.) That separation let client engineers move quickly
             while backend teams iterated independently.
         </p>
-        <p><b>How APIs also accelerated business growth (not just development)</b></p>
+        <p><b>APIs also accelerated business growth (not just development)</b></p>
         <p>
             Uber exposed parts of its platform - ETAs, price estimates, trip history, deep links, and later ride
             requests - so partners like TripAdvisor, OpenTable, and United could drop "Request an Uber" right into their apps. That
             drove demand without extra application UI work on Uber's side.
         </p>
-        <p><b>How the project was completed quickly</b></p>
+        <p><b>Factors contributing to the project being completed quickly</b></p>
         <p>
             <ul>
-                <li>No heavy lifts early: Maps, messaging, email, and payments were "solved problems" Uber could rent by API instead of building from scratch.</li>
-                <li>Parallel development: The gateway let multiple backend teams evolve safely while the mobile app consumed stable endpoints.</li>
+                <li>No heavy lifts: Maps, messaging, email, and payments were "solved problems" Uber could incorporate by calling APIs instead of building the capabilities from scratch.</li>
+                <li>Parallel development: The API gateway let multiple backend teams evolve safely while the mobile app consumed stable endpoints.</li>
                 <li>Sandboxes & SDKs: Standard OAuth scopes, sandbox ride requests, and client libraries reduced integration time and testing friction.</li>
             </ul>
         </p>
-        <p><b>Key takeaways</b></p>
+        <p><b>Key takeaway</b></p>
         <p>
-            Uber moved fast by composing a mobile experience from reliable third-party APIs and a clean internal API surface - focusing
+            Uber moved quickly by composing a mobile experience from reliable third-party APIs and a clean internal API surface - focusing
             its engineering effort on the proprietary piece that mattered most: real-time ride dispatch and marketplace logic.
         </p>
 	</div>
