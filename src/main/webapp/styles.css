@@ -178,3 +178,8 @@ B {
     margin: 0px 20px;
     border: 1px solid #808080;
 }
+#insuranceExample {
+    width: 800px;
+    display: block;
+    margin: 40px auto;
+}

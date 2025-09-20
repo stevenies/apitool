@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="ISO-8859-1">
+	<title>Business Domain Model Overview</title>
+	<link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+	<div id="page">
+		<p class="title">Business Domain Model</p>
+		<p>
+			A business domain model is a structured diagram of the real-world concepts in a business - things, their properties,
+			and how they relate. It captures nouns (e.g., Customer, Order, Invoice), key attributes (e.g., Order:total), and relationships
+			(e.g., Customer places Order) using the business's own language. It's technology-agnostic that focuses on business <i>concepts</i>,
+			not implementation.
+		</p>
+		<p>
+			A domain model is not a database schema or data model; it is a conceptual representation of the business
+			domain.  In contrast a database model is storage-oriented (tables, indexes). One domain concept can map to many database tables
+			or vice versa.  Likewise, a domain model is not a technical specification or a detailed design document. Rather it helps align
+			stakeholders, developers, and analysts on the core concepts and relationships in the business.  The domain model serves
+			as a foundation for communication, analysis, and design throughout the API development lifecycle.
+		</p>
+		<p>
+			Creating a business domain model involves collaboration between business stakeholders, domain experts, and developers.
+			The process includes:
+			<ul>
+				<li>Eliciting business language: Collect real terms from domain experts; avoid system jargon</li>
+				<li>Identifying key business concepts and entities</li>
+				<li>Defining attributes and properties of each entity</li>
+				<li>Establishing relationships between entities</li>
+				<li>Iteratively refining the model based on feedback and new insights</li>
+			</ul>
+			For example, the following diagram illustrates a simple business domain model for an insurance system.  Note that the diagram
+			has been simplified for brevity.  In practice, a business domain model typically includes many more entities, attributes,
+			and relationships.
+			<img id="insuranceExample" src="images/insuranceExample.png" alt="Insurance Domain Model">
+			The diagram illustrates the following key business concepts:
+			<ul>
+				<li><b>Entities:</b> Provider, Insured, Insurance Plan, Benefit Set, Service</li>
+				<li><b>Subtypes:</b> Hospital, Physician, and ThirdParty entities are types of Providers; Subscriber and Dependent entities are types of Insured</li>
+				<li><b>Attributes:</b> An Insurance Plan has name, deductibleInNetwork, and deductibleOutOfNetwork attributes; Insured has nameFirst, nameLast, phone, and email attributes</li>
+				<li><b>Relationships:</b> A Provider <i>offers</i> one or more InsurancePlans; Insured is <i>enrolled</i> in one or more InsurancePlans</li>
+				<li><b>Inheritance:</b> Subscriber and Dependent entities inherit common attributes and relationships from  the Insured entity (indicated by the clear arrowhead)</li>
+				<li><b>Multiplicity:</b> An InsurancePlan has <i>one or more</i> BenefitSets; a BenefitSet includes <i>one or more</i> Services</li>
+				<li><b>Composition:</b> Deleting an InsurancePlan also deletes the associated BenefitSets (indicated by the black arrowhead). Likewise, deleting a BenefitSet also deletes the associated Services</li>
+			</ul>
+		</p>
+		<p>
+			For more information on building business domain models, see David Biesack's
+			<a href="https://apidesignmatters.substack.com/p/building-a-domain-model?utm_source=chatgpt.com" target="_blank">article</a>.
+			It highlights several key aspects of using business domain models as the foundation for API design.  Likewise, the Medium platform has
+			published a good
+			<a href="https://medium.com/api-center/where-do-business-resource-apis-come-from-472cc8422dec" target="_blank">article</a>
+			discussing using business domain modeling and Domain-Driven Design (DDD) techniques to create coherent and composable
+			business resource APIs.
+		</p>
+	</div>
+</body>
+</html>
