@@ -506,3 +506,6 @@ target/restapigenerator/overviewDomainModel.html
 target/restapigenerator/overviewUber.html
 target/restapigenerator/images/insuranceExample.mdj
 target/restapigenerator/images/insuranceExample.png
+target/restapigenerator/WEB-INF/lib/classmate-1.7.0.jar
+target/restapigenerator/WEB-INF/lib/hibernate-validator-8.0.1.Final.jar
+target/restapigenerator/WEB-INF/lib/jboss-logging-3.6.1.Final.jar
