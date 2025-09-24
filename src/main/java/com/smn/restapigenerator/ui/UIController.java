@@ -275,12 +275,10 @@ public class UIController {
             JsonNode jsonNode = mapper.readTree(formFields);
 
             String action = this.jsonToString(jsonNode, "action");
-            // String language = this.jsonToString(jsonNode, "Language");
-			String language = "java";
 
 			switch (action) {
 				case "generate": {
-					ApiCode apiCode = this.service.generateCode(user, language, errors);
+					ApiCode apiCode = this.service.generateCode(user, errors);
 					session.setAttribute("apiCode", apiCode);
 					response.setStatus(HttpServletResponse.SC_OK);
 					break;
@@ -391,13 +389,13 @@ public class UIController {
 				.body(stream);
 	}
 
-	private boolean jsonToBoolean(JsonNode parentJsonNode, String fieldName) {
+	boolean jsonToBoolean(JsonNode parentJsonNode, String fieldName) {
 		JsonNode fieldJsonNode = parentJsonNode.get(fieldName);
 		String value = fieldJsonNode != null ? fieldJsonNode.asText() : "";
 		return Boolean.parseBoolean(value);
 	}
 
-	private String jsonToString(JsonNode parentJsonNode, String fieldName) {
+	String jsonToString(JsonNode parentJsonNode, String fieldName) {
 		JsonNode fieldJsonNode = parentJsonNode.get(fieldName);
 		String value = fieldJsonNode != null ? fieldJsonNode.asText() : "";
 		return value;

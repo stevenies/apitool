@@ -196,7 +196,7 @@ public class Service {
 		apiSpec.deleteSwaggerFile();
 	}
 
-	public ApiCode generateCode(User user, String language, List<String> issues) throws IOException {
+	public ApiCode generateCode(User user, List<String> issues) throws IOException {
 
 		// Create a filesystem directory for the user's API code artifacts.
 		File userDir = this.userRepository.getUserStorageDir(user);
@@ -209,18 +209,20 @@ public class Service {
 		}
 		tempCodeDir.mkdirs();
 
-		// Generate the Swagger text and store it in the apiSpecFile.
 		ApiSpec apiSpec = user.getApiSpec();
 		File swaggerFile = apiSpec.getSwaggerFile();
 
 		// Configure Swagger Codegen
 		CodegenConfigurator configurator = new CodegenConfigurator();
-        configurator.setGeneratorName("java"); 
-		// configurator.addAdditionalProperty("library", "spring-boot"); 
+        configurator.setGeneratorName("spring");
 		String swaggerFileURI = swaggerFile.toString().replace("\\", "/");
 		configurator.setInputSpec(swaggerFileURI);
 		String tempCodeDirURI = tempCodeDir.toString().replace("\\", "/");
 		configurator.setOutputDir(tempCodeDirURI);
+
+		Map<String, Object> additionalProperties = new HashMap<>();
+		additionalProperties.put("useSpringBoot3", "true");
+        configurator.setAdditionalProperties(additionalProperties);
 
 		// Generate code
 		ApiCode apiCode = new ApiCode();

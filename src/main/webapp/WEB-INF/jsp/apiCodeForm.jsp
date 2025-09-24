@@ -61,18 +61,8 @@
 </head>
 <body>
 	<div id="page">
-		<p class="title">API Specification Generator</p>
+		<p class="title">API Code Generator</p>
 		<form id="apiCodeForm">
-			<table>
-				<tr>
-					<td colspan="3"><div class="formHeader">API Implementation Settings</div></td>
-				</tr>
-				<tr>
-					<td><label>Language<span class="required">*</span>:</label></td>
-					<td><input id="language" name="language" type="text" value="${apiCode.language}" /></td>
-					<td class="formNote">Programming language for the API's implementation code (e.g., Java, Python).</td>
-				</tr>
-			</table>
 			<c:if test="${not empty errors}">
 				<div class="errorPanel">
 					<ul>
@@ -89,7 +79,7 @@
 			</c:if>
 			<div class="actionPanel">
 				<c:if test="${not apiCode.valid}">
-					<button id="buttonGenerate">Generate API Implementation Code</button>
+					<button id="buttonGenerate">Generate API Skeleton Code</button>
 				</c:if>
 				<c:if test="${apiCode.valid}">
 					<button id="buttonGenerate">Regenerate API Code</button>
