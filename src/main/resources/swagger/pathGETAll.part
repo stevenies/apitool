@@ -33,17 +33,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"allOf": [
-										{"$ref": "#/components/schemas/PageInfo"},
-										{
-											"type": "object",
-											"properties": {
-												"items": {
-													"$ref": "#/components/schemas/>>>deepEntityName"
-												}
-											}
-										}
-									]
+									"$ref": "#/components/schemas/>>>deepEntityNamePaged"
 								}
 							}
 						}

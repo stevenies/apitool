@@ -42,17 +42,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"allOf": [
-										{"$ref": "#/components/schemas/PageInfo"},
-										{
-											"type": "object",
-											"properties": {
-												"items": {
-													"$ref": "#/components/schemas/>>>deepTargetName"
-												}
-											}
-										}
-									]
+									"$ref": "#/components/schemas/>>>deepTargetNamePaged"
 								}
 							}
 						}

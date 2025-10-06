@@ -37,7 +37,6 @@ public class Swagger {
 	final static String MARKER_TARGET_NAME = ">>>targetName";
 	final static String MARKER_TARGET_NAME_DEEP = ">>>deepTargetName";
 
-
 	public String generate(
 			DomainModel api,
 			String serverDomain,
@@ -174,9 +173,25 @@ public class Swagger {
 			buffer.append(this.indent(tabs)).append("\"").append(entityName).append("-Array").append("\": {\n");
 			buffer.append(this.indent(++tabs)).append("\"type\": \"array\",\n");
 			buffer.append(this.indent(tabs)).append("\"items\": {\n");
-			buffer.append(this.indent(++tabs)).append("\"$ref\": \"#/components/schemas/").append(entityName)
-					.append("\"\n");
+			buffer.append(this.indent(++tabs));
+			buffer.append("\"$ref\": \"#/components/schemas/").append(entityName).append("\"\n");
 			buffer.append(this.indent(--tabs)).append("}\n");
+			buffer.append(this.indent(--tabs)).append("},\n");
+
+			// Create a paged array of Entities
+			buffer.append(this.indent(tabs)).append("\"").append(entityName).append("-ArrayPaged").append("\": {\n");
+			buffer.append(this.indent(++tabs)).append("\"allOf\": [\n");
+			buffer.append(this.indent(++tabs)).append("{\"$ref\": \"#/components/schemas/PageInfo\"},\n");
+			buffer.append(this.indent(tabs)).append("{\n");
+			buffer.append(this.indent(++tabs)).append("\"type\": \"object\",\n");
+			buffer.append(this.indent(tabs)).append("\"properties\": {\n");
+			buffer.append(this.indent(++tabs)).append("\"items\": {\n");
+			buffer.append(this.indent(++tabs));
+			buffer.append("\"$ref\": \"#/components/schemas/").append(entityName).append("-Array\"\n");
+			buffer.append(this.indent(--tabs)).append("}\n");
+			buffer.append(this.indent(--tabs)).append("}\n");
+			buffer.append(this.indent(--tabs)).append("}\n");
+			buffer.append(this.indent(--tabs)).append("]\n");
 			buffer.append(this.indent(--tabs)).append("},");
 
 			if (hasRelations) {
@@ -194,9 +209,25 @@ public class Swagger {
 				buffer.append(this.indent(tabs)).append("\"").append(entityName).append("-DeepArray").append("\": {\n");
 				buffer.append(this.indent(++tabs)).append("\"type\": \"array\",\n");
 				buffer.append(this.indent(tabs)).append("\"items\": {\n");
-				buffer.append(this.indent(++tabs)).append("\"$ref\": \"#/components/schemas/").append(entityName)
-						.append("-Deep\"\n");
+				buffer.append(this.indent(++tabs));
+				buffer.append("\"$ref\": \"#/components/schemas/").append(entityName).append("-Deep\"\n");
 				buffer.append(this.indent(--tabs)).append("}\n");
+				buffer.append(this.indent(--tabs)).append("},\n");
+
+				// Create a paged array of Deep Entities
+				buffer.append(this.indent(tabs)).append("\"").append(entityName).append("-DeepArrayPaged").append("\": {\n");
+				buffer.append(this.indent(++tabs)).append("\"allOf\": [\n");
+				buffer.append(this.indent(++tabs)).append("{\"$ref\": \"#/components/schemas/PageInfo\"},\n");
+				buffer.append(this.indent(tabs)).append("{\n");
+				buffer.append(this.indent(++tabs)).append("\"type\": \"object\",\n");
+				buffer.append(this.indent(tabs)).append("\"properties\": {\n");
+				buffer.append(this.indent(++tabs)).append("\"items\": {\n");
+				buffer.append(this.indent(++tabs));
+				buffer.append("\"$ref\": \"#/components/schemas/").append(entityName).append("-DeepArray\"\n");
+				buffer.append(this.indent(--tabs)).append("}\n");
+				buffer.append(this.indent(--tabs)).append("}\n");
+				buffer.append(this.indent(--tabs)).append("}\n");
+				buffer.append(this.indent(--tabs)).append("]\n");
 				buffer.append(this.indent(--tabs)).append("},");
 			}
 
@@ -215,8 +246,8 @@ public class Swagger {
 					if (!firstSubtype) {
 						buffer.append(",\n");
 					}
-					buffer.append(this.indent(tabs)).append("{\"$ref\": \"#/components/schemas/").append(subtypeName)
-							.append("\"}");
+					buffer.append(this.indent(tabs));
+					buffer.append("{\"$ref\": \"#/components/schemas/").append(subtypeName).append("\"}");
 					firstSubtype = false;
 				}
 
@@ -225,13 +256,29 @@ public class Swagger {
 				buffer.append(this.indent(--tabs)).append("},\n");
 
 				// Create an array of subtype Schemas
-				buffer.append(this.indent(tabs)).append("\"").append(entityName).append("-SubtypesArray")
-						.append("\": {\n");
+				buffer.append(this.indent(tabs));
+				buffer.append("\"").append(entityName).append("-SubtypesArray").append("\": {\n");
 				buffer.append(this.indent(++tabs)).append("\"type\": \"array\",\n");
 				buffer.append(this.indent(tabs)).append("\"items\": {\n");
-				buffer.append(this.indent(++tabs)).append("\"$ref\": \"#/components/schemas/").append(entityName)
-						.append("-Subtypes\"\n");
+				buffer.append(this.indent(++tabs));
+				buffer.append("\"$ref\": \"#/components/schemas/").append(entityName).append("-Subtypes\"\n");
 				buffer.append(this.indent(--tabs)).append("}\n");
+				buffer.append(this.indent(--tabs)).append("},\n");
+
+				// Create a paged array of subtype Schemas
+				buffer.append(this.indent(tabs)).append("\"").append(entityName).append("-SubtypesArrayPaged").append("\": {\n");
+				buffer.append(this.indent(++tabs)).append("\"allOf\": [\n");
+				buffer.append(this.indent(++tabs)).append("{\"$ref\": \"#/components/schemas/PageInfo\"},\n");
+				buffer.append(this.indent(tabs)).append("{\n");
+				buffer.append(this.indent(++tabs)).append("\"type\": \"object\",\n");
+				buffer.append(this.indent(tabs)).append("\"properties\": {\n");
+				buffer.append(this.indent(++tabs)).append("\"items\": {\n");
+				buffer.append(this.indent(++tabs));
+				buffer.append("\"$ref\": \"#/components/schemas/").append(entityName).append("-SubtypesArray\"\n");
+				buffer.append(this.indent(--tabs)).append("}\n");
+				buffer.append(this.indent(--tabs)).append("}\n");
+				buffer.append(this.indent(--tabs)).append("}\n");
+				buffer.append(this.indent(--tabs)).append("]\n");
 				buffer.append(this.indent(--tabs)).append("},");
 			}
 			firstEntity = false;
