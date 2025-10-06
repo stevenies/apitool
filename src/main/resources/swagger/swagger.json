@@ -19,6 +19,14 @@
 	"components": {
 		"schemas": {
 ">>>schemas": "",
+			"SearchId": {
+				"type": "object",
+				"properties": {
+					"searchId": {
+						"type": "string"
+					}
+				}
+			},
 			"PageInfo": {
 				"type": "object",
 				"properties": {

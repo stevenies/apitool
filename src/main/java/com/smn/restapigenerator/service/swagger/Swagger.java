@@ -1,5 +1,12 @@
 package com.smn.restapigenerator.service.swagger;
 
+import com.smn.restapigenerator.model.uml.Attribute;
+import com.smn.restapigenerator.model.uml.DomainModel;
+import com.smn.restapigenerator.model.uml.Entity;
+import com.smn.restapigenerator.model.uml.MVA;
+import com.smn.restapigenerator.model.uml.MVA.TRelationDepth;
+import com.smn.restapigenerator.util.FileUtil;
+import com.smn.restapigenerator.util.StringUtil;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,18 +18,11 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
-import com.smn.restapigenerator.model.uml.Attribute;
-import com.smn.restapigenerator.model.uml.DomainModel;
-import com.smn.restapigenerator.model.uml.Entity;
-import com.smn.restapigenerator.model.uml.MVA;
-import com.smn.restapigenerator.model.uml.MVA.TRelationDepth;
-import com.smn.restapigenerator.util.FileUtil;
-import com.smn.restapigenerator.util.StringUtil;
-
 @Component
 public class Swagger {
 
 	final static String MARKER_TITLE = ">>>title";
+	final static String MARKER_OPERATION_ID = ">>>operationId";
 	final static String MARKER_DESCRIPTION = ">>>description";
 	final static String MARKER_VERSION = ">>>version";
 	final static String MARKER_SERVERS = "\">>>servers\": \"\"";
@@ -377,8 +377,18 @@ public class Swagger {
 		return buffer.toString();
 	}
 
-	private String makePaths(int tabs, DomainModel api, boolean makePOST, boolean makeGET, boolean makePUT, boolean makePATCH,
-			boolean makeDELETE, boolean makeSEARCH, Map<Entity, List<String>> issues) {
+	private String makePaths(
+		int tabs,
+		DomainModel api,
+		boolean makePOST,
+		boolean makeGET,
+		boolean makePUT,
+		boolean makePATCH,
+		boolean makeDELETE,
+		boolean makeSEARCH,
+		Map<Entity,
+		List<String>> issues) {
+			
 		StringBuilder buffer = new StringBuilder();
 
 		List<Entity> entities = api.getEntities();
@@ -393,27 +403,31 @@ public class Swagger {
 			}
 
 			if (makeSEARCH) {
+				String operationId = entityName + "_search";
+
 				if (buffer.length() > 0) {
 					buffer.append(",\n");
 				}
 				buffer.append(this.indent(tabs)).append("\"/").append(entityName).append("-$search\" : {\n");
-				buffer.append(this.makeEndpoint(entity, "/swagger/pathSEARCH_POST.part", false)).append("\n");
+				buffer.append(this.makeEndpoint(entity, "/swagger/pathSEARCH_POST.part", operationId, false)).append("\n");
 				buffer.append(this.indent(tabs)).append("},\n");
 				buffer.append(this.indent(tabs)).append("\"/").append(entityName).append("-$search/{searchId}\" : {\n");
-				buffer.append(this.makeEndpoint(entity, "/swagger/pathSEARCH_GET.part", false)).append("\n");
+				buffer.append(this.makeEndpoint(entity, "/swagger/pathSEARCH_GET.part", operationId, false)).append("\n");
 				buffer.append(this.indent(tabs)).append("}");
 			}
 
 			if (makePOST || makeGET) {
+				String operationId = entityName;
+
 				StringBuilder endpointBuffer = new StringBuilder();
 				if (makePOST) {
-					endpointBuffer.append(this.makeEndpoint(entity, "/swagger/pathPOST.part", false));
+					endpointBuffer.append(this.makeEndpoint(entity, "/swagger/pathPOST.part", operationId, false));
 				}
 				if (makeGET) {
 					if (endpointBuffer.length() > 0) {
 						endpointBuffer.append(",\n");
 					}
-					endpointBuffer.append(this.makeEndpoint(entity, "/swagger/pathGETAll.part", false));
+					endpointBuffer.append(this.makeEndpoint(entity, "/swagger/pathGETAll.part", operationId, false));
 				}
 
 				if (buffer.length() > 0) {
@@ -433,17 +447,18 @@ public class Swagger {
 			} else {
 				String entityIdName = entityId.getName();
 				List<MVA> relations = entity.getRelations();
+				String operationId = entityName;
 
 				StringBuilder endpointBuffer = new StringBuilder();
 				if (makeGET) {
-					endpointBuffer.append(this.makeEndpoint(entity, "/swagger/pathGETOne.part", true));
+					endpointBuffer.append(this.makeEndpoint(entity, "/swagger/pathGETOne.part", operationId, true));
 				}
 
 				if (makePUT) {
 					if (endpointBuffer.length() > 0) {
 						endpointBuffer.append(",\n");
 					}
-					String endpointText = this.makeEndpoint(entity, "/swagger/pathPUT.part", true);
+					String endpointText = this.makeEndpoint(entity, "/swagger/pathPUT.part", operationId, true);
 					endpointBuffer.append(endpointText);
 				}
 
@@ -451,14 +466,14 @@ public class Swagger {
 					if (endpointBuffer.length() > 0) {
 						endpointBuffer.append(",\n");
 					}
-					endpointBuffer.append(this.makeEndpoint(entity, "/swagger/pathPATCH.part", true));
+					endpointBuffer.append(this.makeEndpoint(entity, "/swagger/pathPATCH.part", operationId, true));
 				}
 
 				if (makeDELETE) {
 					if (endpointBuffer.length() > 0) {
 						endpointBuffer.append(",\n");
 					}
-					endpointBuffer.append(this.makeEndpoint(entity, "/swagger/pathDELETE.part", true));
+					endpointBuffer.append(this.makeEndpoint(entity, "/swagger/pathDELETE.part", operationId, true));
 				}
 
 				if (endpointBuffer.length() > 0) {
@@ -507,7 +522,7 @@ public class Swagger {
 
 	}
 
-	private String makeEndpoint(Entity entity, String partFileURI, boolean needsId) {
+	private String makeEndpoint(Entity entity, String partFileURI, String operationId, boolean needsId) {
 		String entityName = entity.getName();
 		String entityDeepName = entity.getDeepName();
 		Attribute entityId = entity.getExplicitId();
@@ -522,6 +537,7 @@ public class Swagger {
 		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_TAG, entityName);
 		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_NAME, entityName);
 		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_NAME_DEEP, entityDeepName);
+		resourceText = resourceText.replace(Swagger.MARKER_OPERATION_ID, operationId);
 
 		if (needsId) {
 			String entityIdName = entityId.getName();

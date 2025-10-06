@@ -2,6 +2,7 @@
 				"tags": [
 					">>>entityTag"
 				],
+				"operationId": ">>>operationIdPOST",
 				"summary": "Search for >>>entityName data resources matching the specified criteria",
 				"description": "",
 				"requestBody": {
@@ -20,12 +21,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object",
-									"properties": {
-										"searchId": {
-											"type": "string"
-										}
-									}
+									"$ref": "#/components/schemas/SearchId"
 								}
 							}
 						}

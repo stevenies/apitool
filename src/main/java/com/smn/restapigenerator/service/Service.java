@@ -222,6 +222,7 @@ public class Service {
 
 		Map<String, Object> additionalProperties = new HashMap<>();
 		additionalProperties.put("useSpringBoot3", "true");
+		additionalProperties.put("generateAliasAsModel", "true");
         configurator.setAdditionalProperties(additionalProperties);
 
 		// Generate code

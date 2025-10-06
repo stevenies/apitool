@@ -2,6 +2,7 @@
 				"tags": [
 					">>>entityTag"
 				],
+				"operationId": ">>>operationIdsearchIdGET",
 				"summary": "Return the results from a >>>entityName resource search",
 				"description": "",
 				"parameters": [
@@ -43,7 +44,14 @@
 								"schema": {
 									"allOf": [
 										{"$ref": "#/components/schemas/PageInfo"},
-										{"$ref": "#/components/schemas/>>>deepEntityName"}
+										{
+											"type": "object",
+											"properties": {
+												"items": {
+													"$ref": "#/components/schemas/>>>deepEntityName"
+												}
+											}
+										}
 									]
 								}
 							}

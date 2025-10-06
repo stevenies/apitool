@@ -2,6 +2,7 @@
 				"tags": [
 					">>>entityTag"
 				],
+				"operationId": ">>>operationId>>>entityIdPUT",
 				"summary": "Update all attributes of a specified >>>entityName data resource",
 				"description": "",
 				"parameters": [

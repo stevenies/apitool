@@ -2,6 +2,7 @@
 				"tags": [
 					">>>entityTag"
 				],
+				"operationId": ">>>operationIdPOST",
 				"summary": "Create a new >>>entityName data resource",
 				"description": "",
 				"requestBody": {

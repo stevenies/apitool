@@ -2,6 +2,7 @@
 				"tags": [
 					">>>entityTag"
 				],
+				"operationId": ">>>operationId>>>entityIdGET",
 				"summary": "Return all related >>>targetName data resources",
 				"description": "",
 				"parameters": [
@@ -43,7 +44,14 @@
 								"schema": {
 									"allOf": [
 										{"$ref": "#/components/schemas/PageInfo"},
-										{"$ref": "#/components/schemas/>>>deepTargetName"}
+										{
+											"type": "object",
+											"properties": {
+												"items": {
+													"$ref": "#/components/schemas/>>>deepTargetName"
+												}
+											}
+										}
 									]
 								}
 							}

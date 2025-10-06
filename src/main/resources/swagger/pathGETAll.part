@@ -2,6 +2,7 @@
 				"tags": [
 					">>>entityTag"
 				],
+				"operationId": ">>>operationIdGET",
 				"summary": "Return all >>>entityName data resources",
 				"description": "",
 				"parameters": [
@@ -34,7 +35,14 @@
 								"schema": {
 									"allOf": [
 										{"$ref": "#/components/schemas/PageInfo"},
-										{"$ref": "#/components/schemas/>>>deepEntityName"}
+										{
+											"type": "object",
+											"properties": {
+												"items": {
+													"$ref": "#/components/schemas/>>>deepEntityName"
+												}
+											}
+										}
 									]
 								}
 							}

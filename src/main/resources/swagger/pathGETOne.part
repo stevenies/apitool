@@ -2,6 +2,7 @@
 				"tags": [
 					">>>entityTag"
 				],
+				"operationId": ">>>operationId>>>entityIdGET",
 				"summary": "Return the specified >>>entityName data resource",
 				"description": "",
 				"parameters": [
