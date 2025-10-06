@@ -186,8 +186,10 @@ public class Swagger {
 			buffer.append(this.indent(++tabs)).append("\"type\": \"object\",\n");
 			buffer.append(this.indent(tabs)).append("\"properties\": {\n");
 			buffer.append(this.indent(++tabs)).append("\"items\": {\n");
-			buffer.append(this.indent(++tabs));
-			buffer.append("\"$ref\": \"#/components/schemas/").append(entityName).append("-Array\"\n");
+			buffer.append(this.indent(++tabs)).append("\"type\": \"array\",\n");
+			buffer.append(this.indent(tabs)).append("\"items\": {\n");
+			buffer.append(this.indent(++tabs)).append("\"$ref\": \"#/components/schemas/").append(entityName).append("\"\n");
+			buffer.append(this.indent(--tabs)).append("}\n");
 			buffer.append(this.indent(--tabs)).append("}\n");
 			buffer.append(this.indent(--tabs)).append("}\n");
 			buffer.append(this.indent(--tabs)).append("}\n");
@@ -223,7 +225,7 @@ public class Swagger {
 				buffer.append(this.indent(tabs)).append("\"properties\": {\n");
 				buffer.append(this.indent(++tabs)).append("\"items\": {\n");
 				buffer.append(this.indent(++tabs));
-				buffer.append("\"$ref\": \"#/components/schemas/").append(entityName).append("-DeepArray\"\n");
+				buffer.append("\"$ref\": \"#/components/schemas/").append(entityName).append("-Deep\"\n");
 				buffer.append(this.indent(--tabs)).append("}\n");
 				buffer.append(this.indent(--tabs)).append("}\n");
 				buffer.append(this.indent(--tabs)).append("}\n");
@@ -274,7 +276,7 @@ public class Swagger {
 				buffer.append(this.indent(tabs)).append("\"properties\": {\n");
 				buffer.append(this.indent(++tabs)).append("\"items\": {\n");
 				buffer.append(this.indent(++tabs));
-				buffer.append("\"$ref\": \"#/components/schemas/").append(entityName).append("-SubtypesArray\"\n");
+				buffer.append("\"$ref\": \"#/components/schemas/").append(entityName).append("-Subtypes\"\n");
 				buffer.append(this.indent(--tabs)).append("}\n");
 				buffer.append(this.indent(--tabs)).append("}\n");
 				buffer.append(this.indent(--tabs)).append("}\n");

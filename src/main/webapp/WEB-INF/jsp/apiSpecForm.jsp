@@ -63,7 +63,7 @@
 
 			installOnClickHandler("buttonTailor", function(event) {
 				event.preventDefault(); // Prevent default form submission
-				window.open("swaggerEditor.html", '_blank');
+				window.open("swaggerEditor.html", 'SwaggerEditor');
 				return false;
 			});
 		};
