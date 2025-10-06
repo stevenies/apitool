@@ -2,7 +2,7 @@
 				"tags": [
 					">>>entityTag"
 				],
-				"operationId": ">>>operationIdPOST",
+				"operationId": ">>>operationId-POST",
 				"summary": "Search for >>>entityName data resources matching the specified criteria",
 				"description": "",
 				"requestBody": {

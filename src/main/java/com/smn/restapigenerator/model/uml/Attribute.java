@@ -11,7 +11,7 @@ public class Attribute {
 	private String defaultValue;
 
 	public Attribute(String name, String type, String defaultValue, boolean isId, boolean isReadOnly) {
-		this.name = StringUtil.isEmpty(name) ? name : name.replace(" ", "_");
+		this.name = name;
 		this.type = type;
 		this.defaultValue = defaultValue;
 		this.isId = isId;
@@ -20,6 +20,14 @@ public class Attribute {
 
 	public String getName() {
 		return this.name;
+	}
+
+	public String getNameCamelCase() {
+		return StringUtil.toCamelCase(this.name);
+	}
+
+	public String getNameKebabCase() {
+		return StringUtil.toKebabCase(this.name);
 	}
 
 	public String getType() {

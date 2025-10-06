@@ -1,10 +1,9 @@
 package com.smn.restapigenerator.model.uml;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.smn.restapigenerator.model.uml.MVA.TRelationDepth;
 import com.smn.restapigenerator.util.StringUtil;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Entity implements Comparable<Entity> {
 
@@ -19,14 +18,30 @@ public class Entity implements Comparable<Entity> {
 	private boolean hasDeepRelations;
 
 	public Entity(String name) {
-		if (!StringUtil.isEmpty(name)) {
-			name = name.replace(" ", "_");
-		}
 		this.name = name;
 	}
 
 	public String getName() {
 		return this.name;
+	}
+
+	/*
+	 * @return name with spaces replaced by underscores
+	 */
+	public String getNameNoSpaces() {
+		return this.name.replaceAll(" ", "_");
+	}
+
+	public String getNameCamelCase() {
+		return StringUtil.toCamelCase(this.name);
+	}
+
+	public String getNamePascalCase() {
+		return StringUtil.toPascalCase(this.name);
+	}
+
+	public String getNameKebabCase() {
+		return StringUtil.toKebabCase(this.name);
 	}
 
 	/**
@@ -35,7 +50,7 @@ public class Entity implements Comparable<Entity> {
 	public String getArrayName() {
 		boolean hasRelations = this.hasShallowRelations() || this.hasDeepRelations();
 		boolean hasSubtypes = this.getSubtypes().size() > 0;
-		return this.name + (hasSubtypes ? "-SubtypesArray" : hasRelations ? "-DeepArray" : "-Array");
+		return this.getNamePascalCase() + (hasSubtypes ? "-SubtypesArray" : hasRelations ? "-DeepArray" : "-Array");
 	}
 
 	public Entity getSupertype() {

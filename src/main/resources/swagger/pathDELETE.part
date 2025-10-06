@@ -2,7 +2,7 @@
 				"tags": [
 					">>>entityTag"
 				],
-				"operationId": ">>>operationId>>>entityIdDELETE",
+				"operationId": ">>>operationId->>>entityId-DELETE",
 				"summary": "Delete the specified >>>entityName data resource",
 				"description": "",
 				"parameters": [

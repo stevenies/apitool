@@ -6,17 +6,76 @@ public class StringUtil {
 		return text == null || text.length() == 0;
 	}
 
+    public static String trim(String text) {
+		if (text == null) {
+			return null;
+		}
+		return text.trim();
+    }
+
 	public static String toCamelCase(String text) {
+       if (text == null || text.isEmpty()) {
+            return "";
+        }
+
+        StringBuilder buffer = new StringBuilder();
+        boolean capitalizeNext = false;
+
+        for (int i = 0; i < text.length(); i++) {
+            char currentChar = text.charAt(i);
+
+            if (Character.isWhitespace(currentChar) || currentChar == '_' || currentChar == '-') {
+                capitalizeNext = true;
+            } else {
+                capitalizeNext |= (i > 0 && Character.isUpperCase(currentChar));
+                buffer.append(capitalizeNext ? Character.toUpperCase(currentChar) : Character.toLowerCase(currentChar));
+                capitalizeNext = false;
+           }
+        }
+        String result = buffer.toString();
+        return result;
+	}
+
+    public static String toPascalCase(String text) {
+        if (text == null || text.isEmpty()) {
+            return "";
+        }
+        String camelCase = StringUtil.toCamelCase(text);
+        return Character.toUpperCase(camelCase.charAt(0)) + (camelCase.length() > 1 ? camelCase.substring(1) : "");
+    }
+
+	public static String toKebabCase(String text) {
 		if (text == null || text.isEmpty()) {
 			return text;
 		}
 
-		char firstChar = text.charAt(0);
-		char lowerFirstChar = Character.toLowerCase(firstChar);
-		return lowerFirstChar + text.substring(1);
-	}
+        StringBuilder buffer = new StringBuilder();
+        boolean allowHyphen = true;
 
-    public static boolean isValidEmail(String email) {
+        for (int i = 0; i < text.length(); i++) {
+            char currentChar = text.charAt(i);
+
+            if (currentChar == '-' || currentChar == '_' || Character.isWhitespace(currentChar)) {
+                if (allowHyphen) {
+                    buffer.append('-');
+                    allowHyphen = false;
+                }
+            } else if (Character.isUpperCase(currentChar)) {
+                if (i > 0 && allowHyphen) {
+                    buffer.append('-');
+                    allowHyphen = false;
+                }
+                buffer.append(Character.toLowerCase(currentChar));
+            } else {
+                buffer.append(currentChar);
+                allowHyphen = true;
+           }
+        }
+        String result = buffer.toString();
+        return result;
+}
+
+	public static boolean isValidEmail(String email) {
 		String emailRegex = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
 		return email != null && email.matches(emailRegex);
     }
@@ -26,10 +85,4 @@ public class StringUtil {
 		return version != null && version.matches(versionRegex);
     }
 
-    public static String trim(String title) {
-		if (title == null) {
-			return null;
-		}
-		return title.trim();
-    }
 }

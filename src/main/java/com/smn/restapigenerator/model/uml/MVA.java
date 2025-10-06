@@ -21,10 +21,10 @@ public class MVA {
 	private boolean makeEndpoint;
 
 	public MVA(Entity targetEntity, String name, String cardinality, TRelationDepth relationDepth) {
-		String targetEntityName = targetEntity.getName();
+		String targetEntityName = targetEntity.getNameCamelCase();
 
 		this.targetEntity = targetEntity;
-		this.name = StringUtil.isEmpty(name) ? StringUtil.toCamelCase(targetEntityName) : name.replace(" ", "_");
+		this.name = StringUtil.isEmpty(name) ? targetEntityName : name;
 		this.cardinality = StringUtil.isEmpty(cardinality) ? "1" : cardinality;
 		this.relationDepth = relationDepth;
 	}
@@ -35,6 +35,14 @@ public class MVA {
 
 	public String getName() {
 		return this.name;
+	}
+
+	public String getNameCamelCase() {
+		return StringUtil.toCamelCase(this.name);
+	}
+
+	public String getNameKebabCase() {
+		return StringUtil.toKebabCase(this.name);
 	}
 
 	public String getCardinality() {

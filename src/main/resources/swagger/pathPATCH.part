@@ -2,7 +2,7 @@
 				"tags": [
 					">>>entityTag"
 				],
-				"operationId": ">>>operationId>>>entityIdPATCH",
+				"operationId": ">>>operationId->>>entityId-PATCH",
 				"summary": "Update one or more attributes of a specified >>>entityName data resource",
 				"description": "",
 				"parameters": [

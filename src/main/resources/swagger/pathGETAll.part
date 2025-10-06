@@ -2,12 +2,12 @@
 				"tags": [
 					">>>entityTag"
 				],
-				"operationId": ">>>operationIdGET",
+				"operationId": ">>>operationId-GET",
 				"summary": "Return all >>>entityName data resources",
 				"description": "",
 				"parameters": [
 					{
-						"name": "pageId",
+						"name": "page-id",
 						"in": "query",
 						"description": "Id of the desired page of data to be returned",
 						"required": false,
@@ -17,7 +17,7 @@
 						}
 					},
 					{
-						"name": "pageSize",
+						"name": "page-size",
 						"in": "query",
 						"description": "Number of data objects per page of data returned",
 						"required": false,

@@ -113,7 +113,7 @@ public class Swagger {
 		StringBuilder buffer = new StringBuilder();
 		List<Entity> entities = api.getEntities();
 		for (Entity entity : entities) {
-			String entityName = entity.getName();
+			String entityName = entity.getNamePascalCase();
 			boolean isEmbedded = entity.isEmbedded();
 
 			// Don't make tags for embedded Entities.
@@ -138,7 +138,7 @@ public class Swagger {
 		boolean firstEntity = true;
 		List<Entity> entities = api.getEntities();
 		for (Entity entity : entities) {
-			String entityName = entity.getName();
+			String entityName = entity.getNamePascalCase();
 			boolean hasRelations = entity.hasShallowRelations() || entity.hasDeepRelations();
 			List<Entity> subtypes = entity.getSubtypes();
 
@@ -243,7 +243,7 @@ public class Swagger {
 
 				boolean firstSubtype = true;
 				for (Entity subtype : subtypes) {
-					String subtypeName = subtype.getName();
+					String subtypeName = subtype.getNamePascalCase();
 
 					if (!firstSubtype) {
 						buffer.append(",\n");
@@ -311,7 +311,7 @@ public class Swagger {
 	}
 
 	private String makeProperty(int tabs, Attribute attribute) {
-		String name = StringUtil.toCamelCase(attribute.getName());
+		String name = attribute.getNameCamelCase();
 		String type = attribute.getType();
 		boolean readOnly = attribute.isReadOnly();
 		String defaultValue = attribute.getDefaultValue();
@@ -370,7 +370,7 @@ public class Swagger {
 	}
 
 	private String makeRelation(int tabs, MVA relation) {
-		String name = StringUtil.toCamelCase(relation.getName());
+		String name = relation.getNameCamelCase();
 		Entity targetEntity = relation.getTargetEntity();
 		Attribute targetIdAttribute = targetEntity.getExplicitId();
 		String targetIdType = targetIdAttribute == null ? "string" : targetIdAttribute.getType();
@@ -442,7 +442,7 @@ public class Swagger {
 
 		List<Entity> entities = api.getEntities();
 		for (Entity entity : entities) {
-			String entityName = entity.getName();
+			String entityName = entity.getNameKebabCase();
 			Attribute entityId = entity.getExplicitId();
 			boolean isEmbedded = entity.isEmbedded();
 
@@ -452,7 +452,7 @@ public class Swagger {
 			}
 
 			if (makeSEARCH) {
-				String operationId = entityName + "_search";
+				String operationId = entityName + "-search";
 
 				if (buffer.length() > 0) {
 					buffer.append(",\n");
@@ -460,7 +460,7 @@ public class Swagger {
 				buffer.append(this.indent(tabs)).append("\"/").append(entityName).append("-$search\" : {\n");
 				buffer.append(this.makeEndpoint(entity, "/swagger/pathSEARCH_POST.part", operationId, false)).append("\n");
 				buffer.append(this.indent(tabs)).append("},\n");
-				buffer.append(this.indent(tabs)).append("\"/").append(entityName).append("-$search/{searchId}\" : {\n");
+				buffer.append(this.indent(tabs)).append("\"/").append(entityName).append("-$search/{search-id}\" : {\n");
 				buffer.append(this.makeEndpoint(entity, "/swagger/pathSEARCH_GET.part", operationId, false)).append("\n");
 				buffer.append(this.indent(tabs)).append("}");
 			}
@@ -494,9 +494,9 @@ public class Swagger {
 				}
 
 			} else {
-				String entityIdName = entityId.getName();
-				List<MVA> relations = entity.getRelations();
 				String operationId = entityName;
+				String entityIdName = entityId.getNameKebabCase();
+				List<MVA> relations = entity.getRelations();
 
 				StringBuilder endpointBuffer = new StringBuilder();
 				if (makeGET) {
@@ -529,15 +529,15 @@ public class Swagger {
 					if (buffer.length() > 0) {
 						buffer.append(",\n");
 					}
-					buffer.append(this.indent(tabs)).append("\"/").append(entityName).append("/{").append(entityIdName)
-							.append("}\" : {\n");
+					buffer.append(this.indent(tabs));
+					buffer.append("\"/").append(entityName).append("/{").append(entityIdName).append("}\" : {\n");
 					buffer.append(endpointBuffer);
 					buffer.append(this.indent(tabs)).append("}");
 				}
 
 				if (makeGET) {
 					for (MVA relation : relations) {
-						String relationName = relation.getName();
+						String relationName = relation.getNameKebabCase();
 						String cardinality = relation.getCardinality();
 
 						boolean needsEndpoint = relation.isMakeEndpoint();
@@ -572,7 +572,8 @@ public class Swagger {
 	}
 
 	private String makeEndpoint(Entity entity, String partFileURI, String operationId, boolean needsId) {
-		String entityName = entity.getName();
+		String entityTag = entity.getNamePascalCase();
+		String entityName = entity.getNamePascalCase();
 		String entityArrayName = entity.getArrayName();
 		Attribute entityId = entity.getExplicitId();
 
@@ -584,13 +585,13 @@ public class Swagger {
 			// TODO Display error message in UI
 		}
 
-		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_TAG, entityName);
+		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_TAG, entityTag);
 		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_NAME, entityName);
 		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_ARRAY, entityArrayName);
 		resourceText = resourceText.replace(Swagger.MARKER_OPERATION_ID, operationId);
 
 		if (needsId) {
-			String entityIdName = entityId.getName();
+			String entityIdName = entityId.getNameKebabCase();
 			String entityIdType = entityId.getType();
 
 			resourceText = resourceText.replace(Swagger.MARKER_ENTITY_ID, entityIdName);
@@ -600,7 +601,7 @@ public class Swagger {
 	}
 
 	private String makeEndpoint(Entity entity, String partFileURI, MVA relation) {
-		String entityName = entity.getName();
+		String entityTag = entity.getNamePascalCase();
 
 		Attribute entityId = entity.getExplicitId();
 		String entityIdName = entityId.getName();
@@ -618,7 +619,7 @@ public class Swagger {
 			// TODO Display error message in UI
 		}
 
-		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_TAG, entityName);
+		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_TAG, entityTag);
 		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_ID, entityIdName);
 		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_ID_TYPE, entityIdType);
 		resourceText = resourceText.replace(Swagger.MARKER_TARGET_NAME, targetEntityName);
