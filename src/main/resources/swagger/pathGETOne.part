@@ -22,7 +22,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/>>>deepEntityName"
+									"$ref": "#/components/schemas/>>>entityName"
 								}
 							}
 						}

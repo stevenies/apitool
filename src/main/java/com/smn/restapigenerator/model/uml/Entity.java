@@ -30,9 +30,9 @@ public class Entity implements Comparable<Entity> {
 	}
 
 	/**
-	 * @return the Entity's name with a prefix attached based on whether the Entity has relations or subtypes.
+	 * @return name of an array of Entities with a prefix attached based on whether the Entity has relations or subtypes.
 	 */
-	public String getDeepName() {
+	public String getArrayName() {
 		boolean hasRelations = this.hasShallowRelations() || this.hasDeepRelations();
 		boolean hasSubtypes = this.getSubtypes().size() > 0;
 		return this.name + (hasSubtypes ? "-SubtypesArray" : hasRelations ? "-DeepArray" : "-Array");

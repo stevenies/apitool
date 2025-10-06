@@ -31,11 +31,11 @@ public class Swagger {
 	final static String MARKER_SCHEMAS = "\">>>schemas\": \"\",";
 	final static String MARKER_ENTITY_TAG = ">>>entityTag";
 	final static String MARKER_ENTITY_NAME = ">>>entityName";
-	final static String MARKER_ENTITY_NAME_DEEP = ">>>deepEntityName";
+	final static String MARKER_ENTITY_ARRAY = ">>>entityArray";
 	final static String MARKER_ENTITY_ID = ">>>entityId";
 	final static String MARKER_ENTITY_ID_TYPE = ">>>typeEntityId";
 	final static String MARKER_TARGET_NAME = ">>>targetName";
-	final static String MARKER_TARGET_NAME_DEEP = ">>>deepTargetName";
+	final static String MARKER_TARGET_ARRAY = ">>>targetArray";
 
 	public String generate(
 			DomainModel api,
@@ -82,8 +82,8 @@ public class Swagger {
 		String tags = this.makeTags(tabs, api);
 		swagger = swagger.replace(Swagger.MARKER_TAGS, tags);
 
-		String paths = this.makePaths(tabs++, api, makePOST, makeGET, makePUT, makePATCH, makeDELETE, makeSEARCH,
-				issues);
+		String paths = this.makePaths(
+			tabs++, api, makePOST, makeGET, makePUT, makePATCH, makeDELETE, makeSEARCH, issues);
 		swagger = swagger.replace(Swagger.MARKER_PATHS, paths);
 
 		String schemas = this.makeSchema(tabs--, api, issues);
@@ -571,7 +571,7 @@ public class Swagger {
 
 	private String makeEndpoint(Entity entity, String partFileURI, String operationId, boolean needsId) {
 		String entityName = entity.getName();
-		String entityDeepName = entity.getDeepName();
+		String entityArrayName = entity.getArrayName();
 		Attribute entityId = entity.getExplicitId();
 
 		String resourceText = "";
@@ -579,11 +579,12 @@ public class Swagger {
 			resourceText = FileUtil.readResource(partFileURI);
 		} catch (IOException e) {
 			System.err.println(e.getMessage());
+			// TODO Display error message in UI
 		}
 
 		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_TAG, entityName);
 		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_NAME, entityName);
-		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_NAME_DEEP, entityDeepName);
+		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_ARRAY, entityArrayName);
 		resourceText = resourceText.replace(Swagger.MARKER_OPERATION_ID, operationId);
 
 		if (needsId) {
@@ -605,20 +606,21 @@ public class Swagger {
 
 		Entity targetEntity = relation.getTargetEntity();
 		String targetEntityName = relation.getName();
-		String targetEntityNameDeep = targetEntity.getDeepName();
+		String targetEntityArrayName = targetEntity.getArrayName();
 
 		String resourceText = "";
 		try {
 			resourceText = FileUtil.readResource(partFileURI);
 		} catch (IOException e) {
 			System.err.println(e.getMessage());
+			// TODO Display error message in UI
 		}
 
 		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_TAG, entityName);
 		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_ID, entityIdName);
 		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_ID_TYPE, entityIdType);
 		resourceText = resourceText.replace(Swagger.MARKER_TARGET_NAME, targetEntityName);
-		resourceText = resourceText.replace(Swagger.MARKER_TARGET_NAME_DEEP, targetEntityNameDeep);
+		resourceText = resourceText.replace(Swagger.MARKER_TARGET_ARRAY, targetEntityArrayName);
 		return resourceText;
 	}
 
