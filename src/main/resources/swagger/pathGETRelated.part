@@ -42,7 +42,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/>>>targetArrayPaged"
+									"$ref": "#/components/schemas/>>>targetArray"
 								}
 							}
 						}

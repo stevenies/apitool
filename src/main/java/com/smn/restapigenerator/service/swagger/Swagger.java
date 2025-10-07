@@ -532,7 +532,7 @@ public class Swagger {
 					}
 					buffer.append(this.indent(tabs));
 					buffer.append("\"/").append(entityName).append("/{").append(entityIdName).append("}\" : {\n");
-					buffer.append(endpointBuffer);
+					buffer.append(endpointBuffer).append("\n");
 					buffer.append(this.indent(tabs)).append("}");
 				}
 
@@ -550,7 +550,7 @@ public class Swagger {
 						}
 						buffer.append(this.indent(tabs));
 						buffer.append("\"/").append(entityName).append("/{").append(entityIdName).append("}/").append(relationName).append("\" : {\n");
-						buffer.append(this.makeEndpoint(entity, "/swagger/pathGETRelated.part", operationId + "-" + relationName, relation));
+						buffer.append(this.makeEndpoint(entity, "/swagger/pathGETRelated.part", operationId + "-" + relationName, relation)).append("\n");
 						buffer.append(this.indent(tabs)).append("}");
 					}
 				}
@@ -597,8 +597,10 @@ public class Swagger {
 		String entityIdType = entityId.getType();
 
 		Entity targetEntity = relation.getTargetEntity();
-		String targetEntityName = relation.getName();
-		String targetEntityArrayName = targetEntity.getArrayName();
+		String targetEntityName = targetEntity.getNamePascalCase();
+		String targetEntityArrayName = targetEntity.getArrayName() + "Paged";
+		String cardinality = relation.getCardinality();
+		boolean isSingleValued = "1".equalsIgnoreCase(cardinality);
 
 		String resourceText = "";
 		try {
@@ -612,7 +614,7 @@ public class Swagger {
 		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_ID, entityIdName);
 		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_ID_TYPE, entityIdType);
 		resourceText = resourceText.replace(Swagger.MARKER_TARGET_NAME, targetEntityName);
-		resourceText = resourceText.replace(Swagger.MARKER_TARGET_ARRAY, targetEntityArrayName);
+		resourceText = resourceText.replace(Swagger.MARKER_TARGET_ARRAY,  isSingleValued ? targetEntityName : targetEntityArrayName);
 		resourceText = resourceText.replace(Swagger.MARKER_OPERATION_ID, operationId);
 		return resourceText;
 	}
