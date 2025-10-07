@@ -106,7 +106,7 @@ public class Entity implements Comparable<Entity> {
 		if (relationDepth == TRelationDepth.LINK) {
 			this.hasShallowRelations = true;
 		}
-		if (relationDepth == TRelationDepth.EMBED || relationDepth == TRelationDepth.EMBED_ALL) {
+		if (relationDepth == TRelationDepth.EMBED || relationDepth == TRelationDepth.EMBEDALL) {
 			this.hasDeepRelations = true;
 		}
 	}

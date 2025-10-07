@@ -7,17 +7,21 @@ import com.smn.restapigenerator.util.StringUtil;
  */
 public class MVA {
 
+	// The following represent stereotypes that can be applied to a relationship in order to specify how the relationship
+	// should be represented in the Entity's schema definition
 	public enum TRelationDepth {
 		NONE, // Relation will not be included in the Entity's schema definition
 		LINK, // Relation will be represented in the Entity's schema definition as the primary ID of the target class
 		EMBED, // Relation will be represented in the Entity's schema definition by embedding only the attributes from target class's schema definition
-		EMBED_ALL // Relation will be represented in the Entity's schema definition by embedding the attributes and relations from target class's schema definition
+		EMBEDALL // Relation will be represented in the Entity's schema definition by embedding the attributes and relations from target class's schema definition
 	}
 
 	private Entity targetEntity;
 	private String name;
 	private String cardinality;
 	private TRelationDepth relationDepth = TRelationDepth.NONE;
+
+	// The makeEndpoint flag is set True if an endpoint contains the "endpoint" stereotype
 	private boolean makeEndpoint;
 
 	public MVA(Entity targetEntity, String name, String cardinality, TRelationDepth relationDepth) {
@@ -42,7 +46,18 @@ public class MVA {
 	}
 
 	public String getNameKebabCase() {
-		return StringUtil.toKebabCase(this.name);
+		String relationName = StringUtil.toKebabCase(this.name);
+
+		// Make the relation name plural
+		boolean isSingleRelation = "1".equalsIgnoreCase(this.cardinality);
+		if (!isSingleRelation) {
+			if (relationName.length() > 1 && relationName.endsWith("y")) {
+				relationName = relationName.substring(0, relationName.length() - 1) + "ies";
+			} else if (!relationName.endsWith("s")) {
+				relationName += "s";
+			}
+		}
+		return relationName;
 	}
 
 	public String getCardinality() {

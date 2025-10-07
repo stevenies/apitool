@@ -134,42 +134,32 @@ public class AdaptorStarUML {
 								String end1Name = umlEnd1.getName();
 								String end1Multiplicity = umlEnd1.getMultiplicity();
 								boolean end1Navigable = umlEnd1.isNavigable();
-								boolean end1Composite = umlEnd1.isComposite();
-								String end1Stereotype = umlEnd1.getStereotype();
-								boolean end1MakeEndpoint = StringUtil.isEmpty(end1Stereotype)? false : end1Stereotype.toLowerCase().contains("endpoint");
+								String end1Stereotype = StringUtil.isEmpty(umlEnd1.getStereotype()) ? "" : umlEnd1.getStereotype().trim().toLowerCase();
+								boolean end1MakeEndpoint = StringUtil.isEmpty(end1Stereotype)? false : end1Stereotype.contains("endpoint");
 
 								UMLAssociationEnd umlEnd2 = umlAssociation.getEnd2();
 								Entity end2Entity = classMap.get(umlEnd2.getReference().get$ref());
 								String end2Name = umlEnd2.getName();
 								String end2Multiplicity = umlEnd2.getMultiplicity();
 								boolean end2Navigable = umlEnd2.isNavigable();
-								boolean end2Composite = umlEnd2.isComposite();
-								String end2Stereotype = umlEnd2.getStereotype();
-								boolean end2MakeEndpoint = StringUtil.isEmpty(end2Stereotype)? false : end2Stereotype.toLowerCase().contains("endpoint");
+								String end2Stereotype = StringUtil.isEmpty(umlEnd2.getStereotype()) ? "" : umlEnd2.getStereotype().trim().toLowerCase();
+								boolean end2MakeEndpoint = StringUtil.isEmpty(end2Stereotype)? false : end2Stereotype.contains("endpoint");
 
-								TRelationDepth end1RelationDepth = end2Composite ? TRelationDepth.EMBED_ALL //
-									: StringUtil.isEmpty(end1Stereotype) ? TRelationDepth.NONE //
-									: end1Stereotype.contains("embedall") ? TRelationDepth.EMBED_ALL //
-									: end1Stereotype.contains("embed") ? TRelationDepth.EMBED //
-									: end1Stereotype.contains("link") ? TRelationDepth.LINK : TRelationDepth.NONE;
-								TRelationDepth end2RelationDepth = end1Composite ? TRelationDepth.EMBED_ALL //
-									: StringUtil.isEmpty(end2Stereotype) ? TRelationDepth.NONE //
-									: end2Stereotype.contains("embedall") ? TRelationDepth.EMBED_ALL //
-									: end2Stereotype.contains("embed") ? TRelationDepth.EMBED //
-									: end2Stereotype.contains("link") ? TRelationDepth.LINK : TRelationDepth.NONE;
+								TRelationDepth end1RelationDepth = StringUtil.isEmpty(end1Stereotype) ? TRelationDepth.NONE //
+									: end1Stereotype.contains(TRelationDepth.EMBEDALL.name().toLowerCase()) ? TRelationDepth.EMBEDALL //
+									: end1Stereotype.contains(TRelationDepth.EMBED.name().toLowerCase()) ? TRelationDepth.EMBED //
+									: end1Stereotype.contains(TRelationDepth.LINK.name().toLowerCase()) ? TRelationDepth.LINK : TRelationDepth.NONE;
+								TRelationDepth end2RelationDepth = StringUtil.isEmpty(end2Stereotype) ? TRelationDepth.NONE //
+									: end2Stereotype.contains(TRelationDepth.EMBEDALL.name().toLowerCase()) ? TRelationDepth.EMBEDALL //
+									: end2Stereotype.contains(TRelationDepth.EMBED.name().toLowerCase()) ? TRelationDepth.EMBED //
+									: end2Stereotype.contains(TRelationDepth.LINK.name().toLowerCase()) ? TRelationDepth.LINK : TRelationDepth.NONE;
 
-								if (end2Composite) {
-									end1Entity.setEmbedded(true);
-								}
 								if (end2Navigable) {
 									MVA mva1 = new MVA(end2Entity, end2Name, end2Multiplicity, end2RelationDepth);
 									mva1.setMakeEndpoint(end2MakeEndpoint);
 									end1Entity.addRelation(mva1);
 								}
 
-								if (end1Composite) {
-									end2Entity.setEmbedded(true);
-								}
 								if (end1Navigable) {
 									MVA mva2 = new MVA(end1Entity, end1Name, end1Multiplicity, end1RelationDepth);
 									mva2.setMakeEndpoint(end1MakeEndpoint);
@@ -183,7 +173,8 @@ public class AdaptorStarUML {
 
 			ArrayList<Entity> entityList = new ArrayList<>(classMap.values());
 			for (Entity entity : entityList) {
-				System.out.println(entity);
+				// TODO Replacing following with a logger
+				// System.out.println(entity);
 			}
 
 			return new DtoReadUMLFile(entityList, issues);

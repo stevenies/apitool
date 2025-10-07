@@ -377,7 +377,7 @@ public class Swagger {
 		boolean isSingleValued = "1".equalsIgnoreCase(relation.getCardinality());
 		TRelationDepth relationDepth = relation.getRelationDepth();
 		boolean hasShallowRelations = relationDepth == TRelationDepth.LINK;
-		boolean hasDeepRelations = relationDepth == TRelationDepth.EMBED || relationDepth == TRelationDepth.EMBED_ALL;
+		boolean hasDeepRelations = relationDepth == TRelationDepth.EMBED || relationDepth == TRelationDepth.EMBEDALL;
 
 		StringBuilder buffer = new StringBuilder();
 		if (hasShallowRelations) {
@@ -400,7 +400,7 @@ public class Swagger {
 
 				if (relationDepth == TRelationDepth.EMBED) {
 					buffer.append(this.makeProperties(tabs + 1, targetEntity));
-				} else if (relationDepth == TRelationDepth.EMBED_ALL) {
+				} else if (relationDepth == TRelationDepth.EMBEDALL) {
 					buffer.append(this.makeRelations(tabs + 1, targetEntity));
 				}
 				buffer.append("\n");
@@ -413,7 +413,7 @@ public class Swagger {
 
 				if (relationDepth == TRelationDepth.EMBED) {
 					buffer.append(this.makeProperties(tabs + 1, targetEntity));
-				} else if (relationDepth == TRelationDepth.EMBED_ALL) {
+				} else if (relationDepth == TRelationDepth.EMBEDALL) {
 					buffer.append(this.makeRelations(tabs + 1, targetEntity));
 				}
 				buffer.append("\n");
@@ -446,7 +446,8 @@ public class Swagger {
 			Attribute entityId = entity.getExplicitId();
 			boolean isEmbedded = entity.isEmbedded();
 
-			// Don't make endpoints for embedded Entities.
+			// TODO Post-process an entity to determine if it is reachable only via relationships with embed stereotype.
+			// If so, then do not create endpoints for it.
 			if (isEmbedded) {
 				continue;
 			}
@@ -494,9 +495,9 @@ public class Swagger {
 				}
 
 			} else {
-				String operationId = entityName;
 				String entityIdName = entityId.getNameKebabCase();
 				List<MVA> relations = entity.getRelations();
+				String operationId = entityName;
 
 				StringBuilder endpointBuffer = new StringBuilder();
 				if (makeGET) {
@@ -537,31 +538,19 @@ public class Swagger {
 
 				if (makeGET) {
 					for (MVA relation : relations) {
-						String relationName = relation.getNameKebabCase();
-						String cardinality = relation.getCardinality();
-
 						boolean needsEndpoint = relation.isMakeEndpoint();
 						if (!needsEndpoint) {
 							continue;
 						}
 
-						boolean isSingleRelation = "1".equalsIgnoreCase(cardinality);
-						if (!isSingleRelation) {
-
-							// Make the relation name plural
-							if (relationName.length() > 1 && relationName.endsWith("y")) {
-								relationName = relationName.substring(0, relationName.length() - 1) + "ies";
-							} else if (!relationName.endsWith("s")) {
-								relationName += "s";
-							}
-						}
+						String relationName = relation.getNameKebabCase();
 
 						if (buffer.length() > 0) {
 							buffer.append(",\n");
 						}
-						buffer.append(this.indent(tabs)).append("\"/").append(entityName).append("/{")
-								.append(entityIdName).append("}/").append(relationName).append("\" : {\n");
-						buffer.append(this.makeEndpoint(entity, "/swagger/pathGETRelated.part", relation));
+						buffer.append(this.indent(tabs));
+						buffer.append("\"/").append(entityName).append("/{").append(entityIdName).append("}/").append(relationName).append("\" : {\n");
+						buffer.append(this.makeEndpoint(entity, "/swagger/pathGETRelated.part", operationId + "-" + relationName, relation));
 						buffer.append(this.indent(tabs)).append("}");
 					}
 				}
@@ -600,11 +589,11 @@ public class Swagger {
 		return resourceText;
 	}
 
-	private String makeEndpoint(Entity entity, String partFileURI, MVA relation) {
+	private String makeEndpoint(Entity entity, String partFileURI, String operationId, MVA relation) {
 		String entityTag = entity.getNamePascalCase();
 
 		Attribute entityId = entity.getExplicitId();
-		String entityIdName = entityId.getName();
+		String entityIdName = entityId.getNameKebabCase();
 		String entityIdType = entityId.getType();
 
 		Entity targetEntity = relation.getTargetEntity();
@@ -624,6 +613,7 @@ public class Swagger {
 		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_ID_TYPE, entityIdType);
 		resourceText = resourceText.replace(Swagger.MARKER_TARGET_NAME, targetEntityName);
 		resourceText = resourceText.replace(Swagger.MARKER_TARGET_ARRAY, targetEntityArrayName);
+		resourceText = resourceText.replace(Swagger.MARKER_OPERATION_ID, operationId);
 		return resourceText;
 	}
 
