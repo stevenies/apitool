@@ -44,15 +44,6 @@ public class Entity implements Comparable<Entity> {
 		return StringUtil.toKebabCase(this.name);
 	}
 
-	/**
-	 * @return name of an array of Entities with a prefix attached based on whether the Entity has relations or subtypes.
-	 */
-	public String getArrayName() {
-		boolean hasRelations = this.hasShallowRelations() || this.hasDeepRelations();
-		boolean hasSubtypes = this.getSubtypes().size() > 0;
-		return this.getNamePascalCase() + (hasSubtypes ? "-SubtypesArray" : hasRelations ? "-DeepArray" : "-Array");
-	}
-
 	public Entity getSupertype() {
 		return this.supertype;
 	}
@@ -60,6 +51,11 @@ public class Entity implements Comparable<Entity> {
 	public void setSupertype(Entity supertype) {
 		this.supertype = supertype;
 		supertype.subtypes.add(this);
+	}
+
+	public boolean isSupertype() {
+		boolean isSupertype = !this.subtypes.isEmpty();
+		return isSupertype;
 	}
 
 	public List<Entity> getSubtypes() {

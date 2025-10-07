@@ -38,7 +38,7 @@
 					}
 				}
 			},
-			"Error": {
+			"ErrorInfo": {
 				"type": "object",
 				"properties": {
 					"code": {
@@ -51,6 +51,25 @@
 				"required": [
 					"code",
 					"message"
+				]
+			},
+			"ValidationErrorInfo": {
+				"allOf": [
+					{"$ref": "components/schema/ErrorInfo"},
+					{
+						"type": "array",
+						"items": {
+							"type": "object",
+							"properties": {
+								"field": {
+									"type": "string"
+								},
+								"reason": {
+									"type": "string"                  
+								}
+							}
+						}
+					}
 				]
 			}
 		}

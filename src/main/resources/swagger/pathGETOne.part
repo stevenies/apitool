@@ -28,40 +28,104 @@
 						}
 					},
 					"400": {
-						"description": "Bad Request"
+						"description": "Bad Request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorInfo"
+								}
+							}
+						}
 					},
 					"401": {
-						"description": "Unauthorized"
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorInfo"
+								}
+							}
+						}
 					},
 					"403": {
-						"description": "Forbidden"
-					},
-					"404": {
-						"description": "Not Found"
+						"description": "Forbidden",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorInfo"
+								}
+							}
+						}
 					},
 					"405": {
-						"description": "Method Not Allowed"
+						"description": "Method Not Allowed",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorInfo"
+								}
+							}
+						}
 					},
 					"413": {
-						"description": "Content Too Large"
-					},
-					"414": {
-						"description": "URI Too Long"
+						"description": "Content Too Large",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorInfo"
+								}
+							}
+						}
 					},
 					"415": {
-						"description": "Unsupported Media Type"
+						"description": "Unsupported Media Type",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorInfo"
+								}
+							}
+						}
 					},
 					"429": {
-						"description": "Too Many Requests"
+						"description": "Too Many Requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorInfo"
+								}
+							}
+						}
 					},
 					"500": {
-						"description": "Internal Server Error"
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorInfo"
+								}
+							}
+						}
 					},
 					"503": {
-						"description": "Service Unavailable"
+						"description": "Service Unavailable",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorInfo"
+								}
+							}
+						}
 					},
 					"504": {
-						"description": "Gateway Timeout"
+						"description": "Gateway Timeout",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorInfo"
+								}
+							}
+						}
 					}
 				}
 			}

@@ -31,11 +31,10 @@ public class Swagger {
 	final static String MARKER_SCHEMAS = "\">>>schemas\": \"\",";
 	final static String MARKER_ENTITY_TAG = ">>>entityTag";
 	final static String MARKER_ENTITY_NAME = ">>>entityName";
-	final static String MARKER_ENTITY_ARRAY = ">>>entityArray";
 	final static String MARKER_ENTITY_ID = ">>>entityId";
 	final static String MARKER_ENTITY_ID_TYPE = ">>>typeEntityId";
 	final static String MARKER_TARGET_NAME = ">>>targetName";
-	final static String MARKER_TARGET_ARRAY = ">>>targetArray";
+	final static String MARKER_RESPONSE_SCHEMA = ">>>responseSchema";
 
 	public String generate(
 			DomainModel api,
@@ -139,30 +138,35 @@ public class Swagger {
 		List<Entity> entities = api.getEntities();
 		for (Entity entity : entities) {
 			String entityName = entity.getNamePascalCase();
-			boolean hasRelations = entity.hasShallowRelations() || entity.hasDeepRelations();
 			List<Entity> subtypes = entity.getSubtypes();
 
 			if (!firstEntity) {
 				buffer.append("\n");
 			}
 
-			// Create an Entity containing only attributes
-			buffer.append(this.indent(tabs)).append("\"").append(entityName).append("\": {\n");
-
+			// Determine if there are any issues for this entity
+			StringBuilder issueBuffer = new StringBuilder();
 			List<String> entityIssues = issues.get(entity);
 			if (entityIssues != null && entityIssues.size() > 0) {
-				StringBuilder issueBuffer = new StringBuilder();
 				for (String issue : entityIssues) {
 					if (issueBuffer.length() > 0) {
 						buffer.append("\n");
 					}
 					issueBuffer.append(issue);
 				}
-				buffer.append(this.indent(++tabs)).append("\"description\": \"").append(issueBuffer).append("\",\n");
-			} else {
-				++tabs;
 			}
 
+			// Create a Entity containing attributes and relationships
+			buffer.append(this.indent(tabs)).append("\"").append(entityName).append("\": {\n");
+			buffer.append(this.indent(++tabs)).append("\"type\": \"object\",\n");
+			buffer.append(this.indent(tabs)).append("\"properties\": {\n");
+			buffer.append(this.makeRelations(++tabs, entity)).append("\n");
+			buffer.append(this.indent(--tabs)).append("}\n");
+			buffer.append(this.indent(--tabs)).append("},\n");
+
+			// Create an Entity containing only fields (no relationships)
+			buffer.append(this.indent(tabs)).append("\"").append(entityName).append("-Fields\": {\n");
+			buffer.append(this.indent(++tabs)).append("\"description\": \"").append(issueBuffer).append("\",\n");
 			buffer.append(this.indent(tabs)).append("\"type\": \"object\",\n");
 			buffer.append(this.indent(tabs)).append("\"properties\": {\n");
 			buffer.append(this.makeProperties(++tabs, entity)).append("\n");
@@ -186,52 +190,13 @@ public class Swagger {
 			buffer.append(this.indent(++tabs)).append("\"type\": \"object\",\n");
 			buffer.append(this.indent(tabs)).append("\"properties\": {\n");
 			buffer.append(this.indent(++tabs)).append("\"items\": {\n");
-			buffer.append(this.indent(++tabs)).append("\"type\": \"array\",\n");
-			buffer.append(this.indent(tabs)).append("\"items\": {\n");
-			buffer.append(this.indent(++tabs)).append("\"$ref\": \"#/components/schemas/").append(entityName).append("\"\n");
-			buffer.append(this.indent(--tabs)).append("}\n");
+			buffer.append(this.indent(++tabs));
+			buffer.append("\"$ref\": \"#/components/schemas/").append(entityName).append("-Array\"\n");
 			buffer.append(this.indent(--tabs)).append("}\n");
 			buffer.append(this.indent(--tabs)).append("}\n");
 			buffer.append(this.indent(--tabs)).append("}\n");
 			buffer.append(this.indent(--tabs)).append("]\n");
 			buffer.append(this.indent(--tabs)).append("},");
-
-			if (hasRelations) {
-				buffer.append("\n");
-
-				// Create a deep Entity containing attributes and related Entity(s)
-				buffer.append(this.indent(tabs)).append("\"").append(entityName).append("-Deep\": {\n");
-				buffer.append(this.indent(++tabs)).append("\"type\": \"object\",\n");
-				buffer.append(this.indent(tabs)).append("\"properties\": {\n");
-				buffer.append(this.makeRelations(++tabs, entity)).append("\n");
-				buffer.append(this.indent(--tabs)).append("}\n");
-				buffer.append(this.indent(--tabs)).append("},\n");
-
-				// Create an array of Deep Entities
-				buffer.append(this.indent(tabs)).append("\"").append(entityName).append("-DeepArray").append("\": {\n");
-				buffer.append(this.indent(++tabs)).append("\"type\": \"array\",\n");
-				buffer.append(this.indent(tabs)).append("\"items\": {\n");
-				buffer.append(this.indent(++tabs));
-				buffer.append("\"$ref\": \"#/components/schemas/").append(entityName).append("-Deep\"\n");
-				buffer.append(this.indent(--tabs)).append("}\n");
-				buffer.append(this.indent(--tabs)).append("},\n");
-
-				// Create a paged array of Deep Entities
-				buffer.append(this.indent(tabs)).append("\"").append(entityName).append("-DeepArrayPaged").append("\": {\n");
-				buffer.append(this.indent(++tabs)).append("\"allOf\": [\n");
-				buffer.append(this.indent(++tabs)).append("{\"$ref\": \"#/components/schemas/PageInfo\"},\n");
-				buffer.append(this.indent(tabs)).append("{\n");
-				buffer.append(this.indent(++tabs)).append("\"type\": \"object\",\n");
-				buffer.append(this.indent(tabs)).append("\"properties\": {\n");
-				buffer.append(this.indent(++tabs)).append("\"items\": {\n");
-				buffer.append(this.indent(++tabs));
-				buffer.append("\"$ref\": \"#/components/schemas/").append(entityName).append("-Deep\"\n");
-				buffer.append(this.indent(--tabs)).append("}\n");
-				buffer.append(this.indent(--tabs)).append("}\n");
-				buffer.append(this.indent(--tabs)).append("}\n");
-				buffer.append(this.indent(--tabs)).append("]\n");
-				buffer.append(this.indent(--tabs)).append("},");
-			}
 
 			if (subtypes.size() > 0) {
 				buffer.append("\n");
@@ -276,7 +241,7 @@ public class Swagger {
 				buffer.append(this.indent(tabs)).append("\"properties\": {\n");
 				buffer.append(this.indent(++tabs)).append("\"items\": {\n");
 				buffer.append(this.indent(++tabs));
-				buffer.append("\"$ref\": \"#/components/schemas/").append(entityName).append("-Subtypes\"\n");
+				buffer.append("\"$ref\": \"#/components/schemas/").append(entityName).append("-SubtypesArray\"\n");
 				buffer.append(this.indent(--tabs)).append("}\n");
 				buffer.append(this.indent(--tabs)).append("}\n");
 				buffer.append(this.indent(--tabs)).append("}\n");
@@ -459,10 +424,10 @@ public class Swagger {
 					buffer.append(",\n");
 				}
 				buffer.append(this.indent(tabs)).append("\"/").append(entityName).append("-$search\" : {\n");
-				buffer.append(this.makeEndpoint(entity, "/swagger/pathSEARCH_POST.part", operationId, false)).append("\n");
+				buffer.append(this.makeEndpoint(entity, "/swagger/pathSEARCH_POST.part", operationId)).append("\n");
 				buffer.append(this.indent(tabs)).append("},\n");
 				buffer.append(this.indent(tabs)).append("\"/").append(entityName).append("-$search/{search-id}\" : {\n");
-				buffer.append(this.makeEndpoint(entity, "/swagger/pathSEARCH_GET.part", operationId, false)).append("\n");
+				buffer.append(this.makeEndpoint(entity, "/swagger/pathSEARCH_GET.part", operationId)).append("\n");
 				buffer.append(this.indent(tabs)).append("}");
 			}
 
@@ -471,13 +436,15 @@ public class Swagger {
 
 				StringBuilder endpointBuffer = new StringBuilder();
 				if (makePOST) {
-					endpointBuffer.append(this.makeEndpoint(entity, "/swagger/pathPOST.part", operationId, false));
+					if (!entity.isSupertype()) {
+						endpointBuffer.append(this.makeEndpoint(entity, "/swagger/pathPOST.part", operationId));
+					}
 				}
 				if (makeGET) {
 					if (endpointBuffer.length() > 0) {
 						endpointBuffer.append(",\n");
 					}
-					endpointBuffer.append(this.makeEndpoint(entity, "/swagger/pathGETAll.part", operationId, false));
+					endpointBuffer.append(this.makeEndpoint(entity, "/swagger/pathGETAll.part", operationId));
 				}
 
 				if (buffer.length() > 0) {
@@ -501,14 +468,14 @@ public class Swagger {
 
 				StringBuilder endpointBuffer = new StringBuilder();
 				if (makeGET) {
-					endpointBuffer.append(this.makeEndpoint(entity, "/swagger/pathGETOne.part", operationId, true));
+					endpointBuffer.append(this.makeEndpoint(entity, "/swagger/pathGETOne.part", operationId));
 				}
 
 				if (makePUT) {
 					if (endpointBuffer.length() > 0) {
 						endpointBuffer.append(",\n");
 					}
-					String endpointText = this.makeEndpoint(entity, "/swagger/pathPUT.part", operationId, true);
+					String endpointText = this.makeEndpoint(entity, "/swagger/pathPUT.part", operationId);
 					endpointBuffer.append(endpointText);
 				}
 
@@ -516,14 +483,14 @@ public class Swagger {
 					if (endpointBuffer.length() > 0) {
 						endpointBuffer.append(",\n");
 					}
-					endpointBuffer.append(this.makeEndpoint(entity, "/swagger/pathPATCH.part", operationId, true));
+					endpointBuffer.append(this.makeEndpoint(entity, "/swagger/pathPATCH.part", operationId));
 				}
 
 				if (makeDELETE) {
 					if (endpointBuffer.length() > 0) {
 						endpointBuffer.append(",\n");
 					}
-					endpointBuffer.append(this.makeEndpoint(entity, "/swagger/pathDELETE.part", operationId, true));
+					endpointBuffer.append(this.makeEndpoint(entity, "/swagger/pathDELETE.part", operationId));
 				}
 
 				if (endpointBuffer.length() > 0) {
@@ -550,7 +517,7 @@ public class Swagger {
 						}
 						buffer.append(this.indent(tabs));
 						buffer.append("\"/").append(entityName).append("/{").append(entityIdName).append("}/").append(relationName).append("\" : {\n");
-						buffer.append(this.makeEndpoint(entity, "/swagger/pathGETRelated.part", operationId + "-" + relationName, relation)).append("\n");
+						buffer.append(this.makeRelationEndpoint(entity, "/swagger/pathGETRelated.part", operationId + "-" + relationName, relation)).append("\n");
 						buffer.append(this.indent(tabs)).append("}");
 					}
 				}
@@ -560,36 +527,36 @@ public class Swagger {
 
 	}
 
-	private String makeEndpoint(Entity entity, String partFileURI, String operationId, boolean needsId) {
+	private String makeEndpoint(Entity entity, String partFileURI, String operationId) {
 		String entityTag = entity.getNamePascalCase();
 		String entityName = entity.getNamePascalCase();
-		String entityArrayName = entity.getArrayName();
+		boolean isSupertype = entity.isSupertype();
+
 		Attribute entityId = entity.getExplicitId();
+		String entityIdName = entityId == null ? "" : entityId.getNameKebabCase();
+		String entityIdType = entityId == null ? "" : entityId.getType();
+
+		String responseSchema = entityName + (isSupertype ? "-SubtypesArrayPaged" : "-ArrayPaged");
 
 		String resourceText = "";
 		try {
 			resourceText = FileUtil.readResource(partFileURI);
-		} catch (IOException e) {
-			System.err.println(e.getMessage());
-			// TODO Display error message in UI
-		}
 
-		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_TAG, entityTag);
-		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_NAME, entityName);
-		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_ARRAY, entityArrayName);
-		resourceText = resourceText.replace(Swagger.MARKER_OPERATION_ID, operationId);
-
-		if (needsId) {
-			String entityIdName = entityId.getNameKebabCase();
-			String entityIdType = entityId.getType();
-
+			resourceText = resourceText.replace(Swagger.MARKER_OPERATION_ID, operationId);
+			resourceText = resourceText.replace(Swagger.MARKER_ENTITY_TAG, entityTag);
+			resourceText = resourceText.replace(Swagger.MARKER_ENTITY_NAME, entityName);
 			resourceText = resourceText.replace(Swagger.MARKER_ENTITY_ID, entityIdName);
 			resourceText = resourceText.replace(Swagger.MARKER_ENTITY_ID_TYPE, entityIdType);
+			resourceText = resourceText.replace(Swagger.MARKER_RESPONSE_SCHEMA, responseSchema);
+
+		} catch (IOException e) {
+			// TODO Display error message in UI
+			System.err.println(e.getMessage());
 		}
 		return resourceText;
 	}
 
-	private String makeEndpoint(Entity entity, String partFileURI, String operationId, MVA relation) {
+	private String makeRelationEndpoint(Entity entity, String partFileURI, String operationId, MVA relation) {
 		String entityTag = entity.getNamePascalCase();
 
 		Attribute entityId = entity.getExplicitId();
@@ -598,24 +565,21 @@ public class Swagger {
 
 		Entity targetEntity = relation.getTargetEntity();
 		String targetEntityName = targetEntity.getNamePascalCase();
-		String targetEntityArrayName = targetEntity.getArrayName() + "Paged";
-		String cardinality = relation.getCardinality();
-		boolean isSingleValued = "1".equalsIgnoreCase(cardinality);
 
 		String resourceText = "";
 		try {
 			resourceText = FileUtil.readResource(partFileURI);
+
+			resourceText = resourceText.replace(Swagger.MARKER_OPERATION_ID, operationId);
+			resourceText = resourceText.replace(Swagger.MARKER_ENTITY_TAG, entityTag);
+			resourceText = resourceText.replace(Swagger.MARKER_ENTITY_ID, entityIdName);
+			resourceText = resourceText.replace(Swagger.MARKER_ENTITY_ID_TYPE, entityIdType);
+			resourceText = resourceText.replace(Swagger.MARKER_TARGET_NAME, targetEntityName);
+
 		} catch (IOException e) {
 			System.err.println(e.getMessage());
 			// TODO Display error message in UI
 		}
-
-		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_TAG, entityTag);
-		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_ID, entityIdName);
-		resourceText = resourceText.replace(Swagger.MARKER_ENTITY_ID_TYPE, entityIdType);
-		resourceText = resourceText.replace(Swagger.MARKER_TARGET_NAME, targetEntityName);
-		resourceText = resourceText.replace(Swagger.MARKER_TARGET_ARRAY,  isSingleValued ? targetEntityName : targetEntityArrayName);
-		resourceText = resourceText.replace(Swagger.MARKER_OPERATION_ID, operationId);
 		return resourceText;
 	}
 
