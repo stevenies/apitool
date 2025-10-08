@@ -34,6 +34,8 @@ public class Swagger {
 	final static String MARKER_ENTITY_ID = ">>>entityId";
 	final static String MARKER_ENTITY_ID_TYPE = ">>>typeEntityId";
 	final static String MARKER_TARGET_NAME = ">>>targetName";
+	final static String MARKER_TARGET_ID_NAME = ">>>targetIdName";
+	final static String MARKER_TARGET_ID_TYPE = ">>>targetIdType";
 	final static String MARKER_RESPONSE_SCHEMA = ">>>responseSchema";
 
 	public String generate(
@@ -221,11 +223,11 @@ public class Swagger {
 						}
 						String relationName = relation.getNameKebabCase();
 
-						// Generate a GET endpoint to query the related entity(s)
 						buffer.append(buffer.length() > 0 ? ",\n": "");
 						buffer.append(this.indent(tabs));
 						buffer.append("\"/").append(entityName).append("/{").append(entityIdName).append("}/").append(relationName).append("\" : {\n");
-						buffer.append(this.makeRelationEndpoint(entity, "/swagger/pathGETRelated.part", operationId + "-" + relationName, relation, components)).append("\n");
+						buffer.append(this.makeRelationEndpoint(entity, "/swagger/pathGETRelated.part", operationId + "-" + relationName, relation, components)).append(",\n");
+						buffer.append(this.makeRelationEndpoint(entity, "/swagger/pathPOSTRelated.part", operationId + "-" + relationName, relation, components)).append("\n");
 						buffer.append(this.indent(tabs)).append("}");
 					}
 				}
@@ -278,6 +280,9 @@ public class Swagger {
 
 		Entity targetEntity = relation.getTargetEntity();
 		String targetEntityName = targetEntity.getNamePascalCase();
+		Attribute explicitId = targetEntity.getExplicitId();
+		String targetIdName = explicitId == null ? "" : explicitId.getNameKebabCase();
+		String targetIdType = explicitId == null ? "" : explicitId.getType();
 
 		String resourceText = "";
 		try {
@@ -288,6 +293,9 @@ public class Swagger {
 			resourceText = resourceText.replace(Swagger.MARKER_ENTITY_ID, entityIdName);
 			resourceText = resourceText.replace(Swagger.MARKER_ENTITY_ID_TYPE, entityIdType);
 			resourceText = resourceText.replace(Swagger.MARKER_TARGET_NAME, targetEntityName);
+			resourceText = resourceText.replace(Swagger.MARKER_TARGET_NAME, targetEntityName);
+			resourceText = resourceText.replace(Swagger.MARKER_TARGET_ID_NAME, targetIdName);
+			resourceText = resourceText.replace(Swagger.MARKER_TARGET_ID_TYPE, targetIdType);
 
 		} catch (IOException e) {
 			System.err.println(e.getMessage());
