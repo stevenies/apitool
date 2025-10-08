@@ -173,15 +173,6 @@ public class Swagger {
 			buffer.append(this.indent(--tabs)).append("}\n");
 			buffer.append(this.indent(--tabs)).append("},\n");
 
-			// Create an array of Entities
-			buffer.append(this.indent(tabs)).append("\"").append(entityName).append("-Array").append("\": {\n");
-			buffer.append(this.indent(++tabs)).append("\"type\": \"array\",\n");
-			buffer.append(this.indent(tabs)).append("\"items\": {\n");
-			buffer.append(this.indent(++tabs));
-			buffer.append("\"$ref\": \"#/components/schemas/").append(entityName).append("\"\n");
-			buffer.append(this.indent(--tabs)).append("}\n");
-			buffer.append(this.indent(--tabs)).append("},\n");
-
 			// Create a paged array of Entities
 			buffer.append(this.indent(tabs)).append("\"").append(entityName).append("-ArrayPaged").append("\": {\n");
 			buffer.append(this.indent(++tabs)).append("\"allOf\": [\n");
@@ -190,8 +181,10 @@ public class Swagger {
 			buffer.append(this.indent(++tabs)).append("\"type\": \"object\",\n");
 			buffer.append(this.indent(tabs)).append("\"properties\": {\n");
 			buffer.append(this.indent(++tabs)).append("\"items\": {\n");
-			buffer.append(this.indent(++tabs));
-			buffer.append("\"$ref\": \"#/components/schemas/").append(entityName).append("-Array\"\n");
+			buffer.append(this.indent(++tabs)).append("\"type\": \"array\",\n");
+			buffer.append(this.indent(tabs)).append("\"items\": {\n");
+			buffer.append(this.indent(++tabs)).append("\"$ref\": \"#/components/schemas/").append(entityName).append("\"\n");
+			buffer.append(this.indent(--tabs)).append("}\n");
 			buffer.append(this.indent(--tabs)).append("}\n");
 			buffer.append(this.indent(--tabs)).append("}\n");
 			buffer.append(this.indent(--tabs)).append("}\n");
@@ -222,16 +215,6 @@ public class Swagger {
 				buffer.append(this.indent(--tabs)).append("]\n");
 				buffer.append(this.indent(--tabs)).append("},\n");
 
-				// Create an array of subtype Schemas
-				buffer.append(this.indent(tabs));
-				buffer.append("\"").append(entityName).append("-SubtypesArray").append("\": {\n");
-				buffer.append(this.indent(++tabs)).append("\"type\": \"array\",\n");
-				buffer.append(this.indent(tabs)).append("\"items\": {\n");
-				buffer.append(this.indent(++tabs));
-				buffer.append("\"$ref\": \"#/components/schemas/").append(entityName).append("-Subtypes\"\n");
-				buffer.append(this.indent(--tabs)).append("}\n");
-				buffer.append(this.indent(--tabs)).append("},\n");
-
 				// Create a paged array of subtype Schemas
 				buffer.append(this.indent(tabs)).append("\"").append(entityName).append("-SubtypesArrayPaged").append("\": {\n");
 				buffer.append(this.indent(++tabs)).append("\"allOf\": [\n");
@@ -240,8 +223,10 @@ public class Swagger {
 				buffer.append(this.indent(++tabs)).append("\"type\": \"object\",\n");
 				buffer.append(this.indent(tabs)).append("\"properties\": {\n");
 				buffer.append(this.indent(++tabs)).append("\"items\": {\n");
-				buffer.append(this.indent(++tabs));
-				buffer.append("\"$ref\": \"#/components/schemas/").append(entityName).append("-SubtypesArray\"\n");
+				buffer.append(this.indent(++tabs)).append("\"type\": \"array\",\n");
+				buffer.append(this.indent(tabs)).append("\"items\": {\n");
+				buffer.append(this.indent(++tabs)).append("\"$ref\": \"#/components/schemas/").append(entityName).append("-Subtypes\"\n");
+				buffer.append(this.indent(--tabs)).append("}\n");
 				buffer.append(this.indent(--tabs)).append("}\n");
 				buffer.append(this.indent(--tabs)).append("}\n");
 				buffer.append(this.indent(--tabs)).append("}\n");
