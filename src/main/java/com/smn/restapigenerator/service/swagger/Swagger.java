@@ -222,12 +222,20 @@ public class Swagger {
 							continue;
 						}
 						String relationName = relation.getNameKebabCase();
+						Entity targetEntity = relation.getTargetEntity();
+						Attribute explicitId = targetEntity.getExplicitId();
+						String targetIdName = explicitId == null ? "" : explicitId.getNameKebabCase();
 
 						buffer.append(buffer.length() > 0 ? ",\n": "");
 						buffer.append(this.indent(tabs));
 						buffer.append("\"/").append(entityName).append("/{").append(entityIdName).append("}/").append(relationName).append("\" : {\n");
 						buffer.append(this.makeRelationEndpoint(entity, "/swagger/pathGETRelated.part", operationId + "-" + relationName, relation, components)).append(",\n");
 						buffer.append(this.makeRelationEndpoint(entity, "/swagger/pathPOSTRelated.part", operationId + "-" + relationName, relation, components)).append("\n");
+						buffer.append(this.indent(tabs)).append("},\n");
+
+						buffer.append(this.indent(tabs));
+						buffer.append("\"/").append(entityName).append("/{").append(entityIdName).append("}/").append(relationName).append("/{related-").append(targetIdName).append("}\" : {\n");
+						buffer.append(this.makeRelationEndpoint(entity, "/swagger/pathDELETERelated.part", operationId + "-" + relationName, relation, components)).append(",\n");
 						buffer.append(this.indent(tabs)).append("}");
 					}
 				}

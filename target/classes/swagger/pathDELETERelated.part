@@ -1,0 +1,123 @@
+			"delete": {
+				"tags": [
+					">>>entityTag"
+				],
+				"operationId": ">>>operationId->>>entityId->>>targetIdName-DELETE",
+				"summary": "Remove a >>>targetName instance from the relationship",
+				"description": "",
+				"parameters": [
+					{
+						"name": ">>>entityId",
+						"in": "path",
+						"description": "ID of the data resource to be updated",
+						"required": true,
+						"schema": {
+							"type": ">>>typeEntityId"
+						}
+					},
+					{
+						"name": "related->>>targetIdName",
+						"in": "path",
+						"description": "ID of the data resource to be removed from the relationship",
+						"required": true,
+						"schema": {
+							"type": ">>>targetIdType"
+						}
+					}
+				],
+				"responses": {
+					"201": {
+						"description": "Successful operation",
+					},
+					"400": {
+						"description": "Bad Request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorInfo"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorInfo"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorInfo"
+								}
+							}
+						}
+					},
+					"405": {
+						"description": "Method Not Allowed",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorInfo"
+								}
+							}
+						}
+					},
+					"415": {
+						"description": "Unsupported Media Type",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorInfo"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Too Many Requests",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorInfo"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorInfo"
+								}
+							}
+						}
+					},
+					"503": {
+						"description": "Service Unavailable",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorInfo"
+								}
+							}
+						}
+					},
+					"504": {
+						"description": "Gateway Timeout",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorInfo"
+								}
+							}
+						}
+					}
+				}
+			}
