@@ -133,9 +133,7 @@ public class Swagger {
 			if (makeSEARCH) {
 				String operationId = entityName + "-search";
 
-				if (buffer.length() > 0) {
-					buffer.append(",\n");
-				}
+				buffer.append(buffer.length() > 0 ? ",\n": "");
 				buffer.append(this.indent(tabs)).append("\"/").append(entityName).append("-$search\" : {\n");
 				buffer.append(this.makeEndpoint(entity, "/swagger/pathSEARCH_POST.part", operationId, components)).append("\n");
 				buffer.append(this.indent(tabs)).append("},\n");
@@ -156,15 +154,11 @@ public class Swagger {
 					}
 				}
 				if (makeGET) {
-					if (endpointBuffer.length() > 0) {
-						endpointBuffer.append(",\n");
-					}
+					endpointBuffer.append(endpointBuffer.length() > 0 ? ",\n": "");
 					endpointBuffer.append(this.makeEndpoint(entity, "/swagger/pathGETAll.part", operationId, components));
 				}
 
-				if (buffer.length() > 0) {
-					buffer.append(",\n");
-				}
+				buffer.append(buffer.length() > 0 ? ",\n": "");
 				buffer.append(this.indent(tabs)).append("\"/").append(entityName).append("\" : {\n");
 				buffer.append(endpointBuffer).append("\n");
 				buffer.append(this.indent(tabs)).append("}");
@@ -172,8 +166,10 @@ public class Swagger {
 
 			if (entityId == null) {
 				if (makeGET || makePUT || makePATCH || makeDELETE) {
-					this.addIssue(issues, entity,
-							"One or more endpoints were not generated due to the resource not defining an ID attribute");
+					this.addIssue(
+						issues,
+						entity,
+						"One or more endpoints were not generated due to the resource not defining an ID attribute");
 				}
 
 			} else {
@@ -209,9 +205,7 @@ public class Swagger {
 				}
 
 				if (endpointBuffer.length() > 0) {
-					if (buffer.length() > 0) {
-						buffer.append(",\n");
-					}
+					buffer.append(buffer.length() > 0 ? ",\n": "");
 					buffer.append(this.indent(tabs));
 					buffer.append("\"/").append(entityName).append("/{").append(entityIdName).append("}\" : {\n");
 					buffer.append(endpointBuffer).append("\n");
@@ -220,16 +214,15 @@ public class Swagger {
 
 				if (makeGET) {
 					for (MVA relation : relations) {
+
 						boolean needsEndpoint = relation.isMakeEndpoint();
 						if (!needsEndpoint) {
 							continue;
 						}
-
 						String relationName = relation.getNameKebabCase();
 
-						if (buffer.length() > 0) {
-							buffer.append(",\n");
-						}
+						// Generate a GET endpoint to query the related entity(s)
+						buffer.append(buffer.length() > 0 ? ",\n": "");
 						buffer.append(this.indent(tabs));
 						buffer.append("\"/").append(entityName).append("/{").append(entityIdName).append("}/").append(relationName).append("\" : {\n");
 						buffer.append(this.makeRelationEndpoint(entity, "/swagger/pathGETRelated.part", operationId + "-" + relationName, relation, components)).append("\n");
