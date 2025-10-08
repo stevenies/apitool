@@ -47,25 +47,26 @@
 					"message": {
 						"type": "string"
 					}
-				},
-				"required": [
-					"code",
-					"message"
-				]
+				}
 			},
 			"ValidationErrorInfo": {
 				"allOf": [
-					{"$ref": "components/schema/ErrorInfo"},
+          			{"$ref": "#/components/schemas/ErrorInfo"},
 					{
-						"type": "array",
-						"items": {
-							"type": "object",
-							"properties": {
-								"field": {
-									"type": "string"
-								},
-								"reason": {
-									"type": "string"                  
+						"type": "object",
+						"properties": {
+							"errors": {
+								"type": "array",
+								"items": {
+									"type": "object",
+									"properties": {
+										"field": {
+											"type": "string"
+										},
+										"reason": {
+											"type": "string"                  
+										}
+									}
 								}
 							}
 						}
