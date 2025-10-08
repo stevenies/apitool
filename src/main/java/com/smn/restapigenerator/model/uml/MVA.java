@@ -53,6 +53,8 @@ public class MVA {
 		if (!isSingleRelation) {
 			if (relationName.length() > 1 && relationName.endsWith("y")) {
 				relationName = relationName.substring(0, relationName.length() - 1) + "ies";
+			} else if (relationName.endsWith("ed")) {
+				// do nothing
 			} else if (!relationName.endsWith("s")) {
 				relationName += "s";
 			}

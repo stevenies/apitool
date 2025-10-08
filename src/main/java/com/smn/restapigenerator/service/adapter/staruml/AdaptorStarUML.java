@@ -7,9 +7,9 @@ import com.smn.restapigenerator.model.uml.Entity;
 import com.smn.restapigenerator.model.uml.MVA;
 import com.smn.restapigenerator.model.uml.MVA.TRelationDepth;
 import com.smn.restapigenerator.util.StringUtil;
-
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import org.springframework.stereotype.Component;
@@ -171,11 +171,32 @@ public class AdaptorStarUML {
 				}
 			}
 
-			ArrayList<Entity> entityList = new ArrayList<>(classMap.values());
-			// TODO Replacing following with a logger
-			// for (Entity entity : entityList) {
-			// 	// System.out.println(entity);
-			// }
+			// Iterate through the entities to determine which entities are only embedded within other entities
+			HashMap<Entity, MVA> targetedEntities = new HashMap<>();
+
+			List<Entity> entityList = new ArrayList<>(classMap.values());
+			for (Entity entity : entityList) {
+
+				// TODO Replace following with a logger
+				System.out.println(entity);
+
+				List<MVA> relations = entity.getRelations();
+				for (MVA relation : relations) {
+					Entity targetEntity = relation.getTargetEntity();
+					targetedEntities.put(targetEntity, relation);
+				}
+			}
+			HashSet<Entity> embeddedEntities = new HashSet<>(targetedEntities.keySet());
+			for (MVA relation : targetedEntities.values()) {
+				TRelationDepth relationDepth = relation.getRelationDepth();
+				if (relationDepth == TRelationDepth.NONE || relationDepth == TRelationDepth.LINK || relation.isMakeEndpoint()) {
+					Entity targetEntity = relation.getTargetEntity();
+					embeddedEntities.remove(targetEntity);
+				}
+			}
+			for (Entity entity : embeddedEntities) {
+				entity.setEmbedded(true);
+			}
 
 			return new DtoReadUMLFile(entityList, issues);
 

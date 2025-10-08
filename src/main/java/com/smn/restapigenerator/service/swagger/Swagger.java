@@ -126,8 +126,6 @@ public class Swagger {
 			Attribute entityId = entity.getExplicitId();
 			boolean isEmbedded = entity.isEmbedded();
 
-			// TODO Post-process an entity to determine if it is reachable only via relationships with embed stereotype.
-			// If so, then do not create endpoints for it.
 			if (isEmbedded) {
 				continue;
 			}
