@@ -26,7 +26,6 @@ public class Swagger {
 	final static String MARKER_DESCRIPTION = ">>>description";
 	final static String MARKER_VERSION = ">>>version";
 	final static String MARKER_SERVERS = "\">>>servers\": \"\"";
-	final static String MARKER_TAGS = "{\">>>entityTags\": \"\"}";
 	final static String MARKER_PATHS = "\">>>paths\": \"\"";
 	final static String MARKER_SCHEMAS = "\">>>schemas\": \"\",";
 	final static String MARKER_ENTITY_TAG = ">>>entityTag";
@@ -78,9 +77,6 @@ public class Swagger {
 		String servers = this.makeServers(tabs + 1, serverDomain, contextRoot);
 		swagger = swagger.replace(Swagger.MARKER_SERVERS, servers);
 
-		String tags = this.makeTags(tabs, api);
-		swagger = swagger.replace(Swagger.MARKER_TAGS, tags);
-
 		String paths = this.makePaths(
 			tabs++, api, makePOST, makeGET, makePUT, makePATCH, makeDELETE, makeSEARCH, issues);
 		swagger = swagger.replace(Swagger.MARKER_PATHS, paths);
@@ -105,29 +101,6 @@ public class Swagger {
 		StringBuilder buffer = new StringBuilder();
 		buffer.append(this.indent(tabs)).append("\"url\": \"https://").append(serverDomain).append("/")
 				.append(contextRoot).append("\"");
-		return buffer.toString();
-	}
-
-	private String makeTags(int tabs, DomainModel api) {
-		StringBuilder buffer = new StringBuilder();
-		List<Entity> entities = api.getEntities();
-		for (Entity entity : entities) {
-			String entityName = entity.getNamePascalCase();
-			boolean isEmbedded = entity.isEmbedded();
-
-			// Don't make tags for embedded Entities.
-			if (isEmbedded) {
-				continue;
-			}
-
-			if (buffer.length() > 0) {
-				buffer.append(",\n");
-			}
-			buffer.append(this.indent(tabs++)).append("{\n");
-			buffer.append(this.indent(tabs)).append("\"name\": \"").append(entityName).append("\"\n");
-			buffer.append(this.indent(--tabs)).append("}");
-		}
-		buffer.append("\n");
 		return buffer.toString();
 	}
 
@@ -385,8 +358,7 @@ public class Swagger {
 		boolean makePATCH,
 		boolean makeDELETE,
 		boolean makeSEARCH,
-		Map<Entity,
-		List<String>> issues) {
+		Map<Entity, List<String>> issues) {
 			
 		StringBuilder buffer = new StringBuilder();
 

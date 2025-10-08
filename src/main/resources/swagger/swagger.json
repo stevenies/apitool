@@ -10,9 +10,6 @@
 ">>>servers": ""
 		}
 	],
-	"tags": [
-{">>>entityTags": ""}
-	],
 	"paths": {
 ">>>paths": ""
 	},
@@ -51,7 +48,7 @@
 			},
 			"ValidationErrorInfo": {
 				"allOf": [
-          			{"$ref": "#/components/schemas/ErrorInfo"},
+					{"$ref": "#/components/schemas/ErrorInfo"},
 					{
 						"type": "object",
 						"properties": {

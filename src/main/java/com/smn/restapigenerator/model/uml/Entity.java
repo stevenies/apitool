@@ -88,7 +88,11 @@ public class Entity implements Comparable<Entity> {
 	 * @return either the attribute serving as the Entity's unique identifier or null if an attribute serving as the Entity's primary key has not been defined.
 	 */
 	public Attribute getExplicitId() {
-		return this.explicitId;
+		Attribute id = this.explicitId;
+		if (id == null && this.supertype != null) {
+			id = this.supertype.getExplicitId();
+		}
+		return id;
 	}
 
 	public List<MVA> getRelations() {
