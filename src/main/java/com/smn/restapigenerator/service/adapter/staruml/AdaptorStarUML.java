@@ -172,10 +172,10 @@ public class AdaptorStarUML {
 			}
 
 			ArrayList<Entity> entityList = new ArrayList<>(classMap.values());
-			for (Entity entity : entityList) {
-				// TODO Replacing following with a logger
-				// System.out.println(entity);
-			}
+			// TODO Replacing following with a logger
+			// for (Entity entity : entityList) {
+			// 	// System.out.println(entity);
+			// }
 
 			return new DtoReadUMLFile(entityList, issues);
 
