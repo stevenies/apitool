@@ -178,7 +178,7 @@ public class AdaptorStarUML {
 			for (Entity entity : entityList) {
 
 				// TODO Replace following with a logger
-				System.out.println(entity);
+				// System.out.println(entity);
 
 				List<MVA> relations = entity.getRelations();
 				for (MVA relation : relations) {

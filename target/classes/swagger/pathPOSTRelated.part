@@ -3,7 +3,7 @@
 					">>>entityTag"
 				],
 				"operationId": ">>>operationId->>>entityId-POST",
-				"summary": "Add a >>>targetName instance to the relationship",
+				"summary": "Add >>>targetName instance(s) to the relationship",
 				"description": "",
 				"parameters": [
 					{
@@ -17,15 +17,13 @@
 					}
 				],
 				"requestBody": {
-					"description": "ID of the >>>targetName data resource to be added",
+					"description": "ID(s) of the >>>targetName data resource(s) to be added",
 					"content": {
 						"application/json": {
 							"schema": {
-								"type": "object",
-								"properties": {
- 									">>>targetIdName": {
-										"type": ">>>targetIdType"
- 									}
+								"type": "array",
+								"items": {
+									"type": ">>>targetIdType"
 								}
 							}
 						}

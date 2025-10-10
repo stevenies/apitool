@@ -46,6 +46,17 @@
 					}
 				}
 			},
+			"FieldValidationError": {
+				"type": "object",
+				"properties": {
+					"field": {
+						"type": "string"
+					},
+					"issue": {
+						"type": "string"                  
+					}
+				}
+			},
 			"ValidationErrorInfo": {
 				"allOf": [
 					{"$ref": "#/components/schemas/ErrorInfo"},
@@ -55,15 +66,7 @@
 							"errors": {
 								"type": "array",
 								"items": {
-									"type": "object",
-									"properties": {
-										"field": {
-											"type": "string"
-										},
-										"reason": {
-											"type": "string"                  
-										}
-									}
+									"$ref": "#/components/schemas/FieldValidationError"
 								}
 							}
 						}
