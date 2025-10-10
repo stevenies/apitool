@@ -19,7 +19,7 @@
 				"requestBody": {
 					"description": "Data used to update the >>>entityName data resource",
 					"content": {
-						"application/json": {
+						"application/merge-patch+json": {
 							"schema": {
 								"$ref": "#/components/schemas/>>>entityName-Fields"
 							}

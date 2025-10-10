@@ -171,13 +171,18 @@ public class Swagger {
 
 				StringBuilder endpointBuffer = new StringBuilder();
 				if (makeGET) {
+
+					// Generate a GET endpoint to retrieve a single entity by its ID
 					endpointBuffer.append(this.makeEndpoint(entity, "/swagger/pathGETOne.part", operationId, components));
 				}
 
 				if (makePUT) {
+
+					// Generate a PUT endpoint that requires the full entity in the request body
 					endpointBuffer.append(endpointBuffer.length() > 0 ? ",\n": "");
 					endpointBuffer.append(this.makeEndpoint(entity, "/swagger/pathPUT.part", operationId, components));
 
+					// Generate a PATCH endpoint based on RFC 7396 (uses application/merge-patch+json as the content type)
 					endpointBuffer.append(endpointBuffer.length() > 0 ? ",\n": "");
 					endpointBuffer.append(this.makeEndpoint(entity, "/swagger/pathPATCH.part", operationId, components));
 				}
@@ -205,7 +210,7 @@ public class Swagger {
 						String relationName = relation.getNameKebabCase();
 						Entity targetEntity = relation.getTargetEntity();
 						Attribute explicitId = targetEntity.getExplicitId();
-						String targetIdName = explicitId == null ? "" : explicitId.getNameKebabCase();
+						String targetIdName = explicitId == null ? "id" : explicitId.getNameKebabCase();
 
 						buffer.append(buffer.length() > 0 ? ",\n": "");
 						buffer.append(this.indent(tabs));
