@@ -101,34 +101,16 @@
 					<td colspan="3"><div class="formHeader">API Functionality</div></td>
 				</tr>
 				<tr>
-					<td><label>Generate GET endpoints:</label></td>
-					<td><input id="makeGET" name="makeGET" type="checkbox" value="true" <c:if test="${apiSpec.makeGET}">checked</c:if> /></td>
-					<td class="formNote">Generate endpoints for retrieval of resources.</td>
-				</tr>
-				<tr>
-					<td><label>Generate POST endpoints:</label></td>
-					<td><input id="makePOST" name="makePOST" type="checkbox" value="true" <c:if test="${apiSpec.makePOST}">checked</c:if> /></td>
-					<td class="formNote">Generate endpoints for creation of new resource instances.</td>
-				</tr>
-				<tr>
-					<td><label>Generate PUT endpoints:</label></td>
-					<td><input id="makePUT" name="makePUT" type="checkbox" value="true" <c:if test="${apiSpec.makePUT}">checked</c:if> /></td>
-					<td class="formNote">Generate endpoints for full updates of existing resources.</td>
-				</tr>
-				<tr>
-					<td><label>Generate PATCH endpoints:</label></td>
-					<td><input id="makePATCH" name="makePATCH" type="checkbox" value="true" <c:if test="${apiSpec.makePATCH}">checked</c:if> /></td>
-					<td class="formNote">Generate endpoints for partial updates of existing resources.</td>
-				</tr>
-				<tr>
-					<td><label>Generate DELETE endpoints:</label></td>
-					<td><input id="makeDELETE" name="makeDELETE" type="checkbox" value="true" <c:if test="${apiSpec.makeDELETE}">checked</c:if> /></td>
-					<td class="formNote">Generate endpoints for resource deletion.</td>
-				</tr>
-				<tr>
-					<td><label>Generate SEARCH endpoints:</label></td>
-					<td><input id="makeSEARCH" name="makeSEARCH" type="checkbox" value="true" <c:if test="${apiSpec.makeSEARCH}">checked</c:if> /></td>
-					<td class="formNote">Generate endpoints for searching for resources based on example values.</td>
+					<td colspan="3">
+						<p>Generate API endpoints for the following capabilities:</p>
+						<div id="apiCapabilities">
+							<input id="makeSEARCH" name="makeSEARCH" type="checkbox" value="true" <c:if test="${apiSpec.makeSEARCH}">checked</c:if> /> Search for data matching the specified criteria<br/>
+							<input id="makePOST" name="makePOST" type="checkbox" value="true" <c:if test="${apiSpec.makePOST}">checked</c:if> /> Create new data<br/>
+							<input id="makeGET" name="makeGET" type="checkbox" value="true" <c:if test="${apiSpec.makeGET}">checked</c:if> /> Query existing data<br/>
+							<input id="makePUT" name="makePUT" type="checkbox" value="true" <c:if test="${apiSpec.makePUT}">checked</c:if> /> Update data values<br/>
+							<input id="makeDELETE" name="makeDELETE" type="checkbox" value="true" <c:if test="${apiSpec.makeDELETE}">checked</c:if> /> Delete data
+						</div>
+					</td>
 				</tr>
 				<tr>
 					<td colspan="3"><div class="formHeader">API Deployment Settings</div></td>

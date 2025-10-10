@@ -42,12 +42,7 @@ public class Swagger {
 			DomainModel api,
 			String serverDomain,
 			String contextRoot,
-			boolean makePOST,
-			boolean makeGET,
-			boolean makePUT,
-			boolean makePATCH,
-			boolean makeDELETE,
-			boolean makeSEARCH,
+			boolean makePOST, boolean makeGET, boolean makePUT, boolean makeDELETE, boolean makeSEARCH,
 			Map<Entity, List<String>> issues)
 			throws IOException {
 
@@ -81,7 +76,7 @@ public class Swagger {
 		swagger = swagger.replace(Swagger.MARKER_SERVERS, servers);
 
 		HashSet<String> components = new HashSet<>();
-		String paths = this.makePaths(tabs++, api, makePOST, makeGET, makePUT, makePATCH, makeDELETE, makeSEARCH, components, issues);
+		String paths = this.makePaths(tabs++, api, makePOST, makeGET, makePUT, makeDELETE, makeSEARCH, components, issues);
 		swagger = swagger.replace(Swagger.MARKER_PATHS, paths);
 
 		String schemas = this.makeSchema(tabs--, api, components, issues);
@@ -110,12 +105,7 @@ public class Swagger {
 	private String makePaths(
 		int tabs,
 		DomainModel api,
-		boolean makePOST,
-		boolean makeGET,
-		boolean makePUT,
-		boolean makePATCH,
-		boolean makeDELETE,
-		boolean makeSEARCH,
+		boolean makePOST, boolean makeGET, boolean makePUT, boolean makeDELETE, boolean makeSEARCH,
 		HashSet<String> components,
 		Map<Entity, List<String>> issues) {
 			
@@ -167,7 +157,7 @@ public class Swagger {
 			}
 
 			if (entityId == null) {
-				if (makeGET || makePUT || makePATCH || makeDELETE) {
+				if (makeGET || makePUT || makeDELETE) {
 					this.addIssue(
 						issues,
 						entity,
@@ -185,24 +175,15 @@ public class Swagger {
 				}
 
 				if (makePUT) {
-					if (endpointBuffer.length() > 0) {
-						endpointBuffer.append(",\n");
-					}
-					String endpointText = this.makeEndpoint(entity, "/swagger/pathPUT.part", operationId, components);
-					endpointBuffer.append(endpointText);
-				}
+					endpointBuffer.append(endpointBuffer.length() > 0 ? ",\n": "");
+					endpointBuffer.append(this.makeEndpoint(entity, "/swagger/pathPUT.part", operationId, components));
 
-				if (makePATCH) {
-					if (endpointBuffer.length() > 0) {
-						endpointBuffer.append(",\n");
-					}
+					endpointBuffer.append(endpointBuffer.length() > 0 ? ",\n": "");
 					endpointBuffer.append(this.makeEndpoint(entity, "/swagger/pathPATCH.part", operationId, components));
 				}
 
 				if (makeDELETE) {
-					if (endpointBuffer.length() > 0) {
-						endpointBuffer.append(",\n");
-					}
+					endpointBuffer.append(endpointBuffer.length() > 0 ? ",\n": "");
 					endpointBuffer.append(this.makeEndpoint(entity, "/swagger/pathDELETE.part", operationId, components));
 				}
 

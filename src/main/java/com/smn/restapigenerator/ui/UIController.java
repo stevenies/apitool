@@ -206,7 +206,6 @@ public class UIController {
 			boolean makeGET = this.jsonToBoolean(jsonNode, "makeGET");
 			boolean makePOST = this.jsonToBoolean(jsonNode, "makePOST");
 			boolean makePUT = this.jsonToBoolean(jsonNode, "makePUT");
-			boolean makePATCH = this.jsonToBoolean(jsonNode, "makePATCH");
 			boolean makeDELETE = this.jsonToBoolean(jsonNode, "makeDELETE");
 			boolean makeSEARCH = this.jsonToBoolean(jsonNode, "makeSEARCH");
 			String serverDomain = this.jsonToString(jsonNode, "serverDomain");
@@ -216,8 +215,9 @@ public class UIController {
 			switch (action) {
 				case "generate": {
 					this.generateApiSpec(
-						user, title, description, version, domainModel, makeSEARCH, makeGET, makePOST, makePUT, makePATCH,
-						makeDELETE, serverDomain, contextRoot, port, errors);
+						user, title, description, version, domainModel,
+						makeSEARCH, makeGET, makePOST, makePUT, makeDELETE,
+						serverDomain, contextRoot, port, errors);
 					response.setStatus(errors.size() == 0 ? HttpServletResponse.SC_OK : HttpServletResponse.SC_BAD_REQUEST);
 					break;
 				}
@@ -407,12 +407,7 @@ public class UIController {
 		String description,
 		String version,
 		MultipartFile file,
-		boolean makeSEARCH,
-		boolean makeGET,
-		boolean makePOST,
-		boolean makePUT,
-		boolean makePATCH,
-		boolean makeDELETE,
+		boolean makeSEARCH, boolean makeGET, boolean makePOST, boolean makePUT, boolean makeDELETE,
 		String serverDomain,
 		String contextRoot,
 		String port,
@@ -447,7 +442,6 @@ public class UIController {
 		apiSpec.setMakeGET(makeGET);
 		apiSpec.setMakePOST(makePOST);
 		apiSpec.setMakePUT(makePUT);
-		apiSpec.setMakePATCH(makePATCH);
 		apiSpec.setMakeDELETE(makeDELETE);
 		
 		if (StringUtil.isEmpty(serverDomain)) {
@@ -488,7 +482,7 @@ public class UIController {
 		DomainModel domainModel = new DomainModel(title, description, version, entities);
 
 		// Process the domain model to generate the API's swagger.
-		apiSpec = this.service.generateSwagger(user, domainModel, makePOST, makeGET, makePUT, makePATCH, makeDELETE, makeSEARCH, serverDomain, contextRoot, port, status.getIssues());
+		apiSpec = this.service.generateSwagger(user, domainModel, makePOST, makeGET, makePUT, makeDELETE, makeSEARCH, serverDomain, contextRoot, port, status.getIssues());
 	}
 
 }

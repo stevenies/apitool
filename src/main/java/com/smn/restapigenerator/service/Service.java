@@ -142,12 +142,7 @@ public class Service {
 	public ApiSpec generateSwagger(
 		User user,
 		DomainModel api,
-		boolean makePOST,
-		boolean makeGET,
-		boolean makePUT,
-		boolean makePATCH,
-		boolean makeDELETE,
-		boolean makeSEARCH,
+		boolean makePOST, boolean makeGET, boolean makePUT, boolean makeDELETE, boolean makeSEARCH,
 		String serverDomain,
 		String contextRoot,
 		String port,
@@ -165,7 +160,7 @@ public class Service {
 		}
 
 		// Generate the Swagger text and store it in the apiSpecFile.
-		String swaggerText = this.swagger.generate(api, serverDomain, contextRoot, makePOST, makeGET, makePUT, makePATCH, makeDELETE, makeSEARCH, issues);
+		String swaggerText = this.swagger.generate(api, serverDomain, contextRoot, makePOST, makeGET, makePUT, makeDELETE, makeSEARCH, issues);
 		FileUtil.writeTextToFile(swaggerText, swaggerFile);
 
 		// Create the ApiSpec object
@@ -176,7 +171,6 @@ public class Service {
 		apiSpec.setMakePOST(makePOST);
 		apiSpec.setMakeGET(makeGET);
 		apiSpec.setMakePUT(makePUT);
-		apiSpec.setMakePATCH(makePATCH);
 		apiSpec.setMakeDELETE(makeDELETE);
 		apiSpec.setMakeSEARCH(makeSEARCH);
 		apiSpec.setServerDomain(serverDomain);

@@ -2,7 +2,6 @@ package com.smn.restapigenerator.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.smn.restapigenerator.util.FileUtil;
-
 import java.io.File;
 import java.util.Date;
 
@@ -18,7 +17,6 @@ public class ApiSpec {
 	private boolean makeGET;
 	private boolean makePOST;
 	private boolean makePUT;
-	private boolean makePATCH;
 	private boolean makeDELETE;
 	private String serverDomain = "";
 	private String contextRoot = "";
@@ -108,14 +106,6 @@ public class ApiSpec {
 
     public void setMakePUT(boolean makePUT) {
         this.makePUT = makePUT;
-    }
-
-    public boolean isMakePATCH() {
-        return makePATCH;
-    }
-
-    public void setMakePATCH(boolean makePATCH) {
-        this.makePATCH = makePATCH;
     }
 
     public boolean isMakeDELETE() {

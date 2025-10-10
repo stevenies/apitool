@@ -183,3 +183,6 @@ B {
     display: block;
     margin: 40px auto;
 }
+#apiCapabilities {
+    margin-left: 40px; 
+}
