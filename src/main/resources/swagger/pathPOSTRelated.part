@@ -3,13 +3,13 @@
 					">>>entityTag"
 				],
 				"operationId": ">>>operationId->>>entityId-POST",
-				"summary": "Add >>>targetName instance(s) to the relationship",
+				"summary": "Create a new >>>targetName instance and append it to the >>>entityName's >>>relationName relationship. If the >>>targetName instance already exists use the PATCH endpoint to append it to the >>>relationName relationship.",
 				"description": "",
 				"parameters": [
 					{
 						"name": ">>>entityId",
 						"in": "path",
-						"description": "ID of the data resource to be updated",
+						"description": "ID of the >>>entityName instance to be updated",
 						"required": true,
 						"schema": {
 							"type": ">>>typeEntityId"
@@ -17,21 +17,25 @@
 					}
 				],
 				"requestBody": {
-					"description": "ID(s) of the >>>targetName data resource(s) to be added",
+					"description": "Fields of the >>>targetName instance to be created",
 					"content": {
 						"application/json": {
 							"schema": {
-								"type": "array",
-								"items": {
-									"type": ">>>targetIdType"
-								}
+								"$ref": "#/components/schemas/>>>targetName"
 							}
 						}
 					}
 				},
 				"responses": {
-					"201": {
+					"200": {
 						"description": "Successful operation",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/>>>targetName"
+								}
+							}
+						}
 					},
 					"400": {
 						"description": "Bad Request",

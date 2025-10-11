@@ -33,6 +33,7 @@ public class Swagger {
 	final static String MARKER_ENTITY_NAME = ">>>entityName";
 	final static String MARKER_ENTITY_ID = ">>>entityId";
 	final static String MARKER_ENTITY_ID_TYPE = ">>>typeEntityId";
+	final static String MARKER_RELATION_NAME = ">>>relationName";
 	final static String MARKER_TARGET_NAME = ">>>targetName";
 	final static String MARKER_TARGET_ID_NAME = ">>>targetIdName";
 	final static String MARKER_TARGET_ID_TYPE = ">>>targetIdType";
@@ -200,7 +201,7 @@ public class Swagger {
 					buffer.append(this.indent(tabs)).append("}");
 				}
 
-				if (makeGET) {
+				if (makeGET || makePOST || makeDELETE) {
 					for (MVA relation : relations) {
 
 						boolean needsEndpoint = relation.isMakeEndpoint();
@@ -212,17 +213,25 @@ public class Swagger {
 						Attribute explicitId = targetEntity.getExplicitId();
 						String targetIdName = explicitId == null ? "id" : explicitId.getNameKebabCase();
 
-						buffer.append(buffer.length() > 0 ? ",\n": "");
-						buffer.append(this.indent(tabs));
-						buffer.append("\"/").append(entityName).append("/{").append(entityIdName).append("}/").append(relationName).append("\" : {\n");
-						buffer.append(this.makeRelationEndpoint(entity, "/swagger/pathGETRelated.part", operationId + "-" + relationName, relation, components)).append(",\n");
-						buffer.append(this.makeRelationEndpoint(entity, "/swagger/pathPOSTRelated.part", operationId + "-" + relationName, relation, components)).append("\n");
-						buffer.append(this.indent(tabs)).append("},\n");
+						if (makeGET || makePOST) {
+							buffer.append(buffer.length() > 0 ? ",\n": "");
+							buffer.append(this.indent(tabs));
+							buffer.append("\"/").append(entityName).append("/{").append(entityIdName).append("}/").append(relationName).append("\" : {\n");
+							if (makeGET) {
+								buffer.append(this.makeRelationEndpoint(entity, "/swagger/pathGETRelated.part", operationId + "-" + relationName, relation, components)).append(",\n");
+							}
+							if (makePOST) {
+								buffer.append(this.makeRelationEndpoint(entity, "/swagger/pathPOSTRelated.part", operationId + "-" + relationName, relation, components)).append(",\n");
+							}
+							buffer.append(this.indent(tabs)).append("},\n");
+						}
 
-						buffer.append(this.indent(tabs));
-						buffer.append("\"/").append(entityName).append("/{").append(entityIdName).append("}/").append(relationName).append("/{related-").append(targetIdName).append("}\" : {\n");
-						buffer.append(this.makeRelationEndpoint(entity, "/swagger/pathDELETERelated.part", operationId + "-" + relationName, relation, components)).append(",\n");
-						buffer.append(this.indent(tabs)).append("}");
+						if (makeDELETE) {
+							buffer.append(this.indent(tabs));
+							buffer.append("\"/").append(entityName).append("/{").append(entityIdName).append("}/").append(relationName).append("/{").append(relationName).append("-").append(targetIdName).append("}\" : {\n");
+							buffer.append(this.makeRelationEndpoint(entity, "/swagger/pathDELETERelated.part", operationId + "-" + relationName, relation, components)).append(",\n");
+							buffer.append(this.indent(tabs)).append("}");
+						}
 					}
 				}
 			}
@@ -267,11 +276,13 @@ public class Swagger {
 
 	private String makeRelationEndpoint(Entity entity, String partFileURI, String operationId, MVA relation, HashSet<String> components) {
 		String entityTag = entity.getNamePascalCase();
+		String entityName = entity.getNamePascalCase();
 
 		Attribute entityId = entity.getExplicitId();
 		String entityIdName = entityId.getNameKebabCase();
 		String entityIdType = entityId.getType();
 
+		String relationName = relation.getNameKebabCase();
 		Entity targetEntity = relation.getTargetEntity();
 		String targetEntityName = targetEntity.getNamePascalCase();
 		Attribute explicitId = targetEntity.getExplicitId();
@@ -284,9 +295,10 @@ public class Swagger {
 
 			resourceText = resourceText.replace(Swagger.MARKER_OPERATION_ID, operationId);
 			resourceText = resourceText.replace(Swagger.MARKER_ENTITY_TAG, entityTag);
+			resourceText = resourceText.replace(Swagger.MARKER_ENTITY_NAME, entityName);
 			resourceText = resourceText.replace(Swagger.MARKER_ENTITY_ID, entityIdName);
 			resourceText = resourceText.replace(Swagger.MARKER_ENTITY_ID_TYPE, entityIdType);
-			resourceText = resourceText.replace(Swagger.MARKER_TARGET_NAME, targetEntityName);
+			resourceText = resourceText.replace(Swagger.MARKER_RELATION_NAME, relationName);
 			resourceText = resourceText.replace(Swagger.MARKER_TARGET_NAME, targetEntityName);
 			resourceText = resourceText.replace(Swagger.MARKER_TARGET_ID_NAME, targetIdName);
 			resourceText = resourceText.replace(Swagger.MARKER_TARGET_ID_TYPE, targetIdType);
