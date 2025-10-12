@@ -518,8 +518,9 @@ public class Swagger {
 	}
 
 	private String makeRelation(int tabs, MVA relation) {
-		String name = relation.getNameCamelCase();
+		String relationName = relation.getNameCamelCase();
 		Entity targetEntity = relation.getTargetEntity();
+		String targetEntityName = targetEntity.getNamePascalCase();
 		Attribute targetIdAttribute = targetEntity.getExplicitId();
 		String targetIdType = targetIdAttribute == null ? "string" : targetIdAttribute.getType();
 		boolean isSingleValued = "1".equalsIgnoreCase(relation.getCardinality());
@@ -529,7 +530,7 @@ public class Swagger {
 
 		StringBuilder buffer = new StringBuilder();
 		if (hasShallowRelations) {
-			buffer.append(this.indent(tabs)).append("\"").append(name).append("\": {\n");
+			buffer.append(this.indent(tabs)).append("\"").append(relationName).append("\": {\n");
 			if (isSingleValued) {
 				buffer.append(this.indent(++tabs)).append("\"type\": \"").append(targetIdType).append("\"\n");
 				buffer.append(this.indent(--tabs)).append("}");
@@ -542,36 +543,44 @@ public class Swagger {
 			}
 		}
 		if (hasDeepRelations) {
-			buffer.append(this.indent(tabs)).append("\"").append(name).append("\": {\n");
 			if (isSingleValued) {
-				buffer.append(this.indent(++tabs)).append("\"type\": \"object\",\n");
-				buffer.append(this.indent(tabs)).append("\"properties\": {\n");
+				buffer.append(this.indent(tabs)).append("\"").append(relationName).append("\": {\n");
 
-				if (relationDepth == TRelationDepth.EMBED) {
-					buffer.append(this.makeProperties(tabs + 1, targetEntity));
-				} else if (relationDepth == TRelationDepth.EMBEDALL) {
-					buffer.append(this.makeRelations(tabs + 1, targetEntity));
-				}
-				buffer.append("\n");
+				buffer.append(this.indent(tabs + 1)).append("\"$ref\": \"#/components/schemas/").append(targetEntityName).append("\"\n");
+				// Replace the above line with the following to make a distinction between embedding only fields or the entire object
+				// buffer.append(this.indent(++tabs)).append("\"type\": \"object\",\n");
+				// buffer.append(this.indent(tabs)).append("\"properties\": {\n");
 
-				buffer.append(this.indent(tabs)).append("}\n");
-				buffer.append(this.indent(--tabs)).append("}");
+				// if (relationDepth == TRelationDepth.EMBED) {
+				// 	buffer.append(this.makeProperties(tabs + 1, targetEntity));
+				// } else if (relationDepth == TRelationDepth.EMBEDALL) {
+				// 	buffer.append(this.makeRelations(tabs + 1, targetEntity));
+				// }
+				// buffer.append("\n");
+
+				// buffer.append(this.indent(tabs)).append("}\n");
+				//buffer.append(this.indent(--tabs)).append("}");
+				buffer.append(this.indent(tabs)).append("}");
 
 			} else {
+				buffer.append(this.indent(tabs)).append("\"").append(relationName).append("\": {\n");
 				buffer.append(this.indent(++tabs)).append("\"type\": \"array\",\n");
 				buffer.append(this.indent(tabs)).append("\"items\": {\n");
-				buffer.append(this.indent(++tabs)).append("\"type\": \"object\",\n");
-				buffer.append(this.indent(tabs)).append("\"properties\": {\n");
 
-				if (relationDepth == TRelationDepth.EMBED) {
-					buffer.append(this.makeProperties(tabs + 1, targetEntity));
-				} else if (relationDepth == TRelationDepth.EMBEDALL) {
-					buffer.append(this.makeRelations(tabs + 1, targetEntity));
-				}
-				buffer.append("\n");
+				buffer.append(this.indent(tabs + 1)).append("\"$ref\": \"#/components/schemas/").append(targetEntityName).append("\"\n");
+				// Replace the above line with the following to make a distinction between embedding only fields or the entire object
+				// buffer.append(this.indent(++tabs)).append("\"type\": \"object\",\n");
+				// buffer.append(this.indent(tabs)).append("\"properties\": {\n");
+
+				// if (relationDepth == TRelationDepth.EMBED) {
+				// 	buffer.append(this.makeProperties(tabs + 1, targetEntity));
+				// } else if (relationDepth == TRelationDepth.EMBEDALL) {
+				// 	buffer.append(this.makeRelations(tabs + 1, targetEntity));
+				// }
+				// buffer.append("\n");
 
 				buffer.append(this.indent(tabs)).append("}\n");
-				buffer.append(this.indent(--tabs)).append("}\n");
+				// buffer.append(this.indent(--tabs)).append("}\n");
 				buffer.append(this.indent(--tabs)).append("}");
 			}
 		}
