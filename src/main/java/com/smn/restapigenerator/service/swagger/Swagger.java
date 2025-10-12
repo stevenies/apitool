@@ -343,7 +343,7 @@ public class Swagger {
 				buffer.append(this.indent(++tabs)).append("\"description\": \"").append(issueBuffer).append("\",\n");
 				buffer.append(this.indent(tabs)).append("\"type\": \"object\",\n");
 				buffer.append(this.indent(tabs)).append("\"properties\": {\n");
-				buffer.append(this.makeRelations(++tabs, entity)).append("\n");
+				buffer.append(this.makeRelations(++tabs, entity, components)).append("\n");
 				buffer.append(this.indent(--tabs)).append("}\n");
 				buffer.append(this.indent(--tabs)).append("}");
 			}
@@ -480,7 +480,7 @@ public class Swagger {
 		return buffer.toString();
 	}
 
-	private String makeRelations(int tabs, Entity entity) {
+	private String makeRelations(int tabs, Entity entity, HashSet<String> components) {
 		StringBuilder buffer = new StringBuilder();
 
 		Entity superType = entity.getSupertype();
@@ -502,7 +502,7 @@ public class Swagger {
 
 		List<MVA> mvaList = entity.getRelations();
 		for (MVA relation : mvaList) {
-			String relationText = this.makeRelation(tabs, relation);
+			String relationText = this.makeRelation(tabs, relation, components);
 
 			if (StringUtil.isEmpty(relationText)) {
 				continue;
@@ -517,7 +517,7 @@ public class Swagger {
 		return buffer.toString();
 	}
 
-	private String makeRelation(int tabs, MVA relation) {
+	private String makeRelation(int tabs, MVA relation, HashSet<String> components) {
 		String relationName = relation.getNameCamelCase();
 		Entity targetEntity = relation.getTargetEntity();
 		String targetEntityName = targetEntity.getNamePascalCase();
@@ -583,6 +583,7 @@ public class Swagger {
 				// buffer.append(this.indent(--tabs)).append("}\n");
 				buffer.append(this.indent(--tabs)).append("}");
 			}
+			components.add(targetEntityName);
 		}
 		return buffer.toString();
 	}
