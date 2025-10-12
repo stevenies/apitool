@@ -3,7 +3,7 @@
 					">>>entityTag"
 				],
 				"operationId": ">>>operationId->>>entityId-PATCH",
-				"summary": "Update one or more attributes of a specified >>>entityName data resource",
+				"summary": "Update attributes or relationships of a specified >>>entityName data resource",
 				"description": "",
 				"parameters": [
 					{
@@ -23,7 +23,13 @@
 							"schema": {
 								"$ref": "#/components/schemas/>>>entityName-Fields"
 							}
+						},
+						"application/json-patch+json": {
+							"schema": {
+								"$ref": "#/components/schemas/JsonPatch"
+							}
 						}
+
 					}
 				},
 				"responses": {

@@ -72,6 +72,26 @@
 						}
 					}
 				]
+			},
+			"JsonPatchOp": {
+				"type": "object",
+				"properties": {
+					"op": {
+						"type": "string",
+						"enum": ["add", "remove", "replace", "move", "copy", "test"]
+					},
+					"path": {
+						"type": "string"
+					},
+					"value": {}
+				},
+				"required": ["op", "path"]
+			},
+			"JsonPatch": {
+				"type": "array",
+				"items": {
+					"$ref": "#/components/schemas/JsonPatchOp"
+				}
 			}
 		}
 	}
