@@ -532,13 +532,14 @@ public class Swagger {
 			buffer.append(this.indent(tabs)).append("\"").append(name).append("\": {\n");
 			if (isSingleValued) {
 				buffer.append(this.indent(++tabs)).append("\"type\": \"").append(targetIdType).append("\"\n");
+				buffer.append(this.indent(--tabs)).append("}");
 			} else {
 				buffer.append(this.indent(++tabs)).append("\"type\": \"array\",\n");
 				buffer.append(this.indent(tabs)).append("\"items\": {\n");
 				buffer.append(this.indent(++tabs)).append("\"type\": \"").append(targetIdType).append("\"\n");
 				buffer.append(this.indent(--tabs)).append("}\n");
+				buffer.append(this.indent(--tabs)).append("}");
 			}
-			buffer.append(this.indent(--tabs)).append("}");
 		}
 		if (hasDeepRelations) {
 			buffer.append(this.indent(tabs)).append("\"").append(name).append("\": {\n");
@@ -554,10 +555,13 @@ public class Swagger {
 				buffer.append("\n");
 
 				buffer.append(this.indent(tabs)).append("}\n");
+				buffer.append(this.indent(--tabs)).append("}");
+
 			} else {
 				buffer.append(this.indent(++tabs)).append("\"type\": \"array\",\n");
 				buffer.append(this.indent(tabs)).append("\"items\": {\n");
-				buffer.append(this.indent(++tabs)).append("\"properties\": {\n");
+				buffer.append(this.indent(++tabs)).append("\"type\": \"object\",\n");
+				buffer.append(this.indent(tabs)).append("\"properties\": {\n");
 
 				if (relationDepth == TRelationDepth.EMBED) {
 					buffer.append(this.makeProperties(tabs + 1, targetEntity));
@@ -568,8 +572,8 @@ public class Swagger {
 
 				buffer.append(this.indent(tabs)).append("}\n");
 				buffer.append(this.indent(--tabs)).append("}\n");
+				buffer.append(this.indent(--tabs)).append("}");
 			}
-			buffer.append(this.indent(--tabs)).append("}");
 		}
 		return buffer.toString();
 	}
