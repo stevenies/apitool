@@ -107,7 +107,7 @@
 					<td>Unlimited tool usage for a single 24 hour period.</td>
 				</tr>
 				<tr>
-					<td></td>
+					<td><a href="whypay.html" target="WhyPay"><span style="white-space: nowrap; padding-right: 2px">Paid Access Benefits</span></a></td>
 					<td><input type="radio" id="accessPlanWeekly" name="accessPlan" value="weekly" disabled>One Week Access ($99)</input></td>
 					<td>Unlimited tool usage for a period of one week.</td>
 				</tr>
@@ -115,9 +115,6 @@
 					<td></td>
 					<td><input type="radio" id="accessPlanMonthly" name="accessPlan" value="monthly" disabled>One Month Access ($299)</input></td>
 					<td>Unlimited tool usage for a period of one month.</td>
-				</tr>
-				<tr>
-					<td><a href="whypay.html" target="WhyPay"><span style="white-space: nowrap">Why pay for access?</span></a></td>
 				</tr>
 			</table>
 			<c:if test="${not empty registrationErrors}">
