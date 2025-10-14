@@ -218,18 +218,23 @@ public class Swagger {
 							buffer.append(this.indent(tabs));
 							buffer.append("\"/").append(entityName).append("/{").append(entityIdName).append("}/").append(relationName).append("\" : {\n");
 							if (makeGET) {
-								buffer.append(this.makeRelationEndpoint(entity, "/swagger/pathGETRelated.part", operationId + "-" + relationName, relation, components)).append(",\n");
+								buffer.append(this.makeRelationEndpoint(entity, "/swagger/pathGETRelated.part", operationId + "-" + relationName, relation, components));
 							}
 							if (makePOST) {
-								buffer.append(this.makeRelationEndpoint(entity, "/swagger/pathPOSTRelated.part", operationId + "-" + relationName, relation, components)).append(",\n");
+								if (makeGET) {
+									buffer.append(",\n");
+								}
+								buffer.append(this.makeRelationEndpoint(entity, "/swagger/pathPOSTRelated.part", operationId + "-" + relationName, relation, components));
 							}
-							buffer.append(this.indent(tabs)).append("},\n");
+							buffer.append("\n");
+							buffer.append(this.indent(tabs)).append("}");
 						}
 
 						if (makeDELETE) {
+							buffer.append(buffer.length() > 0 ? ",\n": "");
 							buffer.append(this.indent(tabs));
 							buffer.append("\"/").append(entityName).append("/{").append(entityIdName).append("}/").append(relationName).append("/{").append(relationName).append("-").append(targetIdName).append("}\" : {\n");
-							buffer.append(this.makeRelationEndpoint(entity, "/swagger/pathDELETERelated.part", operationId + "-" + relationName, relation, components)).append(",\n");
+							buffer.append(this.makeRelationEndpoint(entity, "/swagger/pathDELETERelated.part", operationId + "-" + relationName, relation, components)).append("\n");
 							buffer.append(this.indent(tabs)).append("}");
 						}
 					}
