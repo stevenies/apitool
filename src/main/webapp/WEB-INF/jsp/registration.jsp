@@ -99,25 +99,26 @@
 				<tr>
 					<td><label>Password<span class="required">*</span>:</label></td>
 					<td><input id="accessToken" name="accessToken" type="text" /></td>
-					<td class="formNote">Specify a password for use as a security credential for this account.</td>
+					<td class="formNote">Specify a password for use as a security credential for your account.</td>
 				</tr>
 				<tr>
 					<td><label>Access Plan<span class="required">*</span>:</label></td>
 					<td><input type="radio" id="accessPlanFree" name="accessPlan" value="free" checked>Trial (Free)</input></td>
-					<td>Unlimited tool usage during the tool's Beta test period.</td>
-				</tr>
-<!--
 					<td>Unlimited tool usage for a single 24 hour period.</td>
 				</tr>
 				<tr>
-					<td><input type="radio" id="accessPlanWeekly" name="accessPlan" value="weekly">Week Access ($99)</input></td>
-					<td>Unlimited tool usage during a period of one week.</td>
+					<td></td>
+					<td><input type="radio" id="accessPlanWeekly" name="accessPlan" value="weekly" disabled>One Week Access ($99)</input></td>
+					<td>Unlimited tool usage for a period of one week.</td>
 				</tr>
 				<tr>
-					<td><input type="radio" id="accessPlanMonthly" name="accessPlan" value="monthly">Month Access ($299)</input></td>
-					<td>Unlimited tool usage during a period of one month.</td>
+					<td></td>
+					<td><input type="radio" id="accessPlanMonthly" name="accessPlan" value="monthly" disabled>One Month Access ($299)</input></td>
+					<td>Unlimited tool usage for a period of one month.</td>
 				</tr>
--->
+				<tr>
+					<td><a href="whypay.html" target="WhyPay"><span style="white-space: nowrap">Why pay for access?</span></a></td>
+				</tr>
 			</table>
 			<c:if test="${not empty registrationErrors}">
 				<div class="errorPanel">

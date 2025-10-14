@@ -186,3 +186,8 @@ B {
 #apiCapabilities {
     margin-left: 40px; 
 }
+#payBenefitsImage {
+    width: 200px;
+    float: right;
+    padding: 20px 0px 0px 10px;
+}
