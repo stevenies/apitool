@@ -3,22 +3,22 @@
 					">>>entityTag"
 				],
 				"operationId": ">>>operationId->>>entityId->>>targetIdName-DELETE",
-				"summary": "Remove a >>>targetName instance from the relationship",
+				"summary": "Remove a >>>targetName instance from the >>>entityName's >>>relationName relationship and then delete it.  Use the PATCH endpoint to remove the >>>targetName instance from the >>>relationName relationship without deleting it.",
 				"description": "",
 				"parameters": [
 					{
 						"name": ">>>entityId",
 						"in": "path",
-						"description": "ID of the data resource to be updated",
+						"description": "ID of the >>>entityName instance to be updated",
 						"required": true,
 						"schema": {
 							"type": ">>>typeEntityId"
 						}
 					},
 					{
-						"name": "related->>>targetIdName",
+						"name": ">>>relationName->>>targetIdName",
 						"in": "path",
-						"description": "ID of the data resource to be removed from the relationship",
+						"description": "ID of the >>>targetName instance to be deleted",
 						"required": true,
 						"schema": {
 							"type": ">>>targetIdType"
@@ -27,7 +27,7 @@
 				],
 				"responses": {
 					"201": {
-						"description": "Successful operation",
+						"description": "Successful operation"
 					},
 					"400": {
 						"description": "Bad Request",

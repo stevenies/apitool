@@ -1,22 +1,5 @@
 package com.smn.restapigenerator.service;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.openapitools.codegen.ClientOptInput;
-import org.openapitools.codegen.DefaultGenerator;
-import org.openapitools.codegen.SpecValidationException;
-import org.openapitools.codegen.config.CodegenConfigurator;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import com.smn.restapigenerator.exception.ExceptionAccessTokenInUse;
 import com.smn.restapigenerator.exception.ExceptionUserExists;
 import com.smn.restapigenerator.model.ApiCode;
 import com.smn.restapigenerator.model.ApiSpec;
@@ -26,7 +9,23 @@ import com.smn.restapigenerator.model.uml.Entity;
 import com.smn.restapigenerator.persistence.UserRepository;
 import com.smn.restapigenerator.service.adapter.staruml.AdaptorStarUML;
 import com.smn.restapigenerator.service.swagger.Swagger;
+import com.smn.restapigenerator.util.Email;
 import com.smn.restapigenerator.util.FileUtil;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import org.openapitools.codegen.ClientOptInput;
+import org.openapitools.codegen.DefaultGenerator;
+import org.openapitools.codegen.SpecValidationException;
+import org.openapitools.codegen.config.CodegenConfigurator;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 @Component
 public class Service {
 
@@ -68,25 +67,26 @@ public class Service {
 	@Autowired
 	private Swagger swagger;
 
-    public User createUser(String nameFirst, String nameLast, String company, String email, String accessPlan, String accessToken) throws ExceptionUserExists, ExceptionAccessTokenInUse {
+	@Autowired
+	private Email email;
+
+    public User createUser(String nameFirst, String nameLast, String company, String email, String accessPlan, String accessToken) throws ExceptionUserExists {
 	
 		// Determine if the user already exists.
 		for (User aUser : this.userRepository.findAllUsers()) {
-			String aUserAccessToken = aUser.getAccessToken();
 			String aUserEmail = aUser.getEmail();
 			String aUserNameFirst = aUser.getNameFirst();
 			String aUserNameLast = aUser.getNameLast();
 			String aUserCompany = aUser.getCompany();
 		
-			if (aUserEmail.equalsIgnoreCase(email)) {
-				throw new ExceptionUserExists();
-			} else if (aUserNameFirst.equalsIgnoreCase(nameFirst) &&
-				aUserNameLast.equalsIgnoreCase(nameLast) &&
-				aUserCompany.equalsIgnoreCase(company)) {
-				throw new ExceptionUserExists();
-			} else if (aUserAccessToken.equalsIgnoreCase(accessToken)) {
-				throw new ExceptionAccessTokenInUse();
-			}
+			// TODO Uncomment this when ready to prevent duplicate users.
+			// if (aUserEmail.equalsIgnoreCase(email)) {
+			// 	throw new ExceptionUserExists();
+			// } else if (aUserNameFirst.equalsIgnoreCase(nameFirst) &&
+			// 	aUserNameLast.equalsIgnoreCase(nameLast) &&
+			// 	aUserCompany.equalsIgnoreCase(company)) {
+			// 	throw new ExceptionUserExists();
+			// }
 		}
 
 		// Create a new user.	
@@ -112,6 +112,13 @@ public class Service {
 		}
     	Date date = cal.getTime();
 		user.setAccessExpiration(date);
+
+		// Send the user an email to validate their email address.
+		try {
+			this.email.sendWelcomeHtmlEmail(email, nameFirst, accessToken);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
 		try {
 			this.userRepository.addUser(user);

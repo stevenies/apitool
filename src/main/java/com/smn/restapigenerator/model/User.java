@@ -4,10 +4,17 @@ import java.util.Date;
 
 public class User implements Comparable<User> {
 
+    public static enum EmailStatus {
+        NEW,
+        VERIFIED
+    }
+
+    private Date accountCreationDate = new Date();
     private String nameFirst = "";
     private String nameLast = "";
     private String company = "";
     private String email = "";
+    private EmailStatus emailStatus = EmailStatus.NEW;
     private String accessToken = "";
     private Date accessExpiration;
 
@@ -15,6 +22,14 @@ public class User implements Comparable<User> {
     private ApiCode apiCode = new ApiCode();
 
     public User() {
+    }
+
+    public Date getAccountCreationDate() {
+        return accountCreationDate;
+    }
+
+    public void setAccountCreationDate(Date accountCreationDate) {
+        this.accountCreationDate = accountCreationDate;
     }
 
     public String getNameFirst() {
@@ -47,6 +62,14 @@ public class User implements Comparable<User> {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public EmailStatus getEmailStatus() {
+        return emailStatus;
+    }
+
+    public void setEmailStatus(EmailStatus emailStatus) {
+        this.emailStatus = emailStatus;
     }
 
     public String getAccessToken() {

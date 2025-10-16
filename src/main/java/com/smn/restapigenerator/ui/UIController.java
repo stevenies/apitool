@@ -3,7 +3,6 @@ package com.smn.restapigenerator.ui;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.net.HttpHeaders;
-import com.smn.restapigenerator.exception.ExceptionAccessTokenInUse;
 import com.smn.restapigenerator.exception.ExceptionUserExists;
 import com.smn.restapigenerator.model.ApiCode;
 import com.smn.restapigenerator.model.ApiSpec;
@@ -14,7 +13,6 @@ import com.smn.restapigenerator.service.Service;
 import com.smn.restapigenerator.service.Service.DtoReadUMLFile;
 import com.smn.restapigenerator.util.StringUtil;
 import com.smn.restapigenerator.util.ZipUtil;
-
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.io.File;
@@ -27,7 +25,6 @@ import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.ZipOutputStream;
-
 import org.springframework.http.MediaType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
@@ -97,8 +94,6 @@ public class UIController {
 			user = this.service.createUser(nameFirst, nameLast, company, email, accessPlan, accessToken);
 		} catch (ExceptionUserExists e) {
 			errors.add("Another user with the same name or email address already exists");
-		} catch (ExceptionAccessTokenInUse e) {
-			errors.add("That password is already in use");
 		} catch (Throwable t) {
 			errors.add("An unexpected error occurred: " + t.getMessage());
 		}
