@@ -50,67 +50,66 @@ public class UIController {
 		@RequestParam(required = false, defaultValue = "") String nameLast,
 		@RequestParam(required = false, defaultValue = "") String company,
 		@RequestParam(required = false, defaultValue = "") String email,
-		@RequestParam(required = false, defaultValue = "") String accessPlan,
-		@RequestParam(required = false, defaultValue = "") String accessToken,
-		HttpSession session,
-		HttpServletResponse response) {
+		HttpSession session) {
 
 		List<String> errors = new ArrayList<>();
 		session.setAttribute("registrationErrors", errors);
+		session.setAttribute("registrationSuccess", false);
 
 		// Verify that the required fields are provided.
 		if (StringUtil.isEmpty(nameFirst)) {
 			errors.add("Enter your first name");
 		} else {
 			nameFirst = StringUtil.trim(nameFirst);
+			session.setAttribute("nameFirst", nameFirst);
 		}
 
 		if (StringUtil.isEmpty(nameLast)) {
 			errors.add("Enter your last name");
 		} else {
 			nameLast = StringUtil.trim(nameLast);
+			session.setAttribute("nameLast", nameLast);
 		}
 
 		if (StringUtil.isEmpty(company)) {
 			errors.add("Enter your company name or 'Self' if not employed");
 		} else {
 			company = StringUtil.trim(company);
+			session.setAttribute("company", company);
 		}
 
 		if (StringUtil.isEmpty(email) || !StringUtil.isValidEmail(email)) {
 			errors.add("Enter a valid email address");
 		} else {
 			email = StringUtil.trim(email);
+			session.setAttribute("email", email);
 		}
 
-		if (StringUtil.isEmpty(accessToken)) {
-			errors.add("Specify a password you wish to use for your account");
-		} else {
-			accessToken = StringUtil.trim(accessToken);
+		if (errors.isEmpty()) {
+			try {
+				this.service.createUser(nameFirst, nameLast, company, email);
+			} catch (ExceptionUserExists e) {
+				errors.add("Another user with the same name or email address already exists");
+			} catch (Throwable t) {
+				errors.add("An unexpected error occurred: " + t.getMessage());
+			}
 		}
 
-		User user = null;
-		try {
-			user = this.service.createUser(nameFirst, nameLast, company, email, accessPlan, accessToken);
-		} catch (ExceptionUserExists e) {
-			errors.add("Another user with the same name or email address already exists");
-		} catch (Throwable t) {
-			errors.add("An unexpected error occurred: " + t.getMessage());
-		}
+		// if (user == null || !errors.isEmpty()) {
+		// 	return "registration";
+		// } else {
+		// 	ApiSpec apiSpec = user.getApiSpec();
+		// 	ApiCode apiCode = user.getApiCode();
 
-		if (user == null || !errors.isEmpty()) {
-			return "registration";
-		} else {
-			ApiSpec apiSpec = user.getApiSpec();
-			ApiCode apiCode = user.getApiCode();
+		// 	session.setAttribute("user", user);
+		// 	session.setAttribute("apiSpec", apiSpec);
+		// 	session.setAttribute("apiCode", apiCode);
 
-			session.setAttribute("user", user);
-			session.setAttribute("apiSpec", apiSpec);
-			session.setAttribute("apiCode", apiCode);
-
-			String referrer = (String) session.getAttribute("referrer");
-			return "viewApiCodeForm".equalsIgnoreCase(referrer) ? "apiCodeForm" : "apiSpecForm";
-		}
+		// 	String referrer = (String) session.getAttribute("referrer");
+		// 	return "viewApiCodeForm".equalsIgnoreCase(referrer) ? "apiCodeForm" : "apiSpecForm";
+		// }
+		session.setAttribute("registrationSuccess", errors.isEmpty());
+		return "registration";
 	}
 
 	@PostMapping("/login")

@@ -31,10 +31,8 @@
 			installOnClickHandler("buttonRegister", function(event) {
 				event.preventDefault();
 				submitForm("formRegister");
-				document.body.style.cursor = 'wait';
 				return false;
 			});
-			document.body.style.cursor = 'default';
 		};
 
 	</script>
@@ -78,54 +76,45 @@
 				<tr>
 					<td colspan="3"><div class="formHeader">New Users</div></td>
 				</tr>
-<!--
-				<tr>
-					<td></td>
-					<td colspan="2">
-						<table id="subscriptionPlans">
-							<tr>
-								<td colspan="2" id="subscriptionPlansHeader">Subscription Plans:</td>
-							</tr>
-							<tr>
-								<td class="subscriptionPlanLabel">Trial:</td>
-								<td>Unlimited tool usage for a 24 hour period</td>
-							</tr>
-							<tr>
-								<td class="subscriptionPlanLabel">One Week Access ($99):</td>
-								<td>Unlimited tool usage for a 7 day period</td>
-							</tr>
-							<tr>
-								<td class="subscriptionPlanLabel">One Month Access ($299):</td>
-								<td>Unlimited tool usage for a 30 day period</td>
-							</tr>
-							<tr>
-								<td colspan="2" id="subscriptionPlansFooter">
-									<a href="whypay.html" target="WhyPay">Subscription Benefits</a></td>
-								</td>
-							</tr>
-						</table>
-					</td>
-				</tr>
--->
 				<tr>
 					<td><label>First Name<span class="required">*</span>:</label></td>
-					<td><input id="nameFirst" name="nameFirst" value="${nameFirst}" type="text" /></td>
+					<td><input id="nameFirst" name="nameFirst" type="text" /></td>
 					<td class="formNote">Your first name.</td>
 				</tr>
 				<tr>
 					<td><label>Last Name<span class="required">*</span>:</label></td>
-					<td><input id="nameLast" name="nameLast" value="${nameLast}" type="text" /></td>
+					<td><input id="nameLast" name="nameLast" type="text" /></td>
 					<td class="formNote">Your last name.</td>
 				</tr>
 				<tr>
 					<td><label>Company<span class="required">*</span>:</label></td>
-					<td><input id="company" name="company" value="${company}" type="text" /></td>
+					<td><input id="company" name="company" type="text" /></td>
 					<td class="formNote">Name of your employer or "Self" if not employed.</td>
 				</tr>
 				<tr>
 					<td><label>Email<span class="required">*</span>:</label></td>
-					<td><input id="email" name="email" value="${email}" type="text" /></td>
+					<td><input id="email" name="email" type="text" /></td>
 					<td class="formNote">Your email address.</td>
+				</tr>
+				<tr>
+					<td><label>Password<span class="required">*</span>:</label></td>
+					<td><input id="accessToken" name="accessToken" type="text" /></td>
+					<td class="formNote">Specify a password for use as a security credential for your account.</td>
+				</tr>
+				<tr>
+					<td><label>Access Plan<span class="required">*</span>:</label></td>
+					<td><input type="radio" id="accessPlanFree" name="accessPlan" value="free" checked>Trial (Free)</input></td>
+					<td>Unlimited tool usage for a single 24 hour period.</td>
+				</tr>
+				<tr>
+					<td><a href="whypay.html" target="WhyPay"><span style="white-space: nowrap; padding-right: 2px">Paid Access Benefits</span></a></td>
+					<td><input type="radio" id="accessPlanWeekly" name="accessPlan" value="weekly" disabled>One Week Access ($99)</input></td>
+					<td>Unlimited tool usage for a period of one week.</td>
+				</tr>
+				<tr>
+					<td></td>
+					<td><input type="radio" id="accessPlanMonthly" name="accessPlan" value="monthly" disabled>One Month Access ($299)</input></td>
+					<td>Unlimited tool usage for a period of one month.</td>
 				</tr>
 			</table>
 			<c:if test="${not empty registrationErrors}">
@@ -137,23 +126,9 @@
 					</ul>
 				</div>
 			</c:if>
-			<c:if test="${registrationSuccess}">
-				<div class="successPanel">
-					<p>
-						Your account has been successfully registered.<br/>
-						<strong>Please check your email</strong> for an email verification message and login instructions.<br/>
-						Be sure to check your spam/junk folder if you don't see the email within a few minutes.
-					</p>
-					<p>
-						<button id="buttonClose" onclick="window.close(); return false;">OK</button>
-					</p>
-				</div>
-			</c:if>
-			<c:if test="${not registrationSuccess}">
-				<div class="actionPanel">
-					<button id="buttonRegister">Register</button>
-				</div>
-			</c:if>
+			<div class="actionPanel">
+				<button id="buttonRegister">Register</button>
+			</div>
 			<input type="hidden" name="referrer" value="${referrer}" />
 		</form>
 	</div>

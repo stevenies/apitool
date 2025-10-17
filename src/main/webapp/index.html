@@ -5,6 +5,12 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>REST API Generator</title>
 	<link rel="stylesheet" type="text/css" href="styles.css">
+	<script type="text/javascript">
+		function openWindow(url, target) {
+			window.open(url, target);
+			return false;
+		}
+	</script>
 </head>
 <body>
 	<div id="page">
@@ -12,11 +18,11 @@
 		<p class="title" style="text-align: center;">REST API Generator</p>
 		<p class="sectionHeader">What is a REST API?</p>
 		<p>
-			REST APIs are web-based <a href="overviewApi.html" target="_blank">Application Programming Interfaces</a>
+			REST APIs are web-based <a onclick="return openWindow('overviewApi.html', 'API');">Application Programming Interfaces</a>
 			(APIs) providing clients with an easy means to access and update data sourced by a data provider.  A key
 			characteristic of REST APIs is that they expose business data resources (aka business data objects) that
 			can be created, read, updated, and/or deleted by the API. When developing a REST API an important first
-			step is to create a <a href="overviewDomainModel.html" target="_blank">business domain model</a> identifying
+			step is to create a <a onclick="return openWindow('overviewDomainModel.html', 'DomainModel');">business domain model</a> identifying
 			the data resources, resource attributes, and relationships between resources. The business domain model
 			is the main design artifact defining the API's interface between the data provider and its clients from
 			a business perspective.
@@ -57,14 +63,14 @@
 		<p class="sectionHeader">Step <img class="stepImage" src="images/step1.png" /> - Create the business domain model</p>
 		<p>
 			Use the <a href="https://staruml.io/" target="_blank">StarUML</a> modeling tool to create a UML class diagram
-			representing the API's <a href="overviewDomainModel.html" target="_blank">business domain model</a>. The business
+			representing the API's <a onclick="return openWindow('overviewDomainModel.html', 'DomainModel');">business domain model</a>. The business
 			domain model should identify the data resources to be transferred over the API, the resource attributes, and
 			relationships between resources.  Once the business domain model has been created save it to your local computer
 			using StarUML's native <code>.mdj</code> file format.
 		</p>
 		<p class="sectionHeader">Step <img class="stepImage" src="images/step2.png" /> - Generate the API's OpenAPI interface specification</p>
 		<p>
-			Open the <a href="viewApiSpecForm" target="APISpecGenerator">API Spec Generator tool</a>, upload the StarUML <code>.mdj</code>
+			Open the <a onclick="return openWindow('viewApiSpecForm', 'APISpecGenerator');">API Spec Generator tool</a>, upload the StarUML <code>.mdj</code>
 			file containing the API's business domain model, and then press the Generate API button. In response the tool will
 			generate the API's specification document defining the API's client interface.
 		</p>
@@ -83,7 +89,7 @@
 			API endpoint stubs that can be extended to include the API's business logic.
 		</p>
 		<p>
-			To generate the API's skeleton code open the <a href="viewApiCodeForm" target="APICodeGenerator">API Code Generator tool</a>,
+			To generate the API's skeleton code open the <a onclick="return openWindow('viewApiCodeForm', 'APICodeGenerator');">API Code Generator tool</a>,
 			and then press the Implement API button. In response the tool generates code comprising the API's model objects,
 			controller endpoints for processing client requests, and service components containing stubbed endpoints for the business logic.
 		</p>

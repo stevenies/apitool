@@ -1,6 +1,9 @@
 package com.smn.restapigenerator.util;
 
+import java.nio.charset.StandardCharsets;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
@@ -36,25 +39,15 @@ public class Email {
      * Sends a welcome HTML email to a new user.
      * @param userEmail the user's email address
      * @param userName the user's first name
-     * @param accessToken the user's access token
      */
-    public void sendWelcomeHtmlEmail(String userEmail, String userName, String accessToken) {
+    public void sendWelcomeHtmlEmail(String userEmail, String userName) {
         try {
             String subject = "Welcome to REST API Generator";
-            String htmlBody = String.format(
-                "<html><body>" +
-                "<h2>Welcome to REST API Generator!</h2>" +
-                "<p>Hello <strong>%s</strong>,</p>" +
-                "<p>Welcome to the REST API Generator tool!</p>" +
-                "<p>Your access token is: <code>%s</code></p>" +
-                "<p>You can now start generating API specifications and code.</p>" +
-                "<br>" +
-                "<p>Best regards,<br>" +
-                "<em>REST API Generator Team</em></p>" +
-                "</body></html>",
-                userName, accessToken
-            );
-            sendHtmlEmail(userEmail, subject, htmlBody);
+            String resourcePath = "templates/welcome.html";
+            ClassPathResource resource = new ClassPathResource(resourcePath);
+            String htmlBody = new String(resource.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
+            htmlBody = String.format(htmlBody, userName);
+            this.sendHtmlEmail(userEmail, subject, htmlBody);
         } catch (Exception e) {
             e.printStackTrace();
         }

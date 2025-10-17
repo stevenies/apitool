@@ -191,3 +191,21 @@ B {
     float: right;
     padding: 20px 0px 0px 10px;
 }
+#subscriptionPlans {
+    margin: 20px 0px;
+    padding: 20px;
+    border: 1px solid #808080;
+    border-radius: 8px;
+    background-color: #fbfbc8;
+}
+#subscriptionPlansHeader {
+    font-family: Arial, sans-serif;
+    font-size: 18px;
+    font-weight: bold;
+    margin-top: 30px;
+}
+.subscriptionPlanLabel {
+    text-align: right;
+    white-space: nowrap;
+}
+
