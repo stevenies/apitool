@@ -1,5 +1,6 @@
 package com.smn.restapigenerator.service;
 
+import com.smn.restapigenerator.exception.ExceptionUserDoesntExist;
 import com.smn.restapigenerator.exception.ExceptionUserExists;
 import com.smn.restapigenerator.model.ApiCode;
 import com.smn.restapigenerator.model.ApiSpec;
@@ -70,16 +71,20 @@ public class Service {
 	@Autowired
 	private Email email;
 
-    public User createUser(String nameFirst, String nameLast, String company, String email) throws ExceptionUserExists {
+	/**
+	 * Create a new user account and send them a welcome email.  They must validate
+	 * their email address before they can register for API access.
+	 * @throws ExceptionUserExists if a user already exists with the same email or name.
+	 */
+    public User createUser(String nameFirst, String nameLast, String company, String email, String phone) throws ExceptionUserExists {
 	
 		// Determine if the user already exists.
-		for (User aUser : this.userRepository.findAllUsers()) {
-			String aUserEmail = aUser.getEmail();
-			String aUserNameFirst = aUser.getNameFirst();
-			String aUserNameLast = aUser.getNameLast();
-			String aUserCompany = aUser.getCompany();
-		
-			// TODO Uncomment this when ready to prevent duplicate users.
+		// TODO Uncomment this when ready to prevent duplicate users.
+		// for (User aUser : this.userRepository.findAllUsers()) {
+			// String aUserEmail = aUser.getEmail();
+			// String aUserNameFirst = aUser.getNameFirst();
+			// String aUserNameLast = aUser.getNameLast();
+			// String aUserCompany = aUser.getCompany();
 			// if (aUserEmail.equalsIgnoreCase(email)) {
 			// 	throw new ExceptionUserExists();
 			// } else if (aUserNameFirst.equalsIgnoreCase(nameFirst) &&
@@ -87,7 +92,7 @@ public class Service {
 			// 	aUserCompany.equalsIgnoreCase(company)) {
 			// 	throw new ExceptionUserExists();
 			// }
-		}
+		// }
 
 		// Create a new user.	
 		User user = new User();
@@ -95,26 +100,11 @@ public class Service {
 		user.setNameLast(nameLast);
 		user.setCompany(company);
 		user.setEmail(email);
-
-		// Compute the access expiration date.
-		// Calendar cal = Calendar.getInstance();
-		// switch (accessPlan.toLowerCase()) {
-		// 	case "weekly":
-    	// 		cal.add(Calendar.DAY_OF_YEAR, 7);
-		// 		break;
-		// 	case "monthly":
-    	// 		cal.add(Calendar.DAY_OF_YEAR, 31);
-		// 		break;
-		// 	default:
-    	// 		cal.add(Calendar.DAY_OF_YEAR, 100000);	// TODO: Change this to a reasonable date when the Beta test ends.
-		// 		break;
-		// }
-    	// Date date = cal.getTime();
-		// user.setAccessExpiration(date);
+		user.setPhone(phone);
 
 		// Send the user an email to validate their email address.
 		try {
-			this.email.sendWelcomeHtmlEmail(email, nameFirst);
+			this.email.sendWelcomeEmail(email, nameFirst);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -128,8 +118,42 @@ public class Service {
 		return user;
     }
 	
-	public User findUser(String accessToken) {
-		User user = this.userRepository.findUserByAccessToken(accessToken);
+	/**
+	 * Register a user for API access by setting their access token and access expiration date.
+	 * @throws ExceptionUserDoesntExist if a user with the given email does not exist.
+	 */
+    public User registerUser(String email, String accessToken, String accessPlan) throws ExceptionUserDoesntExist {
+
+		// Find the user and set their access token.
+		User user = this.findUserByEmail(email);
+		user.setAccessToken(accessToken);
+
+		// Compute the access expiration date.
+		Calendar cal = Calendar.getInstance();
+		switch (accessPlan.toLowerCase()) {
+			case "weekly":
+    			cal.add(Calendar.DAY_OF_YEAR, 7);
+				break;
+			case "monthly":
+    			cal.add(Calendar.DAY_OF_YEAR, 31);
+				break;
+			default:
+    			cal.add(Calendar.DAY_OF_YEAR, 100000);	// TODO: Change this to a reasonable date when the Beta test ends.
+				break;
+		}
+    	Date date = cal.getTime();
+		user.setAccessExpiration(date);
+
+		try {
+			this.userRepository.saveToJsonFile();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return user;
+    }
+	
+	public User findUserByEmail(String accessToken) throws ExceptionUserDoesntExist {
+		User user = this.userRepository.findUserByEmail(accessToken);
 		return user;
 	}
 

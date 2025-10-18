@@ -40,7 +40,7 @@ public class Email {
      * @param userEmail the user's email address
      * @param userName the user's first name
      */
-    public void sendWelcomeHtmlEmail(String userEmail, String userName) {
+    public void sendWelcomeEmail(String userEmail, String userName) {
         try {
             String subject = "Welcome to REST API Generator";
             String resourcePath = "templates/welcome.html";

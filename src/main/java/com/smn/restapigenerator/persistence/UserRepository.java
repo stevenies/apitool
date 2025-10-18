@@ -3,6 +3,7 @@ package com.smn.restapigenerator.persistence;
 import jakarta.annotation.PostConstruct;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.smn.restapigenerator.exception.ExceptionUserDoesntExist;
 import com.smn.restapigenerator.model.User;
 
 import java.util.concurrent.ConcurrentHashMap;
@@ -76,16 +77,16 @@ public class UserRepository {
     }
 
     public User addUser(User user) throws IllegalArgumentException {
-        if (user == null || user.getAccessToken() == null) {
-            throw new IllegalArgumentException("User and access token must not be null");
+        if (user == null || user.getEmail() == null) {
+            throw new IllegalArgumentException("User and email must not be null");
         }
-        userMap.put(user.getAccessToken(), user);
+        userMap.put(user.getEmail(), user);
         return user;
     }
 
     public void removeUser(User user) throws IllegalArgumentException {
-        if (user == null || user.getAccessToken() == null) {
-            throw new IllegalArgumentException("User and access token must not be null");
+        if (user == null || user.getEmail() == null) {
+            throw new IllegalArgumentException("User and email must not be null");
         }
         userMap.remove(user.getEmail());
     }
@@ -98,12 +99,16 @@ public class UserRepository {
         return new ArrayList<>(userMap.values());
     }
 
-    public boolean userExists(String accessToken) {
-        return userMap.containsKey(accessToken);
+    public boolean userExists(String email) {
+        return userMap.containsKey(email);
     }
 
-    public User findUserByAccessToken(String accessToken) {
-        return userMap.get(accessToken);
+    public User findUserByEmail(String email) throws ExceptionUserDoesntExist {
+        User user = userMap.get(email);
+        if (user == null) {
+            throw new ExceptionUserDoesntExist();
+        }
+        return user;
     }
 
     public File getUserStorageDir(User user) {

@@ -42,6 +42,37 @@
 <body>
 	<div id="page">
 		<p class="title">API Specification Generator</p>
+		<form id="formLogin" action="login" enctype="multipart/form-data" method="post">
+			<table>
+				<tr>
+					<td colspan="3"><div class="formHeader">Registered Users</div></td>
+				</tr>
+				<tr>
+				<tr>
+					<td><label>Email<span class="required">*</span>:</label></td>
+					<td><input id="email" name="email" type="text" /></td>
+					<td class="formNote">Email address given when your account was registered.</td>
+				</tr>
+				<tr>
+					<td><label>Password<span class="required">*</span>:</label></td>
+					<td><input id="accessToken" name="accessToken" type="text" /></td>
+					<td class="formNote">Security credential authorizing use of the REST API Generator.</td>
+				</tr>
+			</table>
+			<c:if test="${not empty loginErrors}">
+				<div class="errorPanel">
+					<ul>
+						<c:forEach var="error" items="${loginErrors}">
+							<li>${error}</li>
+						</c:forEach>
+					</ul>
+				</div>
+			</c:if>
+			<div class="actionPanel">
+				<button id="buttonLogin">Login</button>
+			</div>
+			<input type="hidden" name="referrer" value="${referrer}" />
+		</form>
 		<form id="formRegister" action="register" enctype="multipart/form-data" method="post">
 			<table>
 				<tr>

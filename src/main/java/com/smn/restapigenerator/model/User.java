@@ -15,6 +15,7 @@ public class User implements Comparable<User> {
     private String company = "";
     private String email = "";
     private EmailStatus emailStatus = EmailStatus.NEW;
+    private String phone;
     private String accessToken = "";
     private Date accessExpiration;
 
@@ -25,7 +26,7 @@ public class User implements Comparable<User> {
     }
 
     public Date getAccountCreationDate() {
-        return accountCreationDate;
+        return this.accountCreationDate;
     }
 
     public void setAccountCreationDate(Date accountCreationDate) {
@@ -33,7 +34,7 @@ public class User implements Comparable<User> {
     }
 
     public String getNameFirst() {
-        return nameFirst;
+        return this.nameFirst;
     }
 
     public void setNameFirst(String nameFirst) {
@@ -41,7 +42,7 @@ public class User implements Comparable<User> {
     }
 
     public String getNameLast() {
-        return nameLast;
+        return this.nameLast;
     }
 
     public void setNameLast(String nameLast) {
@@ -49,7 +50,7 @@ public class User implements Comparable<User> {
     }
 
     public String getCompany() {
-        return company;
+        return this.company;
     }
 
     public void setCompany(String company) {
@@ -65,15 +66,23 @@ public class User implements Comparable<User> {
     }
 
     public EmailStatus getEmailStatus() {
-        return emailStatus;
+        return this.emailStatus;
     }
 
     public void setEmailStatus(EmailStatus emailStatus) {
         this.emailStatus = emailStatus;
     }
 
+    public String getPhone() {
+        return this.phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
     public String getAccessToken() {
-        return accessToken;
+        return this.accessToken;
     }
 
     public void setAccessToken(String accessToken) {
@@ -81,7 +90,7 @@ public class User implements Comparable<User> {
     }
 
     public Date getAccessExpiration() {
-        return accessExpiration;
+        return this.accessExpiration;
     }
 
     public void setAccessExpiration(Date accessExpiration) {
@@ -89,7 +98,7 @@ public class User implements Comparable<User> {
     }
 
     public ApiSpec getApiSpec() {
-        return apiSpec;
+        return this.apiSpec;
     }
 
     public void setApiSpec(ApiSpec apiSpec) {
@@ -97,7 +106,7 @@ public class User implements Comparable<User> {
     }
 
     public ApiCode getApiCode() {
-        return apiCode;
+        return this.apiCode;
     }
 
     public void setApiCode(ApiCode apiCode) {

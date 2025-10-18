@@ -3,6 +3,7 @@ package com.smn.restapigenerator.ui;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.net.HttpHeaders;
+import com.smn.restapigenerator.exception.ExceptionUserDoesntExist;
 import com.smn.restapigenerator.exception.ExceptionUserExists;
 import com.smn.restapigenerator.model.ApiCode;
 import com.smn.restapigenerator.model.ApiSpec;
@@ -50,9 +51,11 @@ public class UIController {
 		@RequestParam(required = false, defaultValue = "") String nameLast,
 		@RequestParam(required = false, defaultValue = "") String company,
 		@RequestParam(required = false, defaultValue = "") String email,
+		@RequestParam(required = false, defaultValue = "") String phone,
 		HttpSession session) {
 
 		List<String> errors = new ArrayList<>();
+		session.setAttribute("loginErrors", null);
 		session.setAttribute("registrationErrors", errors);
 		session.setAttribute("registrationSuccess", false);
 
@@ -79,15 +82,22 @@ public class UIController {
 		}
 
 		if (StringUtil.isEmpty(email) || !StringUtil.isValidEmail(email)) {
-			errors.add("Enter a valid email address");
+			errors.add("Enter a valid email address using the format user@example.com");
 		} else {
 			email = StringUtil.trim(email);
 			session.setAttribute("email", email);
 		}
 
+		if (StringUtil.isEmpty(phone) || !StringUtil.isValidPhone(phone)) {
+			errors.add("Enter a valid phone number using the format 555-123-4567 (US) or<br/> +44 20 7946 0958 (International)");
+		} else {
+			phone = StringUtil.trim(phone);
+			session.setAttribute("phone", phone);
+		}
+
 		if (errors.isEmpty()) {
 			try {
-				this.service.createUser(nameFirst, nameLast, company, email);
+				this.service.createUser(nameFirst, nameLast, company, email, phone);
 			} catch (ExceptionUserExists e) {
 				errors.add("Another user with the same name or email address already exists");
 			} catch (Throwable t) {
@@ -95,21 +105,53 @@ public class UIController {
 			}
 		}
 
-		// if (user == null || !errors.isEmpty()) {
-		// 	return "registration";
-		// } else {
-		// 	ApiSpec apiSpec = user.getApiSpec();
-		// 	ApiCode apiCode = user.getApiCode();
-
-		// 	session.setAttribute("user", user);
-		// 	session.setAttribute("apiSpec", apiSpec);
-		// 	session.setAttribute("apiCode", apiCode);
-
-		// 	String referrer = (String) session.getAttribute("referrer");
-		// 	return "viewApiCodeForm".equalsIgnoreCase(referrer) ? "apiCodeForm" : "apiSpecForm";
-		// }
 		session.setAttribute("registrationSuccess", errors.isEmpty());
-		return "registration";
+		return "login";
+	}
+
+	@PostMapping("/emailVerified")
+	public String emailVerified(
+		@RequestParam(required = false, defaultValue = "") String email,
+		@RequestParam(required = false, defaultValue = "") String accessToken,
+		@RequestParam(required = false, defaultValue = "") String accessPlan,
+		HttpSession session) {
+
+		List<String> errors = new ArrayList<>();
+		session.setAttribute("registrationErrors", errors);
+
+		email = StringUtil.trim(email);
+		session.setAttribute("email", email);
+
+		// Verify that the required fields are provided.
+		if (StringUtil.isEmpty(accessToken)) {
+			errors.add("Enter your account's password");
+		} else {
+			accessToken = StringUtil.trim(accessToken);
+			session.setAttribute("accessToken", accessToken);
+		}
+
+		User user = null;
+		if (errors.isEmpty()) {
+			try {
+				user = this.service.registerUser(email, accessToken, accessPlan);
+			} catch (ExceptionUserDoesntExist e) {
+				errors.add("An account doesn't exist with the specified email address");
+			} catch (Throwable t) {
+				errors.add("An unexpected error occurred: " + t.getMessage());
+			}
+		}
+
+		if (user == null || !errors.isEmpty()) {
+			return "registration";
+		} else {
+			ApiSpec apiSpec = user.getApiSpec();
+			ApiCode apiCode = user.getApiCode();
+
+			session.setAttribute("user", user);
+			session.setAttribute("apiSpec", apiSpec);
+			session.setAttribute("apiCode", apiCode);
+			return "apiSpecForm";
+		}
 	}
 
 	@PostMapping("/login")
@@ -121,6 +163,7 @@ public class UIController {
 
 		List<String> errors = new ArrayList<>();
 		session.setAttribute("loginErrors", errors);
+		session.setAttribute("registrationErrors", null);
 
 		// Verify that the required fields are provided.
 		if (StringUtil.isEmpty(email) || !StringUtil.isValidEmail(email)) {
@@ -133,14 +176,15 @@ public class UIController {
 
 		User user = null;
 		if (errors.isEmpty()) {
-			user = this.service.findUser(accessToken);
-			if (user == null || !email.equals(user.getEmail())) {
-				errors.add("Either the email address or password is invalid");
+			try {
+				user = this.service.findUserByEmail(email);
+			} catch (ExceptionUserDoesntExist e) {
+				errors.add("The email address is invalid");
 			}
 		}
 
 		if (user == null || !errors.isEmpty()) {
-			return "registration";
+			return "login";
 		} else {
 			ApiSpec apiSpec = user.getApiSpec();
 			ApiCode apiCode = user.getApiCode();
@@ -161,7 +205,7 @@ public class UIController {
 		User user = (User) session.getAttribute("user");
 		if (user == null || user.getAccessToken() == null || user.getAccessToken().isEmpty()) {
 			session.setAttribute("referrer", "viewAPISpecForm");
-			return "registration";
+			return "login";
 		}
 
 		ApiSpec apiSpec = user.getApiSpec();
@@ -235,7 +279,7 @@ public class UIController {
 		User user = (User) session.getAttribute("user");
 		if (user == null || user.getAccessToken() == null || user.getAccessToken().isEmpty()) {
 			session.setAttribute("referrer", "viewAPICodeForm");
-			return "registration";
+			return "login";
 		}
 
 		ApiSpec apiSpec = user.getApiSpec();

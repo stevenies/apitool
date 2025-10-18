@@ -85,4 +85,10 @@ public class StringUtil {
 		return version != null && version.matches(versionRegex);
     }
 
+    public static boolean isValidPhone(String phone) {
+        String phoneRegex = "^\\(?\\d{3}\\)?[- ]?\\d{3}[- ]?\\d{4}$";
+        String internationalPhoneRegex = "^\\+\\d{1,3}[- ]?\\(?\\d{1,4}\\)?[- ]?\\d{1,4}[- ]?\\d{1,4}[- ]?\\d{0,4}$";
+        return phone != null && (phone.matches(phoneRegex) || phone.matches(internationalPhoneRegex));
+    }
+
 }
