@@ -116,8 +116,9 @@ public class UIController {
 					String subject = "Welcome to REST API Generator";
 					String resourcePath = "templates/welcome.html";
 					ClassPathResource resource = new ClassPathResource(resourcePath);
+					int key = StringUtil.makeKey(email);
 					String htmlBody = new String(resource.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
-					htmlBody = String.format(htmlBody, urlDomain, email, nameFirst, nameLast);
+					htmlBody = String.format(htmlBody, urlDomain, email, key);
 					this.email.sendHtmlEmail(email, subject, htmlBody);
 				} catch (Exception e) {
 					// TODO Replace following with a logger.
@@ -136,7 +137,22 @@ public class UIController {
 	}
 
 	@GetMapping("/emailVerified")
-	public String emailVerified(@RequestParam(required = false, defaultValue = "") String email, HttpSession session) {
+	public String emailVerified(
+		@RequestParam(required = false, defaultValue = "") String email,
+		@RequestParam(required = false, defaultValue = "0") int key,
+		HttpSession session) {
+
+		List<String> errors = new ArrayList<>();
+		session.setAttribute("enrollmentErrors", errors);
+		session.setAttribute("emailVerified", true);
+
+		int masterKey = StringUtil.makeKey(email);
+		if (key != masterKey) {
+			errors.add("Email verification failed. The provided key is invalid.");
+			session.setAttribute("emailVerified", false);
+			return "activationForm";
+		}
+
 		email = StringUtil.trim(email);
 		session.setAttribute("email", email);
 		return "activationForm";
@@ -157,7 +173,7 @@ public class UIController {
 
 		// Verify that the required fields are provided.
 		if (StringUtil.isEmpty(accessToken)) {
-			errors.add("Enter your account's password");
+			errors.add("Enter a password to secure your account");
 		} else {
 			accessToken = StringUtil.trim(accessToken);
 			session.setAttribute("accessToken", accessToken);

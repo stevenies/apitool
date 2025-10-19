@@ -78,7 +78,7 @@
 				<tr>
 					<td><label>Password<span class="required">*</span>:</label></td>
 					<td><input type="text" id="accessToken" name="accessToken" value="${accessToken}" /></td>
-					<td class="formNote">Password used to access your account.</td>
+					<td class="formNote">Password to be used for account access.</td>
 				</tr>
 			</table>
 			<c:if test="${not empty enrollmentErrors}">
@@ -90,9 +90,11 @@
 					</ul>
 				</div>
 			</c:if>
-			<div class="actionPanel">
-				<button id="buttonRegister">Activate</button>
-			</div>
+			<c:if test="${emailVerified}">
+				<div class="actionPanel">
+					<button id="buttonRegister">Activate</button>
+				</div>
+			</c:if>
 			<input type="hidden" name="email" value="${email}" />
 		</form>
 	</div>

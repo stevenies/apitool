@@ -91,4 +91,20 @@ public class StringUtil {
         return phone != null && (phone.matches(phoneRegex) || phone.matches(internationalPhoneRegex));
     }
 
+    public static int makeKey(String text) {
+        if (text == null) {
+            return 0;
+        }
+        text += "SMNRestApiGenerator";
+        
+        int sum = 0;
+        for (int i = 0; i < text.length(); i++) {
+            char ch = text.charAt(i);
+            if (Character.isLetter(ch)) {
+                sum += (int) ch;
+            }
+        }
+        return sum;
+    }
+
 }
