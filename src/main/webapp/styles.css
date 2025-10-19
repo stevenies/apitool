@@ -118,6 +118,23 @@ B {
 #formRegister .actionPanel {
     margin: 10px auto 20px auto;
 }
+#formActivation TD {
+    padding: 4px;
+    vertical-align: top;
+}
+#formActivation LABEL {
+    width: 100%;
+    display: inline-block;
+    padding-right: 4px;
+    text-align: right;
+    white-space: nowrap;
+}
+#formActivation INPUT[type="text"] {
+    width: 240px;
+}
+#formActivation .actionPanel {
+    margin: 10px auto 20px auto;
+}
 #apiSpecForm TD {
     padding: 4px;
     vertical-align: top;

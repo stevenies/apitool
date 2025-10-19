@@ -25,7 +25,7 @@
 		window.onload = function() {
 			installOnClickHandler("buttonRegister", function(event) {
 				event.preventDefault();
-				submitForm("formEnrollment");
+				submitForm("formActivation");
 				document.body.style.cursor = 'wait';
 				return false;
 			});
@@ -37,10 +37,10 @@
 <body>
 	<div id="page">
 		<p class="title">API Specification Generator</p>
-		<form id="formEnrollment" action="enroll" enctype="multipart/form-data" method="post">
+		<form id="formActivation" action="activate" enctype="multipart/form-data" method="post">
 			<table>
 				<tr>
-					<td colspan="3"><div class="formHeader">Account Registration</div></td>
+					<td colspan="3"><div class="formHeader">Account Activation</div></td>
 				</tr>
 <!--
 				<tr>
@@ -91,7 +91,7 @@
 				</div>
 			</c:if>
 			<div class="actionPanel">
-				<button id="buttonRegister">Register</button>
+				<button id="buttonRegister">Activate</button>
 			</div>
 			<input type="hidden" name="email" value="${email}" />
 		</form>

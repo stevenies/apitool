@@ -110,7 +110,7 @@ public class UIController {
 				// Send the user an email to validate their email address.
 				try {
 					String urlDomain =
-						request.getProtocol().toLowerCase().startsWith("https") ? "https://" : "http://"
+						(request.getProtocol().toLowerCase().startsWith("https") ? "https://" : "http://")
 						+ request.getServerName()
 						+ (request.getServerPort() == 80 ? "" : ":" + request.getServerPort());
 					String subject = "Welcome to REST API Generator";
@@ -139,11 +139,11 @@ public class UIController {
 	public String emailVerified(@RequestParam(required = false, defaultValue = "") String email, HttpSession session) {
 		email = StringUtil.trim(email);
 		session.setAttribute("email", email);
-		return "enroll";
+		return "activationForm";
 	}
 
-	@PostMapping("/enroll")
-	public String enroll(
+	@PostMapping("/activate")
+	public String activate(
 		@RequestParam(required = false, defaultValue = "") String email,
 		@RequestParam(required = false, defaultValue = "") String accessToken,
 		@RequestParam(required = false, defaultValue = "") String accessPlan,
@@ -175,7 +175,7 @@ public class UIController {
 		}
 
 		if (user == null || !errors.isEmpty()) {
-			return "enroll";
+			return "activationForm";
 		} else {
 			ApiSpec apiSpec = user.getApiSpec();
 			ApiCode apiCode = user.getApiCode();
