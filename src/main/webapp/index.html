@@ -15,32 +15,59 @@
 <body>
 	<div id="page">
 		<div id="logo"><img src="images/logo.png" alt="API Tool Logo" /></div>
-		<p class="title" style="text-align: center;">REST API Generator</p>
-		<p class="sectionHeader">What is a REST API?</p>
+		<p class="title" style="text-align: center;">
+			REST API Generator<br />
+			for Rapid Creation of<br />
+			REST API Specifications and Code</p>
+		<p class="sectionHeader">API Development Best Practices</p>
 		<p>
-			REST APIs are web-based <a onclick="return openWindow('overviewApi.html', 'API');">Application Programming Interfaces</a>
-			(APIs) providing clients with an easy means to access and update data sourced by a data provider.  A key
-			characteristic of REST APIs is that they expose business data resources (aka business data objects) that
-			can be created, read, updated, and/or deleted by the API. When developing a REST API an important first
-			step is to create a <a onclick="return openWindow('overviewDomainModel.html', 'DomainModel');">business domain model</a> identifying
-			the data resources, resource attributes, and relationships between resources. The business domain model
-			is the main design artifact defining the API's interface between the data provider and its clients from
-			a business perspective.
-		</p>
-		<p class="sectionHeader">What does the REST API Generator tool do?</p>
-		<p>
-			The REST API Generator provides two important capabilities to greatly reduce API development effort.  First
-			it transforms a business domain model expressed as a UML class diagram into an API interface specification
-			documented using the OpenAPI standard. An OpenAPI specification is a machine-readable document describing
-			the API's endpoints, request and response formats, and other API details needed by clients to know how to
-			call the API.
+			A best practice for <a onclick="return openWindow('overviewApi.html', 'API');">REST API</a> development is to use a
+			contract-first approach to define the API's interface between a business system and its clients before any
+			implementation code is written. A well-defined contract acts as a single source of truth improving communication
+			between stakeholders including product owners, designers, developers, and consumers.  Key benefits include
+			early alignment on the API's functionality, structure, and operation as well as consistency across systems.
 		</p>
 		<p>
-			Second the REST API Generator processes an API's OpenAPI specification to generate code implemementing
-			the API's skeleton infrastructure. The skeleton implementation is a fully functional API that can receive
-			requests from the client and return default responses but contains stubs for the business logic. The API
-			skeleton code provides API developers with an initial "quick start" code base, thus significantly reducing
-			the time and effort required to develop a REST API. 
+			An important first step in defining an API contract is to create a
+			<a onclick="return openWindow('overviewDomainModel.html', 'DomainModel');">business domain model</a>.
+			A business domain model is a conceptual blueprint of an organization's problem space identifying the key
+			business concepts (entities), their attributes, and their relationships to other entities.  It provides a
+			shared vocabulary for business stakeholders and technical teams, bridging the gap between business
+			requirements and technical implementation.  The business domain model is a key design artifact defining
+			the API's interface between a system and its clients from a business perspective, and thus serves as the
+			foundational blueprint for designing the API's client interface contract.
+		</p>
+		<p>
+			An API's client interface contract is a formal specification defining how client applications interact with the API
+			It consists of a set of rules outlining the expected behavior, structure, and communication protocols between the API
+			provider (server) and the API consumer (client). API interface specifications are typically written using the
+			<a href="https://www.openapis.org/" target="OpenAPI">OpenAPI</a> documentation standard. An OpenAPI spec enables both
+			humans and machines to understand and interact with an API without needing to see its underlying implementation code.
+			An OpenAPI spec consists of detailed JSON code specifying the API's endpoints, functionality, request parameters,
+			response data, and data schema formats. As such the spec serves as a shared contract for stakeholders ensuring that
+			agreement has been reached regarding the API's resources, fields, error shapes and constraints, thus reducing rework
+			and scope creep. Once the specification has been created API consumers can start work on integrating the API interface
+			into client systems while API developers work on implementing the API's backend functionality.
+		</p>
+		<p class="sectionHeader">How does the REST API Generator save time and money?</p>
+		<p>
+			Although developers can write OpenAPI specifications manually, doing so is a laborious process typically taking several
+			weeks or longer to complete.  OpenAPI specifications for non-trivial APIs can easily require thousands of lines of detailed
+			JSON code for specifying the various API endpoints, request formats, response formats, success/error status codes, and
+			domain model schemas (e.g., see <a onclick="return openWindow('apiExample.html', 'APIExample');">API example</a>).  However,
+			by using a contract-first design approach based on a business domain model coupled with REST API endpoint patterns, tools 
+			exist that can read the graphical business domain models to automatically generate the API's OpenAPI specification and skeleton
+			implementation code.
+		</p>
+		<p>
+			The REST API Generator is one such tool providing two important capabilities to greatly reduce API development effort.
+			First it transforms a business domain model expressed as a UML class diagram into an API interface specification
+			documented using the OpenAPI standard. Second, the REST API Generator reads the API's OpenAPI specification to generate
+			code implementing the API's skeleton infrastructure. The skeleton implementation is a fully functional API that can receive
+			requests from the client and return default responses but contains stubs for the business logic. The API skeleton code
+			provides API developers with an initial "quick start" code base, thus significantly reducing the time and effort required
+			to develop a REST API. 
+			<img id="apiBuildSteps" src="images/apiBuildSteps.png" />
 		</p>
 		<p>
 			In short by using the REST API Generator development activities that used to take weeks to perform manually
@@ -48,56 +75,18 @@
 			create API specifications and write API boilerplate code they can now focus on implementing the API's business
 			logic to more quickly realize the API's business value proposition.
 		</p>
-		<p class="sectionHeader">What are the steps to create a new REST API?</p>
+		<p class="sectionHeader">API Development Tooling</p>
 		<p>
-			Developing a REST API employs a standard software development lifecycle as shown in the following diagram.  The ideation
-			phase identifies the business need for the API and defines the API's business value proposition.<br>A key artifact produced
-			during this phase is the API's business domain model identifying the API's data resources transferred over the API.
-			The second phase, API Design, develops the API's client interface specification defining the API's callable endpoints and
-			request/response formats.  The API interface specification is then used to generate the API's skeleton implementation
-			code resulting in an operational API but containing stubs for the business logic.  Finally the third phase, API
-			Implementation, replaces the endpoint stubs with the API's business logic to complete the API's implementation.
-			<img id="apiBuildSteps" src="images/apiBuildSteps.png" />
-			The following paragraphs explain the steps performed during each phase in more detail.
-		</p>
-		<p class="sectionHeader">Step <img class="stepImage" src="images/step1.png" /> - Create the business domain model</p>
-		<p>
-			Use the <a href="https://staruml.io/" target="_blank">StarUML</a> modeling tool to create a UML class diagram
-			representing the API's <a onclick="return openWindow('overviewDomainModel.html', 'DomainModel');">business domain model</a>. The business
-			domain model should identify the data resources to be transferred over the API, the resource attributes, and
-			relationships between resources.  Once the business domain model has been created save it to your local computer
-			using StarUML's native <code>.mdj</code> file format.
-		</p>
-		<p class="sectionHeader">Step <img class="stepImage" src="images/step2.png" /> - Generate the API's OpenAPI interface specification</p>
-		<p>
-			Open the <a onclick="return openWindow('viewApiSpecForm', 'APISpecGenerator');">API Spec Generator tool</a>, upload the StarUML <code>.mdj</code>
-			file containing the API's business domain model, and then press the Generate API button. In response the tool will
-			generate the API's specification document defining the API's client interface.
-		</p>
-		<p class="sectionHeader">Step <img class="stepImage" src="images/step3.png" /> - Tailor the API's specification to remove unwanted endpoints</p>
-		<p>	
-			The API Generator tool generates an OpenAPI specification document defining standard sets of CRUD (Create, Read, Update,
-			Delete) callable endpoints for each data resource. Once the specification has been generated it can then be tailored to remove
-			unwanted endpoints. For example, if the business domain model does not require resource deletion capaibilities then the
-			DELETE endpoints can be removed from the API specification.
-		</p>
-		<p class="sectionHeader">Step <img class="stepImage" src="images/step4.png" /> - Generate the API's skeleton implementation</p>
-		<p>
-			After the API's specification has been tailored it can be used to generate code comprising the API's skeleton
-			implementation. The skeleton implementation is a fully functional API that can receive requests from the client and
-			return default responses.  It fully implements the API's controller and model boilerplate logic while providing
-			API endpoint stubs that can be extended to include the API's business logic.
-		</p>
-		<p>
-			To generate the API's skeleton code open the <a onclick="return openWindow('viewApiCodeForm', 'APICodeGenerator');">API Code Generator tool</a>,
-			and then press the Implement API button. In response the tool generates code comprising the API's model objects,
-			controller endpoints for processing client requests, and service components containing stubbed endpoints for the business logic.
-		</p>
-		<p class="sectionHeader">Step <img class="stepImage" src="images/step5.png" /> - Implement the API's business logic</p>
-		<p>
-			Once the API's skeleton implementation is generated it is then ready to be used as a starting point for API developers
-			to implement the business logic.  The skeleton implementation provides a quick-start code base that significantly
-			reduces the time and effort required to develop a REST API.
+			The tools comprising the REST API Generator are:
+			<ol>
+				<li><a href="https://staruml.io/" target="_blank">StarUML Modeling Tool</a> -
+					a COTS tool used by a Business Analyst to create the API's business domain model as a UML class diagram.</li>
+				<li><a onclick="return openWindow('viewApiSpecForm', 'APISpecGenerator');">API Spec Generator</a> -
+					generates an OpenAPI specification from the domain model's class diagram.</li>
+				<li><a onclick="return openWindow('viewApiCodeForm', 'APICodeGenerator');">API Code Generator</a> -
+					generates code implementing the API's skeleton implementation from the API's OpenAPI
+					specification.</li>
+			</ol>
 		</p>
 	</div>
 </body>
