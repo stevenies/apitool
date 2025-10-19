@@ -10,7 +10,6 @@ import com.smn.restapigenerator.model.uml.Entity;
 import com.smn.restapigenerator.persistence.UserRepository;
 import com.smn.restapigenerator.service.adapter.staruml.AdaptorStarUML;
 import com.smn.restapigenerator.service.swagger.Swagger;
-import com.smn.restapigenerator.util.Email;
 import com.smn.restapigenerator.util.FileUtil;
 import java.io.File;
 import java.io.IOException;
@@ -68,15 +67,17 @@ public class Service {
 	@Autowired
 	private Swagger swagger;
 
-	@Autowired
-	private Email email;
-
 	/**
 	 * Create a new user account and send them a welcome email.  They must validate
 	 * their email address before they can register for API access.
 	 * @throws ExceptionUserExists if a user already exists with the same email or name.
 	 */
-    public User createUser(String nameFirst, String nameLast, String company, String email, String phone) throws ExceptionUserExists {
+    public User createUser(
+		String nameFirst,
+		String nameLast,
+		String company,
+		String email,
+		String phone) throws ExceptionUserExists {
 	
 		// Determine if the user already exists.
 		// TODO Uncomment this when ready to prevent duplicate users.
@@ -101,13 +102,6 @@ public class Service {
 		user.setCompany(company);
 		user.setEmail(email);
 		user.setPhone(phone);
-
-		// Send the user an email to validate their email address.
-		try {
-			this.email.sendWelcomeEmail(email, nameFirst);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 
 		try {
 			this.userRepository.addUser(user);

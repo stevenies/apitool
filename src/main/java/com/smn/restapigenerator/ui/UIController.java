@@ -12,14 +12,17 @@ import com.smn.restapigenerator.model.uml.DomainModel;
 import com.smn.restapigenerator.model.uml.Entity;
 import com.smn.restapigenerator.service.Service;
 import com.smn.restapigenerator.service.Service.DtoReadUMLFile;
+import com.smn.restapigenerator.util.Email;
 import com.smn.restapigenerator.util.StringUtil;
 import com.smn.restapigenerator.util.ZipUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
@@ -28,6 +31,7 @@ import java.util.List;
 import java.util.zip.ZipOutputStream;
 import org.springframework.http.MediaType;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -45,6 +49,9 @@ public class UIController {
 	@Autowired
 	private Service service;
 
+	@Autowired
+	private Email email;
+
 	@PostMapping("/register")
 	public String register(
 		@RequestParam(required = false, defaultValue = "") String nameFirst,
@@ -52,6 +59,7 @@ public class UIController {
 		@RequestParam(required = false, defaultValue = "") String company,
 		@RequestParam(required = false, defaultValue = "") String email,
 		@RequestParam(required = false, defaultValue = "") String phone,
+		HttpServletRequest request,
 		HttpSession session) {
 
 		List<String> errors = new ArrayList<>();
@@ -98,6 +106,24 @@ public class UIController {
 		if (errors.isEmpty()) {
 			try {
 				this.service.createUser(nameFirst, nameLast, company, email, phone);
+
+				// Send the user an email to validate their email address.
+				try {
+					String urlDomain =
+						request.getProtocol().toLowerCase().startsWith("https") ? "https://" : "http://"
+						+ request.getServerName()
+						+ (request.getServerPort() == 80 ? "" : ":" + request.getServerPort());
+					String subject = "Welcome to REST API Generator";
+					String resourcePath = "templates/welcome.html";
+					ClassPathResource resource = new ClassPathResource(resourcePath);
+					String htmlBody = new String(resource.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
+					htmlBody = String.format(htmlBody, urlDomain, email, nameFirst, nameLast);
+					this.email.sendHtmlEmail(email, subject, htmlBody);
+				} catch (Exception e) {
+					// TODO Replace following with a logger.
+					e.printStackTrace();
+				}
+
 			} catch (ExceptionUserExists e) {
 				errors.add("Another user with the same name or email address already exists");
 			} catch (Throwable t) {
@@ -109,15 +135,22 @@ public class UIController {
 		return "login";
 	}
 
-	@PostMapping("/emailVerified")
-	public String emailVerified(
+	@GetMapping("/emailVerified")
+	public String emailVerified(@RequestParam(required = false, defaultValue = "") String email, HttpSession session) {
+		email = StringUtil.trim(email);
+		session.setAttribute("email", email);
+		return "enroll";
+	}
+
+	@PostMapping("/enroll")
+	public String enroll(
 		@RequestParam(required = false, defaultValue = "") String email,
 		@RequestParam(required = false, defaultValue = "") String accessToken,
 		@RequestParam(required = false, defaultValue = "") String accessPlan,
 		HttpSession session) {
 
 		List<String> errors = new ArrayList<>();
-		session.setAttribute("registrationErrors", errors);
+		session.setAttribute("enrollmentErrors", errors);
 
 		email = StringUtil.trim(email);
 		session.setAttribute("email", email);
@@ -142,7 +175,7 @@ public class UIController {
 		}
 
 		if (user == null || !errors.isEmpty()) {
-			return "registration";
+			return "enroll";
 		} else {
 			ApiSpec apiSpec = user.getApiSpec();
 			ApiCode apiCode = user.getApiCode();
