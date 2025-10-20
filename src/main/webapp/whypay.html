@@ -1,0 +1,64 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="ISO-8859-1">
+	<title>Why Pay?</title>
+	<link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+	<div id="page">
+        <img id="payBenefitsImage" src="images/benefits.png" />
+		<p class="title" id="apiTitle">Why Pay for Tool Access?</p>
+		<p>
+            In short - to save your project money!  By using the REST API Generator development activities that used to take weeks
+            to perform manually can now be accomplished automatically in a matter of minutes. Client API contracts and API boilerplate
+            code can be quickly generated so that developers can focus on the API's business logic to more quickly realize the API's
+            business value proposition.
+        </p>
+		<p class="textHeader">API Example</p>
+        <p>
+            Consider the following business domain model for a fictional insurance business. Note that the diagram has been
+            simplified for brevity.  An actual business domain model typically includes many more entities, attributes, and relationships.
+            <img id="insuranceExample" src="images/insuranceExample.png" />
+            Suppose the business goal is to build an API enabling clients to view the available insurance plans and to select one or more
+            in which to enroll.  The first step is to create an OpenAPI specification defining the API's client contract.  The OpenAPI
+            documentation standard is an open-source, vendor-neutral specification for describing REST APIs.  It enables both humans
+            and machines to understand and interact with APIs without needing to see the underlying implementation code.  The OpenAPI
+            specification consists of detailed JSON code specifying the API's endpoints, operations, parameters, and data formats.
+            As such it is a foundational tool for designing APIs using a "design-first" approach, ensuring consistency and facilitating integration.
+        </p>
+  		<p class="textHeader">Traditional Costs for API Specification Development</p>
+       <p>
+            How long will it take a proficient API developer to manually write the specification's JSON code?  The API specification for the above example
+            has a nominal number of API endpoints, request/response data payloads, and schema definitions.  Even so the API's specification contains
+            14000 lines of detailed JSON code. For an API of this size experience has shown that a developer typically needs three to four weeks
+            to manually write the JSON code, test it, and resolve issues. Assuming that the developer can finish the JSON code in three weeks
+            at an average developer rate of $60 per hour, the cost to <u>manually</u> write the client API specification is <b>$7,200!</b>
+        </p>
+ 		<p class="textHeader">Cost Savings via the REST API Generator</p>
+        <p>
+            In contrast the REST API Generator provides two important capabilities to greatly reduce API development<br/>cost and shorten time to market.
+            First it automatically transforms a business domain model expressed as a graphical UML class diagram into the API's OpenAPI JSON specification.
+            Second it processes the OpenAPI specification to generate code implementing the API's skeleton infrastructure. The skeleton implementation<br/>
+            is a fully functional API that can receive requests from the client and return default responses but contains stubs for the business logic.
+            The API skeleton code provides API developers with an initial "quick start" code base, thus significantly reducing the time, effort, and cost
+            required to develop a REST API.  For example, applying the REST API Generator to the above business domain model yields the following generated
+            API development artifacts:
+            <ul>
+                <li><a href="exampleApiSpec.json" target="ExampleApiSpec">API client interface specification</a> documented using the OpenAPI standard</li>
+                <li><a href="exampleApiCode.zip" target="ExampleApiCode">Java code</a> implementation of the API's skeleton infrastructure including
+                    REST controller endpoints<br/> and data schema DTOs (Data Transfer Objects)</li>
+            </ul>
+        </p>
+        <p>
+            It only takes a few minutes for the REST API Generator to produce these two core API solution artifacts.<br/>The tool
+            licensing cost is a dramatic savings compared to the $7,200 cost to write the OpenAPI specification manually. In addition the generated
+            API skeleton code provides a significant head start for API developers further reducing the effort, cost, and time to market. Other benefits
+            include improved API design quality, inclusion of API design best practices (e.g., URI naming patterns based on a business domain model,
+            paged list queries, standardized schemas for searching and error reporting), stronger decoupling between API clients and developers, and
+            earlier unblocking of client integration activities.
+        </p>
+    </div>
+</body>
+</html>

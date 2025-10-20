@@ -24,33 +24,34 @@
 			A best practice for <a onclick="return openWindow('overviewApi.html', 'API');">REST API</a> development is to use
 			a contract-first approach to define the API's interface between a business system and its clients before any API
 			implementation code is written. A well-defined contract acts as a single source of truth improving communication
-			between stakeholders including product owners, designers, developers, and consumers.  Key benefits include
-			early alignment regarding the API's functionality, structure, and operation as well as consistency across systems.
+			between stakeholders such as business product owners, designers, developers, and consumers.  Key benefits include
+			early alignment regarding the API's functionality, structure, and operational requirements as well as consistency
+			and interoperability across systems.
 		</p>
 		<p>
-			An important first step in defining an API contract is to create a
+			An important first step in defining an API interface contract is to create a
 			<a onclick="return openWindow('overviewDomainModel.html', 'DomainModel');">business domain model</a>.
 			A business domain model is a conceptual blueprint of an organization's problem space identifying the key
 			business concepts (entities), their attributes, and their relationships to other entities.  It provides a
-			shared vocabulary for business stakeholders and technical teams, bridging the gap between business
+			shared vocabulary for business stakeholders and technical teams to bridge the gap between business
 			requirements and technical implementation.  The business domain model is a key design artifact
-			defining the API's interface between a system and its clients from a business perspective.
+			defining the API's interface from a business perspective.
 		</p>
 		<p>
 			A business domain model also serves as the foundational blueprint for designing the API's client interface contract.
-			An API client interface contract is a formal specification defining how client applications interact with the API.
-			It consists of a set of rules outlining the expected behavior, structure, and communication protocols between the API
-			provider (server) and the API consumer (client).
+			An API interface contract is a formal specification defining how client applications interact with the API.
+			It consists of a set of rules outlining the expected behavior, structure, and communication protocols between API
+			consumers (clients) and the API provider (server).
 		</p>
 		<p>
-			A best practice for creating API interface specifications is to use the
-			<a href="https://www.openapis.org/" target="OpenAPI">OpenAPI</a> documentation standard. An OpenAPI specification enables both
-			humans and machines to understand and interact with an API without needing to see its underlying implementation code.
-			It consists of detailed JSON code specifying the API's endpoints, functionality, request parameters,
-			response data, and data schema formats. As such the specification serves as a shared contract for stakeholders ensuring that
-			agreement exists regarding the API's resources, fields, error shapes and constraints. Once the specification
-			has been baselined API consumers can start work on integrating the API interface into client systems while API developers
-			work on implementing the API's backend functionality.
+			A best practice for creating an API interface specification is to use the
+			<a href="https://www.openapis.org/" target="OpenAPI">OpenAPI</a> documentation standard.<br />An OpenAPI specification enables
+			both humans and machines to understand and interact with an API without needing to see the API's underlying implementation.
+			It consists of detailed JSON code specifying the API's endpoints, functionality, request parameters, response data, and data
+			schema formats. As such the specification serves as a shared contract for stakeholders ensuring that agreement exists regarding
+			the API's resources, fields, error shapes and constraints. Once the specification has been created and baselined then<br />API
+			consumers can start work on integrating the API interface into client systems while API developers work<br />on implementing the
+			API's backend functionality.
 		</p>
 		<p class="sectionHeader">How does the REST API Generator save time and money?</p>
 		<p>
@@ -76,7 +77,7 @@
 			In short, by using the REST API Generator development activities that used to take weeks to perform manually
 			can now be accomplished automatically in a matter of minutes.  Instead of developers spending time to manually
 			create API specifications and write API boilerplate code they can now focus on implementing the API's business
-			logic to more quickly realize the API's business value proposition while shortening time to market.
+			logic to more quickly realize the API's business value proposition and shorten time to market.
 		</p>
 		<p class="sectionHeader">API Development Tooling</p>
 		<p>
