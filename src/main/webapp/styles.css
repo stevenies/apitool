@@ -47,7 +47,6 @@ B {
     font-size: 24px;
     font-weight: bold;
     text-align: left;
-    margin-bottom: 40px;
 }
 .sectionHeader {
     font-family: Arial, sans-serif;
@@ -224,5 +223,15 @@ B {
 .subscriptionPlanLabel {
     text-align: right;
     white-space: nowrap;
+}
+#descriptionSwitch {
+    text-align: center;
+    font-size: 14px;
+}
+#executiveSummary {
+    margin-top: 20px;
+    padding: 20px 30px;
+    text-align: left;
+    font-style: italic;
 }
 

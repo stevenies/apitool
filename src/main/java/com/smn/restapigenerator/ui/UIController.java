@@ -52,6 +52,16 @@ public class UIController {
 	@Autowired
 	private Email email;
 
+	@GetMapping("/toggleDescription")
+	public String toggleDescription(HttpSession session) {
+		Boolean hideDescription = (Boolean) session.getAttribute("hideDescription");
+		if (hideDescription == null) {
+			hideDescription = false;
+		}
+		session.setAttribute("hideDescription", !hideDescription);
+		return "redirect:index";
+	}
+
 	@PostMapping("/register")
 	public String register(
 		@RequestParam(required = false, defaultValue = "") String nameFirst,
