@@ -23,7 +23,9 @@
 </head>
 <body>
 	<div id="page">
-		<div id="logo"><img src="images/logo.png" alt="API Tool Logo" /></div>
+		<c:if test="${not hideDescription}">
+			<div id="logo"><img src="images/logo.png" alt="API Tool Logo" /></div>
+		</c:if>
 		<p class="title" style="text-align: center;">
 			REST API Generator<br />
 			for Rapid Creation of<br />

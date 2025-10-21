@@ -554,3 +554,4 @@ target/classes/com/smn/restapigenerator/exception/ExceptionUserDoesntExist.class
 target/classes/com/smn/restapigenerator/model/User$EmailStatus.class
 target/classes/com/smn/restapigenerator/util/Email.class
 target/classes/com/smn/restapigenerator/util/Email.class
+target/restapigenerator/WEB-INF/jsp/index.jsp
