@@ -26,10 +26,9 @@
 		<c:if test="${not hideDescription}">
 			<div id="logo"><img src="images/logo.png" alt="API Tool Logo" /></div>
 		</c:if>
-		<p class="title" style="text-align: center;">
-			REST API Generator<br />
-			for Rapid Creation of<br />
-			REST API Specifications and Code
+		<p>
+			<div class="title" style="text-align: center;">REST API Generator</div>
+			<div class="subtitle" style="text-align: center;">for Rapid Creation of REST API Specifications and Code</div>
 		</p>
 		<p>
 		<c:if test="${hideDescription}">

@@ -48,6 +48,12 @@ B {
     font-weight: bold;
     text-align: left;
 }
+.subtitle {
+    font-family: Arial, sans-serif;
+    font-size: 18px;
+    font-weight: bold;
+    text-align: left;
+}
 .sectionHeader {
     font-family: Arial, sans-serif;
     font-size: 20px;
@@ -59,7 +65,7 @@ B {
     display: block;
     margin: auto;
     margin-bottom: 40px;
-    padding: 32px;
+    padding: 16px 32px;
     border: 1px solid #808080;
 }
 #apiBuildSteps {
