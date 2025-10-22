@@ -44,58 +44,47 @@
 				from a business domain model. It enables a contract-first approach for API development significantly reducing the time and cost
 				required to create REST APIs.
 			</p>
-			<p class="sectionHeader">API Development Best Practices</p>
+			<p class="sectionHeader">API Development Challenges</p>
 			<p>
-				A best practice for <a onclick="return openWindow('overviewApi.html', 'API');">REST API</a> development is to use
-				a contract-first approach to define the API's interface between a business system and its clients before any API
-				implementation code is written. A well-defined contract acts as a single source of truth improving communication
-				between stakeholders such as business product owners, designers, developers, and consumers.  Key benefits include
-				early alignment regarding the API's functionality, structure, and operational requirements as well as consistency
-				and interoperability across systems.
+				A best practice for <a onclick="return openWindow('overviewApi.html', 'API');">REST API</a> development
+				is to use the <a href="https://www.openapis.org/" target="OpenAPI">OpenAPI</a> documentation standard
+				to define the API's interface between a business system and its clients before any API implementation
+				code is written. OpenAPI facilitates a contract-first design approach that not only improves communication
+				and collaboration between API stakeholders - business product owners, designers, developers, and
+				consumers - but also helps to identify potential issues and gaps in the API's design early in the
+				development process. This proactive approach leads to higher quality APIs that better meet the needs
+				of both the business and its clients.
 			</p>
 			<p>
-				An important first step in defining an API interface contract is to create a
-				<a onclick="return openWindow('overviewDomainModel.html', 'DomainModel');">business domain model</a>.
-				A business domain model is a conceptual blueprint of an organization's problem space identifying the key
-				business concepts (entities), their attributes, and their relationships to other entities.  It provides a
-				shared vocabulary for business stakeholders and technical teams to bridge the gap between business
-				requirements and technical implementation.  The business domain model is a key design artifact
-				defining the API's interface from a business perspective.
-			</p>
-			<p>
-				A business domain model also serves as the foundational blueprint for designing the API's client interface contract.
-				An API interface contract is a formal specification defining how client applications interact with the API.
-				It consists of a set of rules outlining the expected behavior, structure, and communication protocols between API
-				consumers (clients) and the API provider (server).
-			</p>
-			<p>
-				A best practice for creating an API interface specification is to use the
-				<a href="https://www.openapis.org/" target="OpenAPI">OpenAPI</a> documentation standard.<br />An OpenAPI specification enables
-				both humans and machines to understand and interact with an API without needing to see the API's underlying implementation.
-				It consists of detailed JSON code specifying the API's endpoints, functionality, request parameters, response data, and data
-				schema formats. As such the specification serves as a shared contract for stakeholders ensuring that agreement exists regarding
-				the API's resources, fields, error shapes and constraints. Once the API's specification has been created and baselined then
-				API consumers can start work on integrating the API interface into client systems while API developers work on implementing the
-				API's backend functionality.
+				However, creating an OpenAPI specification can be a complex and time-consuming process. Writing an OpenAPI
+				specification manually is a laborious process typically taking several weeks or longer to complete.
+				Specifications for non-trivial APIs can easily require thousands of lines of detailed JSON code
+				for specifying the various API endpoints, request formats, response formats, success/error status codes,
+				and domain model schemas.  For example, this <a onclick="return openWindow('apiExample.html', 'APIExample');">API</a>
+				has a nominal number of API endpoints but requires 14000 lines of JSON code to implement its OpenAPI
+				specification!  For an API of this size experience has shown that a developer typically needs three weeks
+				to manually write the JSON code, test it, and resolve issues. Assuming that the developer can finish the
+				work in three weeks, and given an average developer rate of $60 per hour, the cost to <u>manually</u>
+				write the API's client specification is <b>$7,200!</b>
 			</p>
 			<p class="sectionHeader">How does the REST API Generator save time and money?</p>
 			<p>
-				Although developers can write OpenAPI specifications manually, doing so is a laborious process typically<br />taking several
-				weeks or longer to complete.  OpenAPI specifications for non-trivial APIs can easily require thousands of lines of detailed
-				JSON code for specifying the various API endpoints, request formats, response formats, success/error status codes, and
-				domain model schemas.  However, by employing a contract-first design approach using a business domain model together with
-				REST API endpoint patterns, tools such as the REST API Generator can read the business domain model diagram to automatically
-				generate the API's OpenAPI specification and skeleton implementation code
-				(see <a onclick="return openWindow('apiExample.html', 'APIExample');">API cost savings example</a>).
+				The REST API Generator provides two important capabilities to greatly reduce API development effort.
+				First<br/>it automatically generates the API's OpenAPI specification from a business domain model
+				expressed as a<br/>UML class diagram. A
+				<a onclick="return openWindow('overviewDomainModel.html', 'DomainModel');">business domain model</a>
+				is a conceptual blueprint of an organization's problem space identifying the key business concepts
+				(entities), their attributes, and their relationships to other entities.  It provides a shared
+				vocabulary for business stakeholders and technical teams to bridge the gap between business
+				requirements and technical implementation.  The business domain model is a key design artifact
+				for defining the API's client interface specification from a business perspective.
 			</p>
 			<p>
-				The REST API Generator provides two important capabilities to greatly reduce API development effort.
-				First it transforms a business domain model expressed as a UML class diagram into an API interface specification
-				documented using the OpenAPI standard. Second, the REST API Generator reads the API's OpenAPI specification to generate
-				code implementing the API's skeleton infrastructure. The skeleton implementation is a fully functional API that can receive
-				requests from the client and return default responses but contains stubs for the business logic. The API skeleton code
-				provides API developers with an initial "quick start" code base, thus significantly reducing the time and effort required
-				to develop a REST API. 
+				Second, the REST API Generator reads the API's OpenAPI client interface specification to automatically
+				generate code implementing the API's skeleton infrastructure. The skeleton implementation is a fully
+				functional API that can receive requests from the client and return default responses but contains
+				stubs for the business logic. The API skeleton code provides API developers with an initial "quick
+				start" code base, thus significantly reducing the time and effort required to develop a REST API. 
 			</p>
 		</c:if>
 		<img id="apiBuildSteps" src="images/apiBuildSteps.png" />
@@ -120,6 +109,7 @@
 					specification.</li>
 			</ol>
 		</p>
+		<p class="sectionHeader">Try the REST API Generator risk free!</p>
 	</div>
 </body>
 </html>
