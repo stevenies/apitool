@@ -95,7 +95,7 @@
 				<tr>
 					<td><label>Business Domain Model<span class="required">*</span>:</label></td>
 					<td><input id="file" name="file" type="file" /></td>
-					<td class="formNote">StarUML file containing the API's business domain model.</td>
+					<td class="formNote">StarUML '.mdj' file.</td>
 				</tr>
 				<tr>
 					<td colspan="3"><div class="formHeader">API Functionality</div></td>

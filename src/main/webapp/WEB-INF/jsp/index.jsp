@@ -7,6 +7,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>REST API Generator</title>
 	<link rel="stylesheet" type="text/css" href="styles.css">
+	<script src="../../downloadFile.js"></script>
 	<script type="text/javascript">
 		function openWindow(url, target) {
 			window.open(url, target);
@@ -56,7 +57,7 @@
 				of both the business and its clients.
 			</p>
 			<p>
-				However, creating an OpenAPI specification can be a complex and time-consuming process. Writing an OpenAPI
+				However creating an OpenAPI specification can be a complex and time-consuming process. Writing an OpenAPI
 				specification manually is a laborious process typically taking several weeks or longer to complete.
 				Specifications for non-trivial APIs can easily require thousands of lines of detailed JSON code
 				for specifying the various API endpoints, request formats, response formats, success/error status codes,
@@ -109,7 +110,25 @@
 					specification.</li>
 			</ol>
 		</p>
-		<p class="sectionHeader">Try the REST API Generator risk free!</p>
+		<c:if test="${not hideDescription}">
+			<p class="sectionHeader">Try the REST API Generator risk free!</p>
+			<p>
+				Would you like to experience how the REST API Generator can help your organization automatically generate REST API
+				specifications and operational API code?  You can try the REST API Generator risk free by registering for a
+				free trial license.  The free trial license provides full access to all REST API Generator features for a
+				period of 24 hours.  There is no obligation to continue using the tool after the trial period expires.
+			</p>
+			<p>
+				To try the REST API Generator you'll need to supply a business domain model created with the StarUML modeling
+				tool.  You can either create your own domain model or download the 
+				<a onclick="return downloadFile('images/insuranceExample.mdj', 'sampleDomainModel.mdj');">sample domain model</a>.
+				Once you've obtained a sample business domain model
+				<a onclick="return openWindow('viewApiSpecForm', 'APISpecGenerator');">register for a free trial license</a>.
+			</p>
+		</c:if>
+		<p>
+			Questions, comments, or suggestions?  Contact our support team at <a href="mailto:steveniesfl@gmail.com">steveniesfl@gmail.com</a>.
+		</p>
 	</div>
 </body>
 </html>
