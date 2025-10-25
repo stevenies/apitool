@@ -33,18 +33,18 @@
 		</p>
 		<p>
 		<c:if test="${hideDescription}">
-			<div id="descriptionSwitch" style="padding-bottom: 10px;"><a onclick="return toggleDescription();">Show Description</a></div>
+			<div id="descriptionSwitch"><a onclick="return toggleDescription();">Show Description</a></div>
 		</c:if>
 		<c:if test="${not hideDescription}">
 			<div id="descriptionSwitch"><a onclick="return toggleDescription();">Hide Description</a></div>
 		</c:if>
 		</p>
+		<p id="executiveSummary">
+			The REST API Generator is a toolset that automates the creation of REST API interface specifications and skeleton implementation code
+			from a business domain model. It enables a contract-first approach for API development significantly reducing the time and cost
+			required to create REST APIs.
+		</p>
 		<c:if test="${not hideDescription}">
-			<p id="executiveSummary">
-				The REST API Generator is a toolset that automates the creation of REST API interface specifications and skeleton implementation code
-				from a business domain model. It enables a contract-first approach for API development significantly reducing the time and cost
-				required to create REST APIs.
-			</p>
 			<p class="sectionHeader">API Development Challenges</p>
 			<p>
 				A best practice for <a onclick="return openWindow('overviewApi.html', 'API');">REST API</a> development
@@ -66,9 +66,9 @@
 				specification!  For an API of this size experience has shown that a developer typically needs three weeks
 				to manually write the JSON code, test it, and resolve issues. Assuming that the developer can finish the
 				work in three weeks, and given an average developer rate of $60 per hour, the cost to <u>manually</u>
-				write the API's client specification is <b>$7,200!</b>
+				write the API's client specification is <span style="color:red;">$7,200!</span>
 			</p>
-			<p class="sectionHeader">How does the REST API Generator save time and money?</p>
+			<p class="sectionHeader">How does the REST API Generator Save Time and Money?</p>
 			<p>
 				The REST API Generator provides two important capabilities to greatly reduce API development effort.
 				First<br/>it automatically generates the API's OpenAPI specification from a business domain model
@@ -91,7 +91,7 @@
 		<img id="apiBuildSteps" src="images/apiBuildSteps.png" />
 		<c:if test="${not hideDescription}">
 			<p>
-				In short, by using the REST API Generator development activities that used to take weeks to perform manually
+				By using the REST API Generator development activities that used to take weeks to perform manually
 				can now be accomplished automatically in a matter of minutes.  Instead of developers spending time to manually
 				create API specifications and write API boilerplate code they can now focus on implementing the API's business
 				logic to more quickly realize the API's business value proposition and shorten time to market.
@@ -111,18 +111,18 @@
 			</ol>
 		</p>
 		<c:if test="${not hideDescription}">
-			<p class="sectionHeader">Try the REST API Generator risk free!</p>
+			<p class="sectionHeader">Try the REST API Generator Risk Free</p>
 			<p>
 				Would you like to experience how the REST API Generator can help your organization automatically generate REST API
 				specifications and operational API code?  You can try the REST API Generator risk free by registering for a
-				free trial license.  The free trial license provides full access to all REST API Generator features for a
+				free trial license.  The trial license provides full access to all REST API Generator features for a
 				period of 24 hours.  There is no obligation to continue using the tool after the trial period expires.
 			</p>
 			<p>
-				To try the REST API Generator you'll need to supply a business domain model created with the StarUML modeling
-				tool.  You can either create your own domain model or download the 
+				To try the REST API Generator you'll need a business domain model created with the StarUML modeling
+				tool.  You can either create your own domain model or download a 
 				<a onclick="return downloadFile('images/insuranceExample.mdj', 'sampleDomainModel.mdj');">sample domain model</a>.
-				Once you've obtained a sample business domain model
+				Once you've obtained a business domain model
 				<a onclick="return openWindow('viewApiSpecForm', 'APISpecGenerator');">register for a free trial license</a>.
 			</p>
 		</c:if>
