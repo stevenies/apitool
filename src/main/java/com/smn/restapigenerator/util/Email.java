@@ -26,7 +26,7 @@ public class Email {
         helper.setTo(to);
         helper.setSubject(subject);
         helper.setText(htmlBody, true); // true indicates HTML content
-        helper.setFrom("testniesapi@gmail.com");
+        helper.setFrom("support@api-excellence.com");
         
         mailSender.send(message);
     }

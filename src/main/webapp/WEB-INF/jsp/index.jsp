@@ -127,7 +127,7 @@
 			</p>
 		</c:if>
 		<p>
-			Questions, comments, or suggestions?  Contact our support team at <a href="mailto:steveniesfl@gmail.com">steveniesfl@gmail.com</a>.
+			Questions, comments, or suggestions?  Contact our support team at <a href="mailto:support@api-excellence.com">support@api-excellence.com</a>.
 		</p>
 	</div>
 </body>

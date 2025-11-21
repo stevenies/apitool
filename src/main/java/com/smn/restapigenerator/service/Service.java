@@ -116,7 +116,7 @@ public class Service {
 	 * Register a user for API access by setting their access token and access expiration date.
 	 * @throws ExceptionUserDoesntExist if a user with the given email does not exist.
 	 */
-    public User registerUser(String email, String accessToken, String accessPlan) throws ExceptionUserDoesntExist {
+    public User registerUser(String email, String accessToken) throws ExceptionUserDoesntExist {
 
 		// Find the user and set their access token.
 		User user = this.findUserByEmail(email);
@@ -124,18 +124,8 @@ public class Service {
 
 		// Compute the access expiration date.
 		Calendar cal = Calendar.getInstance();
-		switch (accessPlan.toLowerCase()) {
-			case "weekly":
-    			cal.add(Calendar.DAY_OF_YEAR, 7);
-				break;
-			case "monthly":
-    			cal.add(Calendar.DAY_OF_YEAR, 31);
-				break;
-			default:
-    			cal.add(Calendar.DAY_OF_YEAR, 100000);	// TODO: Change this to a reasonable date when the Beta test ends.
-				break;
-		}
-    	Date date = cal.getTime();
+    	cal.add(Calendar.DAY_OF_YEAR, 100000);	// TODO: Change this to a reasonable date when the Beta test ends.
+		Date date = cal.getTime();
 		user.setAccessExpiration(date);
 
 		try {

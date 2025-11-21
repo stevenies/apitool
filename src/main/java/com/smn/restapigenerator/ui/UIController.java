@@ -172,7 +172,6 @@ public class UIController {
 	public String activate(
 		@RequestParam(required = false, defaultValue = "") String email,
 		@RequestParam(required = false, defaultValue = "") String accessToken,
-		@RequestParam(required = false, defaultValue = "") String accessPlan,
 		HttpSession session) {
 
 		List<String> errors = new ArrayList<>();
@@ -192,7 +191,7 @@ public class UIController {
 		User user = null;
 		if (errors.isEmpty()) {
 			try {
-				user = this.service.registerUser(email, accessToken, accessPlan);
+				user = this.service.registerUser(email, accessToken);
 			} catch (ExceptionUserDoesntExist e) {
 				errors.add("An account doesn't exist with the specified email address");
 			} catch (Throwable t) {

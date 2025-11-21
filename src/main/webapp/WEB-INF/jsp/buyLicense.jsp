@@ -40,16 +40,30 @@
 		<form id="formActivation" action="activate" enctype="multipart/form-data" method="post">
 			<table>
 				<tr>
-					<td colspan="3">
-						You have been automatically enrolled in the Trial license plan.
-						This plan allows unlimited tool usage for a 24 hour period.
-						Once the trial period expires you can continue using the REST API Generator
-						by purchasing a license:
-						<ul>
-							<li>One Week Access ($99): Unlimited tool usage for a 7 day period</li>
-							<li>One Month Access ($249): Unlimited tool usage for a 30 day period</li>
-						</ul>
-						Click <a href="whypay.html" target="WhyPay">here</a> to review the benefits of purchasing a license.
+					<td></td>
+					<td colspan="2">
+						<table id="subscriptionPlans">
+							<tr>
+								<td colspan="2" id="subscriptionPlansHeader">License Plans<span class="required">*</span>:</td>
+							</tr>
+							<tr>
+								<td class="subscriptionPlanLabel">Trial:</td>
+								<td><input type="radio" name="subscriptionPlan" value="trial" /> Unlimited tool usage for a 24 hour period</td>
+							</tr>
+							<tr>
+								<td class="subscriptionPlanLabel">One Week Access ($99):</td>
+								<td><input type="radio" name="subscriptionPlan" value="oneWeek" disabled /> Unlimited tool usage for a 7 day period</td>
+							</tr>
+							<tr>
+								<td class="subscriptionPlanLabel">One Month Access ($249):</td>
+								<td><input type="radio" name="subscriptionPlan" value="oneMonth" disabled /> Unlimited tool usage for a 30 day period</td>
+							</tr>
+							<tr>
+								<td colspan="2" id="subscriptionPlansFooter">
+									<a href="whypay.html" target="WhyPay">License Benefits</a></td>
+								</td>
+							</tr>
+						</table>
 					</td>
 				</tr>
 				<tr>
