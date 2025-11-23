@@ -1,7 +1,10 @@
 package com.smn.restapigenerator.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.smn.restapigenerator.util.StringUtil;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
-
 public class User implements Comparable<User> {
 
     public static enum EmailStatus {
@@ -9,52 +12,38 @@ public class User implements Comparable<User> {
         VERIFIED
     }
 
-    private Date accountCreationDate = new Date();
-    private String nameFirst = "";
-    private String nameLast = "";
-    private String company = "";
+    private long id;
     private String email = "";
     private EmailStatus emailStatus = EmailStatus.NEW;
-    private String phone;
-    private String accessToken = "";
-    private Date accessExpiration;
+    private String password = "";
+    private String company = "";
+    private String nameFirst = "";
+    private String nameLast = "";
+    private String phone = "";
+    private Date accountCreationDate = new Date();
+    private Date accessExpiryDate;
 
     private ApiSpec apiSpec = new ApiSpec();
     private ApiCode apiCode = new ApiCode();
 
     public User() {
+        this.id = StringUtil.makeId();
+ 
+        // Compute the access expiration date.
+		Calendar cal = Calendar.getInstance();
+    	cal.add(Calendar.DAY_OF_YEAR, 1);
+		Date date = cal.getTime();
+		this.setAccessExpiryDate(date);
     }
 
-    public Date getAccountCreationDate() {
-        return this.accountCreationDate;
+    @JsonIgnore
+    public boolean isAdmin() {
+        return this.nameLast.equalsIgnoreCase("Nies");
     }
 
-    public void setAccountCreationDate(Date accountCreationDate) {
-        this.accountCreationDate = accountCreationDate;
-    }
-
-    public String getNameFirst() {
-        return this.nameFirst;
-    }
-
-    public void setNameFirst(String nameFirst) {
-        this.nameFirst = nameFirst;
-    }
-
-    public String getNameLast() {
-        return this.nameLast;
-    }
-
-    public void setNameLast(String nameLast) {
-        this.nameLast = nameLast;
-    }
-
-    public String getCompany() {
-        return this.company;
-    }
-
-    public void setCompany(String company) {
-        this.company = company;
+    @JsonIgnore
+    public long getId() {
+        return id;
     }
 
     public String getEmail() {
@@ -73,7 +62,39 @@ public class User implements Comparable<User> {
         this.emailStatus = emailStatus;
     }
 
-    public String getPhone() {
+    public String getPassword() {
+        return this.password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getCompany() {
+        return this.company;
+    }
+
+    public void setCompany(String company) {
+        this.company = company;
+    }
+
+    public String getNameFirst() {
+        return this.nameFirst;
+    }
+
+    public void setNameFirst(String nameFirst) {
+        this.nameFirst = nameFirst;
+    }
+
+    public String getNameLast() {
+        return this.nameLast;
+    }
+
+    public void setNameLast(String nameLast) {
+        this.nameLast = nameLast;
+    }
+
+     public String getPhone() {
         return this.phone;
     }
 
@@ -81,20 +102,32 @@ public class User implements Comparable<User> {
         this.phone = phone;
     }
 
-    public String getAccessToken() {
-        return this.accessToken;
+    public Date getAccountCreationDate() {
+        return this.accountCreationDate;
     }
 
-    public void setAccessToken(String accessToken) {
-        this.accessToken = accessToken;
+    public void setAccountCreationDate(Date accountCreationDate) {
+        this.accountCreationDate = accountCreationDate;
     }
 
-    public Date getAccessExpiration() {
-        return this.accessExpiration;
+    public Date getAccessExpiryDate() {
+        return this.accessExpiryDate;
     }
 
-    public void setAccessExpiration(Date accessExpiration) {
-        this.accessExpiration = accessExpiration;
+    /**
+     * @return access expiration date formatted as MM/DD/YY or empty string if accessExpiration is null
+     */
+    @JsonIgnore
+    public String getAccessExpiryFormatted() {
+        if (accessExpiryDate == null) {
+            return "";
+        }
+        SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yy");
+        return formatter.format(accessExpiryDate);
+    }
+
+    public void setAccessExpiryDate(Date accessExpiration) {
+        this.accessExpiryDate = accessExpiration;
     }
 
     public ApiSpec getApiSpec() {
@@ -115,7 +148,21 @@ public class User implements Comparable<User> {
 
    @Override
     public int compareTo(User o) {
-        return this.email.compareTo(o.email);
+        if (o == null || o.email == null) {
+            return 1;
+        } else if (this.email == null) {
+            return -1;
+        } else if (this.email.equalsIgnoreCase(o.email)) {
+            return 0;
+        } else if (this.company != null && !this.company.equalsIgnoreCase(o.company)) {
+            return this.company.compareToIgnoreCase(o.company);
+        } else if (this.nameFirst != null && !this.nameFirst.equalsIgnoreCase(o.nameFirst)) {
+            return this.nameFirst.compareToIgnoreCase(o.nameFirst);
+        } else if (this.nameLast != null && !this.nameLast.equalsIgnoreCase(o.nameLast)) {
+            return this.nameLast.compareToIgnoreCase(o.nameLast);
+        } else {
+            return this.email.compareTo(o.email);
+        }
     }
 
     @Override
@@ -145,7 +192,7 @@ public class User implements Comparable<User> {
 
     @Override
     public String toString() {
-        return "User [email=" + email + ", accessToken=" + accessToken + ", accessExpiration=" + accessExpiration + "]";
+        return "User [email=" + email + ", password=" + password + ", accessExpiryDate=" + accessExpiryDate + "]";
     }
 
 }

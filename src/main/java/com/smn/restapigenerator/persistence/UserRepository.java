@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.smn.restapigenerator.exception.ExceptionUserDoesntExist;
 import com.smn.restapigenerator.model.User;
+import com.smn.restapigenerator.model.User.EmailStatus;
 
 import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.stereotype.Component;
@@ -49,16 +50,16 @@ public class UserRepository {
                     }
 
                     User admin = new User();
+                    admin.setEmail("steveniesfl@gmail.com");
+                    admin.setEmailStatus(EmailStatus.VERIFIED);
+                    admin.setCompany("Self");
                     admin.setNameFirst("Steve");
                     admin.setNameLast("Nies");
-                    admin.setCompany("Self");
-                    admin.setEmail("steveniesfl@gmail.com");
-                    admin.setAccessToken("smn01311959");
+                    admin.setPassword("smn01311959");
 
                     Calendar cal = Calendar.getInstance();
-                    cal.add(Calendar.YEAR, 100);
-                    Date futureDate = cal.getTime();
-                    admin.setAccessExpiration(futureDate);
+                    cal.add(Calendar.YEAR, 50);
+                    admin.setAccessExpiryDate(cal.getTime());
 
                     this.addUser(admin);
                     this.saveToJsonFile();
@@ -95,7 +96,7 @@ public class UserRepository {
         userMap.clear();
     }
 
-    public List<User> findAllUsers() {
+    public List<User> getAllUsers() {
         return new ArrayList<>(userMap.values());
     }
 
@@ -148,7 +149,7 @@ public class UserRepository {
         ObjectMapper mapper = new ObjectMapper();
         mapper.enable(SerializationFeature.INDENT_OUTPUT);
 
-        List<User> users = this.findAllUsers();
+        List<User> users = this.getAllUsers();
         users.sort((u1, u2) -> u1.getEmail().compareTo(u2.getEmail()));
 
         String javaUserDir = System.getenv(JAVA_USER_DIR);

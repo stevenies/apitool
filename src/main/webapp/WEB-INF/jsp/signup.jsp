@@ -53,7 +53,7 @@
 				</tr>
 				<tr>
 					<td><label>Password<span class="required">*</span>:</label></td>
-					<td><input id="accessToken" name="accessToken" type="text" /></td>
+					<td><input id="password" name="password" type="text" /></td>
 					<td class="formNote">Security credential authorizing use of the REST API Generator.</td>
 				</tr>
 			</table>
@@ -98,7 +98,7 @@
 				</tr>
 				<tr>
 					<td><label>Password<span class="required">*</span>:</label></td>
-					<td><input id="accessToken" name="accessToken" type="text" /></td>
+					<td><input id="password" name="password" type="text" /></td>
 					<td class="formNote">Specify a password for use as a security credential for your account.</td>
 				</tr>
 				<tr>

@@ -73,7 +73,15 @@ public class StringUtil {
         }
         String result = buffer.toString();
         return result;
-}
+    }
+
+    public static String toHTML(String text) {
+        if (text == null || text.isEmpty()) {
+            return "";
+        }
+        return text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+                   .replace("\"", "&quot;").replace("'", "&#39;").replace("\n", "<br/>");
+    }
 
 	public static boolean isValidEmail(String email) {
 		String emailRegex = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
@@ -107,4 +115,12 @@ public class StringUtil {
         return sum;
     }
 
+    public static long makeId() {
+        long prevId = System.currentTimeMillis();
+        long newId = System.currentTimeMillis();
+        while (newId == prevId) {
+            newId = System.currentTimeMillis();
+        }
+        return newId;
+    }
 }

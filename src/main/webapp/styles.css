@@ -232,4 +232,14 @@ B {
     text-align: left;
     font-style: italic;
 }
+#userTable {
+    border-collapse: collapse;
+    border: 1px solid #808080;
+    background-color: white;
+}
+#userTable TH, #userTable TD {
+    border: 1px solid #808080;
+    padding: 8px 12px;
+    text-align: left;
+}
 

@@ -66,18 +66,6 @@
 						</table>
 					</td>
 				</tr>
-				<tr>
-					<td colspan="3"><div class="formHeader">Account Activation</div></td>
-				</tr>
-				<tr>
-					<td><label>Email<span class="required">*</span>:</label></td>
-					<td>${email}</td>
-				</tr>
-				<tr>
-					<td><label>Password<span class="required">*</span>:</label></td>
-					<td><input type="text" id="accessToken" name="accessToken" value="${accessToken}" /></td>
-					<td class="formNote">Password to be used for account access.</td>
-				</tr>
 			</table>
 			<c:if test="${not empty enrollmentErrors}">
 				<div class="errorPanel">

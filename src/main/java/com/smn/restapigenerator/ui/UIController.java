@@ -171,7 +171,7 @@ public class UIController {
 	@PostMapping("/activate")
 	public String activate(
 		@RequestParam(required = false, defaultValue = "") String email,
-		@RequestParam(required = false, defaultValue = "") String accessToken,
+		@RequestParam(required = false, defaultValue = "") String password,
 		HttpSession session) {
 
 		List<String> errors = new ArrayList<>();
@@ -181,17 +181,17 @@ public class UIController {
 		session.setAttribute("email", email);
 
 		// Verify that the required fields are provided.
-		if (StringUtil.isEmpty(accessToken)) {
+		if (StringUtil.isEmpty(password)) {
 			errors.add("Enter a password to secure your account");
 		} else {
-			accessToken = StringUtil.trim(accessToken);
-			session.setAttribute("accessToken", accessToken);
+			password = StringUtil.trim(password);
+			session.setAttribute("password", password);
 		}
 
 		User user = null;
 		if (errors.isEmpty()) {
 			try {
-				user = this.service.registerUser(email, accessToken);
+				user = this.service.activateUser(email, password);
 			} catch (ExceptionUserDoesntExist e) {
 				errors.add("An account doesn't exist with the specified email address");
 			} catch (Throwable t) {
@@ -215,7 +215,7 @@ public class UIController {
 	@PostMapping("/login")
 	public String login(
 		@RequestParam(required = false, defaultValue = "") String email,
-		@RequestParam(required = false, defaultValue = "") String accessToken,
+		@RequestParam(required = false, defaultValue = "") String password,
 		HttpSession session,
 		HttpServletResponse response) {
 
@@ -228,7 +228,7 @@ public class UIController {
 			errors.add("Enter a valid email address");
 		}
 
-		if (StringUtil.isEmpty(accessToken)) {
+		if (StringUtil.isEmpty(password)) {
 			errors.add("Enter the password you specified when your account was registered");
 		}
 
@@ -261,7 +261,7 @@ public class UIController {
 
 		// Verify that the user session is valid.
 		User user = (User) session.getAttribute("user");
-		if (user == null || user.getAccessToken() == null || user.getAccessToken().isEmpty()) {
+		if (user == null || user.getPassword() == null || user.getPassword().isEmpty()) {
 			session.setAttribute("referrer", "viewAPISpecForm");
 			return "login";
 		}
@@ -285,7 +285,7 @@ public class UIController {
 
 		// Verify that the user session is valid.
 		User user = (User) session.getAttribute("user");
-		if (user == null || user.getAccessToken() == null || user.getAccessToken().isEmpty()) {
+		if (user == null || user.getPassword() == null || user.getPassword().isEmpty()) {
 			response.setStatus(HttpServletResponse.SC_FORBIDDEN);
 			return;
 		}
@@ -335,7 +335,7 @@ public class UIController {
 
 		// Verify that the user session is valid.
 		User user = (User) session.getAttribute("user");
-		if (user == null || user.getAccessToken() == null || user.getAccessToken().isEmpty()) {
+		if (user == null || user.getPassword() == null || user.getPassword().isEmpty()) {
 			session.setAttribute("referrer", "viewAPICodeForm");
 			return "login";
 		}
@@ -360,7 +360,7 @@ public class UIController {
 
 		// Verify that the user session is valid.
 		User user = (User) session.getAttribute("user");
-		if (user == null || user.getAccessToken() == null || user.getAccessToken().isEmpty()) {
+		if (user == null || user.getPassword() == null || user.getPassword().isEmpty()) {
 			response.setStatus(HttpServletResponse.SC_FORBIDDEN);
 			return;
 		}
@@ -396,7 +396,7 @@ public class UIController {
     public ResponseEntity<InputStreamResource> getApiSpecFile(HttpSession session) {
 
 		User user = (User) session.getAttribute("user");
-		if (user == null || user.getAccessToken() == null || user.getAccessToken().isEmpty()) {
+		if (user == null || user.getPassword() == null || user.getPassword().isEmpty()) {
             return ResponseEntity.notFound().build();
 		}
 
@@ -428,7 +428,7 @@ public class UIController {
 	public ResponseEntity<String> saveApiSpecFile(@RequestBody String content, HttpSession session) {
 
 		User user = (User) session.getAttribute("user");
-		if (user == null || user.getAccessToken() == null || user.getAccessToken().isEmpty()) {
+		if (user == null || user.getPassword() == null || user.getPassword().isEmpty()) {
 			return ResponseEntity.status(HttpServletResponse.SC_FORBIDDEN).body("Unauthorized");
 		}
 
@@ -458,7 +458,7 @@ public class UIController {
     public ResponseEntity<StreamingResponseBody> apiCodeZipFile(HttpSession session) {
 
 		User user = (User) session.getAttribute("user");
-		if (user == null || user.getAccessToken() == null || user.getAccessToken().isEmpty()) {
+		if (user == null || user.getPassword() == null || user.getPassword().isEmpty()) {
             return ResponseEntity.notFound().build();
 		}
 
@@ -485,6 +485,37 @@ public class UIController {
 				.body(stream);
 	}
 
+	@GetMapping("/viewUsers")
+	public String viewUsers(HttpSession session) {
+	
+		// Verify that the user session is valid and user has admin privileges
+		User user = (User) session.getAttribute("user");
+		if (user == null || !user.isAdmin()) {
+			session.setAttribute("referrer", "viewUsers");
+			return "login";
+		}
+
+		List<User> users = service.getAllUsers();
+		ArrayList<User> sortedUsers = new ArrayList<>(users);
+		sortedUsers.sort(null);	
+
+		StringBuilder htmlTable = new StringBuilder();
+		for (User u : sortedUsers) {
+			htmlTable.append("					<tr>");
+			htmlTable.append("						<td>").append("<button onclick=\"editUser(").append(u.getId()).append(")\">Edit</button>").append("</td>");
+			htmlTable.append("						<td>").append(StringUtil.toHTML(u.getEmailStatus().name())).append("</td>");
+			htmlTable.append("						<td>").append(StringUtil.toHTML(u.getCompany())).append("</td>");
+			htmlTable.append("						<td>").append(StringUtil.toHTML(u.getNameFirst())).append("</td>");
+			htmlTable.append("						<td>").append(StringUtil.toHTML(u.getNameLast())).append("</td>");
+			htmlTable.append("						<td>").append(StringUtil.toHTML(u.getEmail())).append("</td>");
+			htmlTable.append("						<td>").append(StringUtil.toHTML(u.getPhone())).append("</td>");
+			htmlTable.append("						<td>").append(u.getAccessExpiryFormatted()).append("</td>");
+			htmlTable.append("					</tr>");
+		}
+		session.setAttribute("userTable", htmlTable.toString());
+		return "admin";
+	}
+	
 	boolean jsonToBoolean(JsonNode parentJsonNode, String fieldName) {
 		JsonNode fieldJsonNode = parentJsonNode.get(fieldName);
 		String value = fieldJsonNode != null ? fieldJsonNode.asText() : "";

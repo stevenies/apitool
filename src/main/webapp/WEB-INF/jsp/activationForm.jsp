@@ -61,7 +61,7 @@
 				</tr>
 				<tr>
 					<td><label>Password<span class="required">*</span>:</label></td>
-					<td><input type="text" id="accessToken" name="accessToken" value="${accessToken}" /></td>
+					<td><input type="text" id="password" name="password" value="${password}" /></td>
 					<td class="formNote">Password to be used for account access.</td>
 				</tr>
 			</table>
