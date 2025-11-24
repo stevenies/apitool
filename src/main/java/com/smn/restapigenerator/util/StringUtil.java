@@ -1,5 +1,9 @@
 package com.smn.restapigenerator.util;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 public class StringUtil {
 
 	public static boolean isEmpty(String text) {
@@ -123,4 +127,18 @@ public class StringUtil {
         }
         return newId;
     }
+
+    public static Date parseDate(String dateStr) throws ParseException {
+        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yy");
+        return sdf.parse(dateStr);
+    }
+
+    public static String tabs(int count) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < count; i++) {
+            sb.append("\t");
+        }
+        return sb.toString();
+    }
+
 }

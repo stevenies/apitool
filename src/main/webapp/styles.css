@@ -242,4 +242,12 @@ B {
     padding: 8px 12px;
     text-align: left;
 }
+#userTableHeader {
+    background-color: #f2f2f2;;
+    font-weight: bold;
+    text-align: center;
+}
+#userTable #saveButton {
+    background-color: #329c4a;
+}
 

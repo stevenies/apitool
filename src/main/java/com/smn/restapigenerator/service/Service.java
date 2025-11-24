@@ -11,8 +11,11 @@ import com.smn.restapigenerator.persistence.UserRepository;
 import com.smn.restapigenerator.service.adapter.staruml.AdaptorStarUML;
 import com.smn.restapigenerator.service.swagger.Swagger;
 import com.smn.restapigenerator.util.FileUtil;
+import com.smn.restapigenerator.util.StringUtil;
+
 import java.io.File;
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -140,11 +143,50 @@ public class Service {
 		return this.userRepository.getAllUsers();
 	}
 
+	public User findUserById(long id) throws ExceptionUserDoesntExist {
+		User user = this.userRepository.findUserById(id);
+		return user;
+	}
+
 	public User findUserByEmail(String email) throws ExceptionUserDoesntExist {
 		User user = this.userRepository.findUserByEmail(email);
 		return user;
 	}
 
+    public void updateUser(
+        User user,
+		String company,
+        String nameFirst,
+        String nameLast,
+        String email,
+        String phone,
+        Date accessExpiry) {
+	
+		if (!StringUtil.isEmpty(company)) {
+		    user.setCompany(StringUtil.trim(company));
+		}
+		if (!StringUtil.isEmpty(nameFirst)) {
+		    user.setNameFirst(StringUtil.trim(nameFirst));
+		}
+		if (!StringUtil.isEmpty(nameLast)) {
+		    user.setNameLast(StringUtil.trim(nameLast));
+		}
+		if (!StringUtil.isEmpty(email)) {
+		    user.setEmail(StringUtil.trim(email));
+		}
+		if (!StringUtil.isEmpty(phone)) {
+		    user.setPhone(StringUtil.trim(phone));
+		}
+		if (accessExpiry != null) {
+		    user.setAccessExpiryDate(accessExpiry);
+		}
+		try {
+			this.userRepository.saveToJsonFile();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+ 
 	public DtoReadUMLFile readUMLFile(String filename, byte[] fileContent) {
 		String fileExtension = FileUtil.getExtension(filename);
 

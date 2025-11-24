@@ -26,7 +26,9 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.zip.ZipOutputStream;
 import org.springframework.http.MediaType;
@@ -42,7 +44,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
-
+import static com.smn.restapigenerator.util.StringUtil.tabs;
 @Controller
 public class UIController {
 
@@ -252,7 +254,9 @@ public class UIController {
 			session.setAttribute("apiCode", apiCode);
 
 			String referrer = (String) session.getAttribute("referrer");
-			return "viewApiCodeForm".equalsIgnoreCase(referrer) ? "apiCodeForm" : "apiSpecForm";
+			return "viewApiSpecForm".equalsIgnoreCase(referrer) ?
+				"apiSpecForm" :
+				"viewApiCodeForm".equalsIgnoreCase(referrer) ? "apiCodeForm" : "redirect:viewUsers";
 		}
 	}
 
@@ -486,7 +490,9 @@ public class UIController {
 	}
 
 	@GetMapping("/viewUsers")
-	public String viewUsers(HttpSession session) {
+	public String viewUsers(
+		@RequestParam(required = false, defaultValue = "0") long userId,
+		HttpSession session) {
 	
 		// Verify that the user session is valid and user has admin privileges
 		User user = (User) session.getAttribute("user");
@@ -501,21 +507,102 @@ public class UIController {
 
 		StringBuilder htmlTable = new StringBuilder();
 		for (User u : sortedUsers) {
-			htmlTable.append("					<tr>");
-			htmlTable.append("						<td>").append("<button onclick=\"editUser(").append(u.getId()).append(")\">Edit</button>").append("</td>");
-			htmlTable.append("						<td>").append(StringUtil.toHTML(u.getEmailStatus().name())).append("</td>");
-			htmlTable.append("						<td>").append(StringUtil.toHTML(u.getCompany())).append("</td>");
-			htmlTable.append("						<td>").append(StringUtil.toHTML(u.getNameFirst())).append("</td>");
-			htmlTable.append("						<td>").append(StringUtil.toHTML(u.getNameLast())).append("</td>");
-			htmlTable.append("						<td>").append(StringUtil.toHTML(u.getEmail())).append("</td>");
-			htmlTable.append("						<td>").append(StringUtil.toHTML(u.getPhone())).append("</td>");
-			htmlTable.append("						<td>").append(u.getAccessExpiryFormatted()).append("</td>");
-			htmlTable.append("					</tr>");
+			long id = u.getId();
+			String emailStatus = u.getEmailStatus().name();
+			String company = u.getCompany();
+			String nameFirst = u.getNameFirst();
+			String nameLast = u.getNameLast();
+			String email = u.getEmail();
+			String phone = u.getPhone();
+			String accessExpiry = u.getAccessExpiryFormatted();
+
+			if (id == userId) {
+				htmlTable.append(tabs(5)).append("<tr>\n");
+
+				htmlTable.append(tabs(6)).append("<td>");
+				htmlTable.append("<button id=\"saveButton\" onclick=\"return saveUser()\">Save</button>");
+				htmlTable.append(this.makeHiddenInputField("userId", String.valueOf(id)));
+				htmlTable.append("</td>\n");
+
+				htmlTable.append(tabs(6)).append("<td>").append(StringUtil.toHTML(emailStatus)).append("</td>\n");
+				htmlTable.append(tabs(6)).append("<td>").append(this.makeInputField("company", company)).append("</td>\n");
+				htmlTable.append(tabs(6)).append("<td>").append(this.makeInputField("nameFirst", nameFirst)).append("</td>\n");
+				htmlTable.append(tabs(6)).append("<td>").append(this.makeInputField("nameLast", nameLast)).append("</td>\n");
+				htmlTable.append(tabs(6)).append("<td>").append(this.makeInputField("email", email)).append("</td>\n");
+				htmlTable.append(tabs(6)).append("<td>").append(this.makeInputField("phone", phone)).append("</td>\n");
+				htmlTable.append(tabs(6)).append("<td>").append(this.makeInputField("accessExpiry", accessExpiry)).append("</td>\n");
+				htmlTable.append(tabs(5)).append("</tr>\n");
+			} else {
+				htmlTable.append(tabs(5)).append("<tr>\n");
+				htmlTable.append(tabs(6)).append("<td>").append("<button onclick=\"return editUser(").append(u.getId()).append(")\">Edit</button>").append("</td>\n");
+				htmlTable.append(tabs(6)).append("<td>").append(StringUtil.toHTML(emailStatus)).append("</td>\n");
+				htmlTable.append(tabs(6)).append("<td>").append(StringUtil.toHTML(company)).append("</td>\n");
+				htmlTable.append(tabs(6)).append("<td>").append(StringUtil.toHTML(nameFirst)).append("</td>\n");
+				htmlTable.append(tabs(6)).append("<td>").append(StringUtil.toHTML(nameLast)).append("</td>\n");
+				htmlTable.append(tabs(6)).append("<td>").append(StringUtil.toHTML(email)).append("</td>\n");
+				htmlTable.append(tabs(6)).append("<td>").append(StringUtil.toHTML(phone)).append("</td>\n");
+				htmlTable.append(tabs(6)).append("<td>").append(u.getAccessExpiryFormatted()).append("</td>\n");
+				htmlTable.append(tabs(5)).append("</tr>\n");
+			}
+		
 		}
 		session.setAttribute("userTable", htmlTable.toString());
 		return "admin";
 	}
 	
+	@PostMapping("/saveUser")
+    public String saveUser(
+        @RequestParam(required = false, defaultValue = "0") long userId,
+        @RequestParam(required = false, defaultValue = "") String company,
+        @RequestParam(required = false, defaultValue = "") String nameFirst,
+        @RequestParam(required = false, defaultValue = "") String nameLast,
+        @RequestParam(required = false, defaultValue = "") String email,
+        @RequestParam(required = false, defaultValue = "") String phone,
+        @RequestParam(required = false, defaultValue = "") String accessExpiry,
+        HttpSession session) {
+
+        // Verify that the user session is valid and user has admin privileges
+        User currentUser = (User) session.getAttribute("user");
+        if (currentUser == null || !currentUser.isAdmin()) {
+			session.setAttribute("referrer", "viewUsers");
+			return "login";
+        }
+
+        List<String> errors = new ArrayList<>();
+		session.setAttribute("errors", errors);
+
+ 		User user = null;
+        try {
+            user = service.findUserById(userId);
+        } catch (Exception e) {
+ 			errors.add("User doesn't exist");
+		}
+
+		// Validate and update user fields
+		if (!StringUtil.isEmpty(email) && !StringUtil.isValidEmail(email)) {
+			errors.add("Invalid email format");
+		}
+
+		if (!StringUtil.isEmpty(phone) && !StringUtil.isValidPhone(phone)) {
+			errors.add("Invalid phone format. Use 555-123-4567 (US) or +44 20 7946 0958 (International)");
+		}
+
+		Date accessExpiryDate = null;
+		if (!StringUtil.isEmpty(accessExpiry)) {
+			try {
+				accessExpiryDate = StringUtil.parseDate(accessExpiry);
+			} catch (ParseException e) {
+				errors.add("Invalid date format for Expiration Date. Use MM/DD/YY");
+			}
+		}
+
+		if (user != null && errors.isEmpty()) {
+			service.updateUser(user, company, nameFirst, nameLast, email, phone, accessExpiryDate);
+		}
+
+ 		return "redirect:viewUsers";
+    }
+
 	boolean jsonToBoolean(JsonNode parentJsonNode, String fieldName) {
 		JsonNode fieldJsonNode = parentJsonNode.get(fieldName);
 		String value = fieldJsonNode != null ? fieldJsonNode.asText() : "";
@@ -528,6 +615,14 @@ public class UIController {
 		return value;
 	}
 
+	private String makeInputField(String fieldName, String value) {
+		return "<input type=\"text\" id=\"" + fieldName + "\" name=\"" + fieldName + "\" value=\"" + StringUtil.toHTML(value) + "\" />";
+	}
+
+    private String makeHiddenInputField(String fieldName, String value) {
+        return "<input type=\"hidden\" id=\"" + fieldName + "\" name=\"" + fieldName + "\" value=\"" + StringUtil.toHTML(value) + "\" />";
+    }
+	
 	private void generateApiSpec(
 		User user,
 		String title,
