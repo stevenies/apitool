@@ -12,10 +12,8 @@ import com.smn.restapigenerator.service.adapter.staruml.AdaptorStarUML;
 import com.smn.restapigenerator.service.swagger.Swagger;
 import com.smn.restapigenerator.util.FileUtil;
 import com.smn.restapigenerator.util.StringUtil;
-
 import java.io.File;
 import java.io.IOException;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;

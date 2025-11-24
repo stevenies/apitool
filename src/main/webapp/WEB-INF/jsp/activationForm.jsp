@@ -36,20 +36,22 @@
 </head>
 <body>
 	<div id="page">
-		<p class="title">API Specification Generator</p>
+		<p class="title">REST API Generator</p>
 		<form id="formActivation" action="activate" enctype="multipart/form-data" method="post">
 			<table>
 				<tr>
 					<td colspan="3">
-						You have been automatically enrolled in the Trial license plan.
-						This plan allows unlimited tool usage for a 24 hour period.
-						Once the trial period expires you can continue using the REST API Generator
-						by purchasing a license:
+						You have been automatically enrolled in the Trial license plan. This plan allows unlimited tool usage<br/>
+						for a 24 hour period. Once the trial period expires you can continue using the REST API Generator by<br/>
+						purchasing a license:
 						<ul>
 							<li>One Week Access ($99): Unlimited tool usage for a 7 day period</li>
 							<li>One Month Access ($249): Unlimited tool usage for a 30 day period</li>
 						</ul>
-						Click <a href="whypay.html" target="WhyPay">here</a> to review the benefits of purchasing a license.
+ 						By using the REST API Generator development activities that used to take weeks to perform manually<br/>
+						can now be accomplished automatically in a matter of minutes. Click <a href="apiExample.html" target="apiExample">here</a>
+						to see an example API and its generated development artifacts (OpenAPI client interface specification and
+						foundational API implementation code).
 					</td>
 				</tr>
 				<tr>

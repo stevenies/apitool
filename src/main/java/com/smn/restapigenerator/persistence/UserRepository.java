@@ -6,21 +6,17 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.smn.restapigenerator.exception.ExceptionUserDoesntExist;
 import com.smn.restapigenerator.model.User;
 import com.smn.restapigenerator.model.User.EmailStatus;
-import com.smn.restapigenerator.util.StringUtil;
 import jakarta.annotation.PostConstruct;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @Component
 public class UserRepository {
