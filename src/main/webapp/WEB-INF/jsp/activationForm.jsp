@@ -45,8 +45,9 @@
 						for a 24 hour period. Once the trial period expires you can continue using the REST API Generator by<br/>
 						purchasing a license:
 						<ul>
-							<li>One Week Access ($99): Unlimited tool usage for a 7 day period</li>
-							<li>One Month Access ($249): Unlimited tool usage for a 30 day period</li>
+							<li>One Week Access ($149): Unlimited tool usage for a 7 day period</li>
+							<li>One Month Access ($499): Unlimited tool usage for a 30 day period</li>
+							<li>Long-term Access: Contact <a href="mailto:sales@api-excellence.com">sales@api-excellence.com</a> for pricing and options</li>
 						</ul>
  						By using the REST API Generator development activities that used to take weeks to perform manually<br/>
 						can now be accomplished automatically in a matter of minutes. Click <a href="apiExample.html" target="apiExample">here</a>

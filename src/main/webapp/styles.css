@@ -250,4 +250,8 @@ B {
 #userTable #saveButton {
     background-color: #329c4a;
 }
-
+#licenseBenefitsImage {
+    width: 200px;
+    float: right;
+    padding: 15px 0px 20px 20px;
+}

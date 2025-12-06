@@ -24,12 +24,15 @@ import org.openapitools.codegen.ClientOptInput;
 import org.openapitools.codegen.DefaultGenerator;
 import org.openapitools.codegen.SpecValidationException;
 import org.openapitools.codegen.config.CodegenConfigurator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class Service {
 
+	private static final Logger logger = LoggerFactory.getLogger(Service.class);
 	public static class DtoReadUMLFile {
 
 		private List<Entity> entities = new ArrayList<>();
@@ -108,7 +111,7 @@ public class Service {
 			this.userRepository.addUser(user);
 			this.userRepository.saveToJsonFile();
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.error("Failed to save user to JSON file: {}", e.getMessage(), e);
 		}
 		return user;
     }
@@ -132,7 +135,7 @@ public class Service {
 		try {
 			this.userRepository.saveToJsonFile();
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.error("Failed to save user to JSON file: {}", e.getMessage(), e);
 		}
 		return user;
     }
@@ -181,7 +184,7 @@ public class Service {
 		try {
 			this.userRepository.saveToJsonFile();
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.error("Failed to save user to JSON file: {}", e.getMessage(), e);
 		}
 	}
  

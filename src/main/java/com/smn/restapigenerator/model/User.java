@@ -38,7 +38,8 @@ public class User implements Comparable<User> {
 
     @JsonIgnore
     public boolean isAdmin() {
-        return this.nameLast.equalsIgnoreCase("Nies");
+        boolean isAdmin = this.nameLast.equalsIgnoreCase("Nies");
+        return isAdmin;
     }
 
     @JsonIgnore

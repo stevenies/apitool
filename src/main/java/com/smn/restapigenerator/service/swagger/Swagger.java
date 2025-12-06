@@ -15,12 +15,16 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
 @Component
 public class Swagger {
+
+	private static final Logger logger = LoggerFactory.getLogger(Swagger.class);
 
 	final static String MARKER_TITLE = ">>>title";
 	final static String MARKER_OPERATION_ID = ">>>operationId";
@@ -270,7 +274,7 @@ public class Swagger {
 
 		} catch (IOException e) {
 			// TODO Display error message in UI
-			System.err.println(e.getMessage());
+			logger.error("Error reading resource file: {}", e.getMessage(), e);
 		}
 
 		// Add the referenced component schemas to the components set
@@ -309,7 +313,7 @@ public class Swagger {
 			resourceText = resourceText.replace(Swagger.MARKER_TARGET_ID_TYPE, targetIdType);
 
 		} catch (IOException e) {
-			System.err.println(e.getMessage());
+			logger.error("Error reading resource file: {}", e.getMessage(), e);
 			// TODO Display error message in UI
 		}
 

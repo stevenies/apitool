@@ -6,10 +6,15 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
 public class FileUtil {
+
+	private static final Logger logger = LoggerFactory.getLogger(FileUtil.class);
 
 	public static String readResource(String resourcePath) throws IOException {
 		Resource resource = new ClassPathResource(resourcePath);
@@ -45,7 +50,7 @@ public class FileUtil {
     public static void deleteFile(File file) {
 		if (file != null && file.exists()) {
 			if (!file.delete()) {	
-				System.err.println("Failed to delete file: " + file.getAbsolutePath());
+				logger.error("Failed to delete file: {}", file.getAbsolutePath());
 			}
 		}
     }

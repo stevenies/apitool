@@ -12,11 +12,15 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
 public class AdaptorStarUML {
 
+	private static final Logger logger = LoggerFactory.getLogger(AdaptorStarUML.class);
 	public static class DtoReadUMLFile {
 
 		private List<Entity> entities = new ArrayList<>();
@@ -176,9 +180,7 @@ public class AdaptorStarUML {
 
 			List<Entity> entityList = new ArrayList<>(classMap.values());
 			for (Entity entity : entityList) {
-
-				// TODO Replace following with a logger
-				// System.out.println(entity);
+				logger.debug("Entity: {}", entity);
 
 				List<MVA> relations = entity.getRelations();
 				for (MVA relation : relations) {

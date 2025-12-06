@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.smn.restapigenerator.exception.ExceptionUserDoesntExist;
 import com.smn.restapigenerator.model.User;
 import com.smn.restapigenerator.model.User.EmailStatus;
+import com.smn.restapigenerator.ui.UIController;
 import jakarta.annotation.PostConstruct;
 import java.io.File;
 import java.io.FileReader;
@@ -16,6 +17,8 @@ import java.util.Calendar;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.List;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -25,6 +28,7 @@ public class UserRepository {
     private static final String TOOL_DIR = "RestApiGenerator"; // Environment variable for the working directory used by the REST API Generator tool
     private static final String USERS_FILENAME = "users.json"; // Path to the persisted UserRepository JSON file
 
+    private static final Logger logger = LoggerFactory.getLogger(UIController.class);
     private final Map<String, User> userMap = new ConcurrentHashMap<>();
 
     @PostConstruct
@@ -32,9 +36,9 @@ public class UserRepository {
         try {
             String javaUserDir = System.getenv(JAVA_USER_DIR);
             if (javaUserDir == null) {
-                System.out.println("Environment variable " + JAVA_USER_DIR + " is not set.");
+                logger.error("Environment variable {} is not set.", JAVA_USER_DIR);
             } else {
-                System.out.println("Java user directory: " + javaUserDir);
+                logger.info("Java user directory: {}", javaUserDir);
 
                 File restApiGenDir = new File(javaUserDir, TOOL_DIR);
                 File usersFile = new File(restApiGenDir, USERS_FILENAME);
@@ -63,11 +67,10 @@ public class UserRepository {
                     this.saveToJsonFile();
                 }
             }
-            System.out.println("UserRepository initialized!");
+            logger.info("UserRepository initialized!");
 
         } catch (Throwable t) {
-            System.err.println("Error initializing UserRepository: " + t.getMessage());
-            t.printStackTrace();
+            logger.error("Error initializing UserRepository: {}", t.getMessage(), t);
         }
     }
     

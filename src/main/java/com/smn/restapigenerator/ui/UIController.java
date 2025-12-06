@@ -12,7 +12,7 @@ import com.smn.restapigenerator.model.uml.DomainModel;
 import com.smn.restapigenerator.model.uml.Entity;
 import com.smn.restapigenerator.service.Service;
 import com.smn.restapigenerator.service.Service.DtoReadUMLFile;
-import com.smn.restapigenerator.util.Email;
+import com.smn.restapigenerator.util.EmailService;
 import com.smn.restapigenerator.util.StringUtil;
 import com.smn.restapigenerator.util.ZipUtil;
 import jakarta.servlet.http.HttpServletRequest;
@@ -31,6 +31,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.zip.ZipOutputStream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
@@ -45,14 +47,21 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 import static com.smn.restapigenerator.util.StringUtil.tabs;
+
 @Controller
 public class UIController {
+
+	private static final String VIEW_API_SPEC_FORM = "viewApiSpecForm";
+    private static final String VIEW_API_CODE_FORM = "viewApiCodeForm";
+	private static final String VIEW_USER_ADMIN_FORM = "viewUsers";
+
+	private static final Logger logger = LoggerFactory.getLogger(UIController.class);
 
 	@Autowired
 	private Service service;
 
 	@Autowired
-	private Email email;
+	private EmailService emailService;
 
 	@GetMapping("/toggleDescription")
 	public String toggleDescription(HttpSession session) {
@@ -61,6 +70,11 @@ public class UIController {
 			hideDescription = false;
 		}
 		session.setAttribute("hideDescription", !hideDescription);
+
+		User user = (User) session.getAttribute("user");
+		String userEmail = user == null ? "Unknown" : user.getEmail();
+		logger.info(hideDescription ? "Now Hiding description for user: {}" : "Now Showing description for user: {}", userEmail);
+
 		return "redirect:index";
 	}
 
@@ -118,6 +132,7 @@ public class UIController {
 		if (errors.isEmpty()) {
 			try {
 				this.service.createUser(nameFirst, nameLast, company, email, phone);
+				logger.info("User created successfully: {} {} {} {} {}", nameFirst, nameLast, company, email, phone);
 
 				// Send the user an email to validate their email address.
 				try {
@@ -131,16 +146,20 @@ public class UIController {
 					int key = StringUtil.makeKey(email);
 					String htmlBody = new String(resource.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
 					htmlBody = String.format(htmlBody, urlDomain, email, key);
-					this.email.sendHtmlEmail(email, subject, htmlBody);
+					this.emailService.sendHtmlEmail(email, subject, htmlBody);
+					logger.info("Welcome email sent to {}", email);
+
 				} catch (Exception e) {
-					// TODO Replace following with a logger.
-					e.printStackTrace();
+					logger.error("Failed to send email to {}: {}", email, e.getMessage(), e);
 				}
 
 			} catch (ExceptionUserExists e) {
 				errors.add("Another user with the same name or email address already exists");
+				logger.warn("Account already exists: {} {} {} {} {}", nameFirst, nameLast, company, email, phone);
+
 			} catch (Throwable t) {
 				errors.add("An unexpected error occurred: " + t.getMessage());
+				logger.error("An unexpected error occurred while sending email to {}: {}", email, t.getMessage(), t);
 			}
 		}
 
@@ -161,6 +180,7 @@ public class UIController {
 		int masterKey = StringUtil.makeKey(email);
 		if (key != masterKey) {
 			errors.add("Email verification failed. The provided key is invalid.");
+			logger.warn("Email verification failed for email: {}", email);
 			session.setAttribute("emailVerified", false);
 			return "activationForm";
 		}
@@ -194,10 +214,13 @@ public class UIController {
 		if (errors.isEmpty()) {
 			try {
 				user = this.service.activateUser(email, password);
+				logger.info("User activated successfully: {}", email);
 			} catch (ExceptionUserDoesntExist e) {
 				errors.add("An account doesn't exist with the specified email address");
+				logger.warn("Account doesn't exist for email: {}", email);
 			} catch (Throwable t) {
 				errors.add("An unexpected error occurred: " + t.getMessage());
+				logger.error("An unexpected error occurred while activating user {}: {}", email, t.getMessage(), t);
 			}
 		}
 
@@ -239,13 +262,29 @@ public class UIController {
 			try {
 				user = this.service.findUserByEmail(email);
 			} catch (ExceptionUserDoesntExist e) {
-				errors.add("The email address is invalid");
+				errors.add("An account doesn't exist for email " + email);
 			}
 		}
 
 		if (user == null || !errors.isEmpty()) {
+			for (String error : errors) {
+				logger.warn("Failed login: {}", error);
+			}
 			return "login";
+
 		} else {
+
+			// Determine whether the license has expired
+			if (!user.isAdmin()) {
+				Date now = new Date();
+				Date accessExpiry = user.getAccessExpiryDate();
+				if (accessExpiry != null && now.after(accessExpiry)) {
+					logger.warn("License expired for user: {}", email);
+					return "buyLicense";
+				}
+			}
+
+			// The license is valid. Proceed to log in the user.
 			ApiSpec apiSpec = user.getApiSpec();
 			ApiCode apiCode = user.getApiCode();
 
@@ -254,9 +293,19 @@ public class UIController {
 			session.setAttribute("apiCode", apiCode);
 
 			String referrer = (String) session.getAttribute("referrer");
-			return "viewApiSpecForm".equalsIgnoreCase(referrer) ?
-				"apiSpecForm" :
-				"viewApiCodeForm".equalsIgnoreCase(referrer) ? "apiCodeForm" : "redirect:viewUsers";
+			boolean viewApiSpecForm = VIEW_API_SPEC_FORM.equalsIgnoreCase(referrer);
+			boolean viewApiCodeForm = VIEW_API_CODE_FORM.equalsIgnoreCase(referrer);
+
+			if (viewApiSpecForm) {
+				logger.info("Successful login - redirecting to API Specification Form: {}", email);
+				return "apiSpecForm";
+			} else if (viewApiCodeForm) {
+				logger.info("Successful login - redirecting to API Code Form: {}", email);
+				return "apiCodeForm";
+			} else {
+				logger.info("Successful login - redirecting to User Admin Form: {}", email);
+				return "redirect:viewUsers";
+			}
 		}
 	}
 
@@ -266,7 +315,7 @@ public class UIController {
 		// Verify that the user session is valid.
 		User user = (User) session.getAttribute("user");
 		if (user == null || user.getPassword() == null || user.getPassword().isEmpty()) {
-			session.setAttribute("referrer", "viewAPISpecForm");
+			session.setAttribute("referrer", VIEW_API_SPEC_FORM);
 			return "login";
 		}
 
@@ -293,6 +342,7 @@ public class UIController {
 			response.setStatus(HttpServletResponse.SC_FORBIDDEN);
 			return;
 		}
+		String email = user.getEmail();
 
         try {
             // Parse the JSON object containing the various form fields.
@@ -318,7 +368,13 @@ public class UIController {
 						user, title, description, version, domainModel,
 						makeSEARCH, makeGET, makePOST, makePUT, makeDELETE,
 						serverDomain, contextRoot, port, errors);
-					response.setStatus(errors.size() == 0 ? HttpServletResponse.SC_OK : HttpServletResponse.SC_BAD_REQUEST);
+					boolean success = errors.size() == 0;
+					if (success) {
+						logger.info("API specification generated successfully for user: {}", email);
+					} else {
+						logger.info("API specification generation FAILED for user: {}", email);
+					}
+					response.setStatus(success ? HttpServletResponse.SC_OK : HttpServletResponse.SC_BAD_REQUEST);
 					break;
 				}
 				default: {
@@ -328,7 +384,7 @@ public class UIController {
 				}
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Failed to process API Spec form data: {}", e.getMessage(), e);
 			errors.add(e.getMessage());
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 		}
@@ -340,7 +396,7 @@ public class UIController {
 		// Verify that the user session is valid.
 		User user = (User) session.getAttribute("user");
 		if (user == null || user.getPassword() == null || user.getPassword().isEmpty()) {
-			session.setAttribute("referrer", "viewAPICodeForm");
+			session.setAttribute("referrer", VIEW_API_CODE_FORM);
 			return "login";
 		}
 
@@ -368,6 +424,7 @@ public class UIController {
 			response.setStatus(HttpServletResponse.SC_FORBIDDEN);
 			return;
 		}
+		String email = user.getEmail();
 
         try {
             // Parse the JSON object containing the various form fields.
@@ -379,8 +436,14 @@ public class UIController {
 			switch (action) {
 				case "generate": {
 					ApiCode apiCode = this.service.generateCode(user, errors);
+					boolean success = errors.size() == 0;
+					if (success) {
+						logger.info("API code generated successfully for user: {}", email);
+					} else {
+						logger.info("API code generation FAILED for user: {}", email);
+					}
 					session.setAttribute("apiCode", apiCode);
-					response.setStatus(HttpServletResponse.SC_OK);
+					response.setStatus(success ? HttpServletResponse.SC_OK : HttpServletResponse.SC_BAD_REQUEST);
 					break;
 				}
 				default: {
@@ -390,7 +453,7 @@ public class UIController {
 				}
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Failed to process API Code form data: {}", e.getMessage(), e);
 			session.setAttribute("errors", List.of("Failed to process form data: " + e.getMessage()));
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 		}
@@ -423,7 +486,7 @@ public class UIController {
 				.contentType(MediaType.APPLICATION_JSON)
 				.body(resource);
 		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+			logger.error("API specification file not found: {}", e.getMessage(), e);
             return ResponseEntity.notFound().build();
 		}
      }
@@ -451,9 +514,10 @@ public class UIController {
 			Path filePath = swaggerFile.toPath();
 			Files.createDirectories(filePath.getParent());
 			Files.writeString(filePath, content, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+			logger.info("API specification file updated successfully for user: {}", user.getEmail());
 			return ResponseEntity.ok("File saved successfully.");
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Failed to update API specification file for user {}: {}", user.getEmail(), e.getMessage(), e);
 			return ResponseEntity.status(500).body("Failed to save file: " + e.getMessage());
 		}
 	}
@@ -496,8 +560,12 @@ public class UIController {
 	
 		// Verify that the user session is valid and user has admin privileges
 		User user = (User) session.getAttribute("user");
-		if (user == null || !user.isAdmin()) {
-			session.setAttribute("referrer", "viewUsers");
+		if (user == null) {
+			session.setAttribute("referrer", VIEW_USER_ADMIN_FORM);
+			return "login";
+		} else if (!user.isAdmin()) {
+			logger.warn("Unauthorized attempt to view users by non-admin user: {}", user.getEmail());
+			session.setAttribute("referrer", VIEW_USER_ADMIN_FORM);
 			return "login";
 		}
 
@@ -563,10 +631,15 @@ public class UIController {
 
         // Verify that the user session is valid and user has admin privileges
         User currentUser = (User) session.getAttribute("user");
-        if (currentUser == null || !currentUser.isAdmin()) {
-			session.setAttribute("referrer", "viewUsers");
+ 		if (currentUser == null) {
+			logger.warn("Unauthorized attempt to update user");
+			session.setAttribute("referrer", "saveUser");
 			return "login";
-        }
+		} else if (!currentUser.isAdmin()) {
+			logger.warn("Unauthorized update attempt by non-admin user: {}", currentUser.getEmail());
+			session.setAttribute("referrer", "saveUser");
+			return "login";
+		}
 
         List<String> errors = new ArrayList<>();
 		session.setAttribute("errors", errors);
@@ -598,6 +671,7 @@ public class UIController {
 
 		if (user != null && errors.isEmpty()) {
 			service.updateUser(user, company, nameFirst, nameLast, email, phone, accessExpiryDate);
+			logger.info("User updated successfully: {} {} {} {} {}", company, nameFirst, nameLast, email, phone);
 		}
 
  		return "redirect:viewUsers";
