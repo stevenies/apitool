@@ -41,7 +41,7 @@
 </head>
 <body>
 	<div id="page">
-		<p class="title">API Specification Generator</p>
+		<p class="title">Login</p>
 		<form id="formLogin" action="login" enctype="multipart/form-data" method="post">
 			<table>
 				<tr>

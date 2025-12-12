@@ -51,6 +51,7 @@ public class UserRepository {
                         restApiGenDir.mkdirs();
                     }
 
+                    // Create a default admin user.
                     User admin = new User();
                     admin.setEmail("steveniesfl@gmail.com");
                     admin.setEmailStatus(EmailStatus.VERIFIED);
@@ -62,6 +63,7 @@ public class UserRepository {
                     Calendar cal = Calendar.getInstance();
                     cal.add(Calendar.YEAR, 50);
                     admin.setAccessExpiryDate(cal.getTime());
+                    admin.setLicenseActive(true);
 
                     this.addUser(admin);
                     this.saveToJsonFile();

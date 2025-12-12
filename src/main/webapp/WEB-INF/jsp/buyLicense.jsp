@@ -14,11 +14,39 @@
 		<form>
 			Your license has expired. To continue using the REST API Generator the following licenses are available:
 			<ul>
-				<li>One Week Access ($149): Unlimited tool usage for a 7 day period</li>
-				<li>One Month Access ($499): Unlimited tool usage for a 30 day period</li>
-				<li>Long-term Access: Contact for pricing and options</li>
+				<li>
+					One Week Access ($${UIController.LICENSE_COST_ONE_WEEK}): Unlimited tool usage for a 7 day period
+					<form action="https://www.sandbox.paypal.com/cgi-bin/webscr" method="post" style="display: inline;">
+						<input type="hidden" name="cmd" value="_xclick">
+						<input type="hidden" name="business" value="sales@api-excellence.com">
+						<input type="hidden" name="item_name" value="REST API Generator - One Week License">
+						<input type="hidden" name="amount" value="${UIController.LICENSE_COST_ONE_WEEK}">
+						<input type="hidden" name="currency_code" value="USD">
+						<input type="hidden" name="return" value="${pageContext.request.scheme}://${pageContext.request.serverName}:${pageContext.request.serverPort}${pageContext.request.contextPath}/paypal-success">
+						<input type="hidden" name="cancel_return" value="${pageContext.request.scheme}://${pageContext.request.serverName}:${pageContext.request.serverPort}${pageContext.request.contextPath}/paypal-cancel">
+						<input type="hidden" name="notify_url" value="${pageContext.request.scheme}://${pageContext.request.serverName}:${pageContext.request.serverPort}${pageContext.request.contextPath}/paypal-ipn">
+						<input type="hidden" name="custom" value="${sessionScope.user.email}">
+						<input type="submit" name="submit" value="Buy" style="background-color: #0070ba; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 14px;">
+					</form>
+				</li>
+				<li>
+					One Month Access ($${UIController.LICENSE_COST_ONE_MONTH}): Unlimited tool usage for a 30 day period
+					<form action="https://www.sandbox.paypal.com/cgi-bin/webscr" method="post" style="display: inline;">
+						<input type="hidden" name="cmd" value="_xclick">
+						<input type="hidden" name="business" value="sales@api-excellence.com">
+						<input type="hidden" name="item_name" value="REST API Generator - One Month License">
+						<input type="hidden" name="amount" value="${UIController.LICENSE_COST_ONE_MONTH}">
+						<input type="hidden" name="currency_code" value="USD">
+						<input type="hidden" name="return" value="${pageContext.request.scheme}://${pageContext.request.serverName}:${pageContext.request.serverPort}${pageContext.request.contextPath}/paypal-success">
+						<input type="hidden" name="cancel_return" value="${pageContext.request.scheme}://${pageContext.request.serverName}:${pageContext.request.serverPort}${pageContext.request.contextPath}/paypal-cancel">
+						<input type="hidden" name="notify_url" value="${pageContext.request.scheme}://${pageContext.request.serverName}:${pageContext.request.serverPort}${pageContext.request.contextPath}/paypal-ipn">
+						<input type="hidden" name="custom" value="${sessionScope.user.email}">
+						<input type="submit" name="submit" value="Buy" style="background-color: #0070ba; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 14px;">
+					</form>
+				</li>
+				<li>Long-term Access: Contact <a href="mailto:sales@api-excellence.com">sales@api-excellence.com</a> for pricing and options</li>
 			</ul>
-			To purchase a license contact <a href="mailto:sales@api-excellence.com">sales@api-excellence.com</a>.
+
 			<p class="formHeader" id="apiTitle">Why Pay for a License?</p>
 			<img id="licenseBenefitsImage" src="images/benefits.png" />
 			In short - to save your project money!  By using the REST API Generator, work<br/>that used to take weeks of manual effort

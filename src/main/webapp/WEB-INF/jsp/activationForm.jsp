@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ page import="com.smn.restapigenerator.ui.UIController" %>
 <html>
 <head>
 	<meta charset="ISO-8859-1">
@@ -45,8 +46,8 @@
 						for a 24 hour period. Once the trial period expires you can continue using the REST API Generator by<br/>
 						purchasing a license:
 						<ul>
-							<li>One Week Access ($149): Unlimited tool usage for a 7 day period</li>
-							<li>One Month Access ($499): Unlimited tool usage for a 30 day period</li>
+							<li>One Week Access ($${UIController.LICENSE_COST_ONE_WEEK}): Unlimited tool usage for a 7 day period</li>
+							<li>One Month Access ($${UIController.LICENSE_COST_ONE_MONTH}): Unlimited tool usage for a 30 day period</li>
 							<li>Long-term Access: Contact <a href="mailto:sales@api-excellence.com">sales@api-excellence.com</a> for pricing and options</li>
 						</ul>
  						By using the REST API Generator development activities that used to take weeks to perform manually<br/>

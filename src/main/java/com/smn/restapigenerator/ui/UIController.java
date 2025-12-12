@@ -2,7 +2,6 @@ package com.smn.restapigenerator.ui;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.net.HttpHeaders;
 import com.smn.restapigenerator.exception.ExceptionUserDoesntExist;
 import com.smn.restapigenerator.exception.ExceptionUserExists;
 import com.smn.restapigenerator.model.ApiCode;
@@ -13,6 +12,7 @@ import com.smn.restapigenerator.model.uml.Entity;
 import com.smn.restapigenerator.service.Service;
 import com.smn.restapigenerator.service.Service.DtoReadUMLFile;
 import com.smn.restapigenerator.util.EmailService;
+import com.smn.restapigenerator.util.HTTPUtil;
 import com.smn.restapigenerator.util.StringUtil;
 import com.smn.restapigenerator.util.ZipUtil;
 import jakarta.servlet.http.HttpServletRequest;
@@ -28,11 +28,15 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.zip.ZipOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
@@ -51,6 +55,9 @@ import static com.smn.restapigenerator.util.StringUtil.tabs;
 @Controller
 public class UIController {
 
+	public static final int LICENSE_COST_ONE_WEEK = 149;
+	public static final int LICENSE_COST_ONE_MONTH = 499;
+
 	private static final String VIEW_API_SPEC_FORM = "viewApiSpecForm";
     private static final String VIEW_API_CODE_FORM = "viewApiCodeForm";
 	private static final String VIEW_USER_ADMIN_FORM = "viewUsers";
@@ -62,21 +69,6 @@ public class UIController {
 
 	@Autowired
 	private EmailService emailService;
-
-	@GetMapping("/toggleDescription")
-	public String toggleDescription(HttpSession session) {
-		Boolean hideDescription = (Boolean) session.getAttribute("hideDescription");
-		if (hideDescription == null) {
-			hideDescription = false;
-		}
-		session.setAttribute("hideDescription", !hideDescription);
-
-		User user = (User) session.getAttribute("user");
-		String userEmail = user == null ? "Unknown" : user.getEmail();
-		logger.info(hideDescription ? "Now Hiding description for user: {}" : "Now Showing description for user: {}", userEmail);
-
-		return "redirect:index";
-	}
 
 	@PostMapping("/register")
 	public String register(
@@ -135,23 +127,7 @@ public class UIController {
 				logger.info("User created successfully: {} {} {} {} {}", nameFirst, nameLast, company, email, phone);
 
 				// Send the user an email to validate their email address.
-				try {
-					String urlDomain =
-						(request.getProtocol().toLowerCase().startsWith("https") ? "https://" : "http://")
-						+ request.getServerName()
-						+ (request.getServerPort() == 80 ? "" : ":" + request.getServerPort());
-					String subject = "Welcome to REST API Generator";
-					String resourcePath = "templates/welcome.html";
-					ClassPathResource resource = new ClassPathResource(resourcePath);
-					int key = StringUtil.makeKey(email);
-					String htmlBody = new String(resource.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
-					htmlBody = String.format(htmlBody, urlDomain, email, key);
-					this.emailService.sendHtmlEmail(email, subject, htmlBody);
-					logger.info("Welcome email sent to {}", email);
-
-				} catch (Exception e) {
-					logger.error("Failed to send email to {}: {}", email, e.getMessage(), e);
-				}
+				sendEmailValidateAddress(request, email);
 
 			} catch (ExceptionUserExists e) {
 				errors.add("Another user with the same name or email address already exists");
@@ -261,6 +237,11 @@ public class UIController {
 		if (errors.isEmpty()) {
 			try {
 				user = this.service.findUserByEmail(email);
+				if (user == null) {
+					errors.add("An account doesn't exist for email " + email);
+				} else if (password == null || !password.equals(user.getPassword())) {
+					errors.add("The password is incorrect");
+				}
 			} catch (ExceptionUserDoesntExist e) {
 				errors.add("An account doesn't exist for email " + email);
 			}
@@ -677,6 +658,156 @@ public class UIController {
  		return "redirect:viewUsers";
     }
 
+	@PostMapping("/paypal-ipn")
+	public ResponseEntity<String> processPayPalIPN(HttpServletRequest request, @RequestParam Map<String, String> params) {
+		try {
+
+			// Log all IPN parameters for debugging
+			String ipnData = params.entrySet().stream()
+					.map(entry -> entry.getKey() + "=" + entry.getValue())
+					.collect(Collectors.joining("&"));
+			logger.debug("IPN Parameters: {}", ipnData);
+
+			// Verify the presence of required parameters
+			String receiverEmail = params.get("receiver_email");
+			if (receiverEmail == null || !receiverEmail.equalsIgnoreCase("sales@api-excellence.com")) {
+				logger.error("Invalid receiver_email: {}", receiverEmail);
+				return ResponseEntity.status(HttpServletResponse.SC_BAD_REQUEST).body("Invalid receiver_email");
+			}
+	
+			// Verify the IPN with PayPal
+			if (!verifyIPNWithPayPal(request, ipnData)) {
+				logger.error("IPN verification failed");
+				return ResponseEntity.status(HttpServletResponse.SC_BAD_REQUEST).body("IPN verification failed");
+			}
+
+			// Extract key parameters
+			String paymentStatus = params.get("payment_status");
+			String txnId = params.get("txn_id");
+			String payerEmail = params.get("payer_email");
+			String mcGross = params.get("mc_gross");
+			String mcCurrency = params.get("mc_currency");
+
+			logger.info("Processing IPN: txn_id={}, status={}, amount={} {}", 
+					txnId, paymentStatus, mcGross, mcCurrency);
+
+			// Process based on payment status
+			switch (paymentStatus) {
+				case "Pending":
+					processPendingPayment(request, txnId, payerEmail);
+					break;
+				case "Completed":
+					processCompletedPayment(request, txnId, payerEmail, mcGross);
+					break;
+				case "Refunded":
+					processRefundedPayment(txnId, payerEmail);
+					break;
+				case "Denied":
+				case "Failed":
+					processFailedPayment(txnId, payerEmail);
+					break;
+				default:
+					logger.warn("Unknown payment status: {}", paymentStatus);
+			}
+
+			return ResponseEntity.ok("IPN processed successfully");
+
+		} catch (Exception e) {
+			logger.error("Error processing PayPal IPN: {}", e.getMessage(), e);
+			return ResponseEntity.status(HttpServletResponse.SC_INTERNAL_SERVER_ERROR).body("Error processing IPN");
+		}
+	}
+
+	private boolean verifyIPNWithPayPal( HttpServletRequest request, String ipnData) {
+		try {
+			// Add cmd=_notify-validate to the original IPN data
+			String verificationData = "cmd=_notify-validate&" + ipnData;
+			
+			// Send verification request to PayPal (sandbox or live)
+			String host = request.getServerName().toLowerCase().contains("sandbox") ?
+				"https://ipnpb.sandbox.paypal.com/cgi-bin/webscr" :
+				"https://ipnpb.paypal.com/cgi-bin/webscr";
+			String response = HTTPUtil.makeHttpPostCall(host, verificationData);
+			boolean isVerified = "VERIFIED".equalsIgnoreCase(response.trim());
+			
+			logger.info(isVerified ? "IPN verified" : "IPN verification failed");
+			return isVerified;
+			
+		} catch (Exception e) {
+			logger.error("Error verifying IPN with PayPal: {}", e.getMessage(), e);
+			return false;
+		}
+	}
+
+	private void processPendingPayment(HttpServletRequest request, String txnId, String payerEmail) {
+		logger.info("Payment pending for user: {}, txn_id: {}", payerEmail, txnId);
+		
+		// Send confirmation email
+		sendEmailLicensePending(request, payerEmail, txnId);
+	}
+
+	private void processCompletedPayment(HttpServletRequest request, String txnId, String payerEmail, String amount) {
+		try {
+			// Find user by custom field or email
+			User user = service.findUserByEmail(payerEmail);
+			if (user != null) {
+
+				// Update user's license expiry date based on payment amount
+				Calendar cal = Calendar.getInstance();
+				double amountValue = Double.parseDouble(amount);
+				if (amountValue <= (LICENSE_COST_ONE_WEEK + 1.0D)) {
+					cal.add(Calendar.WEEK_OF_YEAR, 1); // 1 week license
+				} else {
+					cal.add(Calendar.MONTH, 1); // 1 month license
+				}
+				Date expiryDate = cal.getTime();
+				service.updateUser(user, expiryDate);
+				
+				logger.info("Payment completed for user: {}, txn_id: {}", payerEmail, txnId);
+				
+				// Send confirmation email
+				sendEmailLicensePurchased(request, payerEmail, txnId, amount);
+			}
+		} catch (Exception e) {
+			logger.error("Error processing completed payment: {}", e.getMessage(), e);
+		}
+	}
+
+	private void processRefundedPayment(String txnId, String payerEmail) {
+		try {
+			User user = service.findUserByEmail(payerEmail);
+			if (user == null) {
+				logger.error("Can't refund payment: user not found for email {}", payerEmail);
+			} else {
+
+				// Deactivate license
+				service.updateUser(user, null);
+
+				logger.info("Payment refunded for user: {}, txn_id: {}", payerEmail, txnId);
+			}
+
+		} catch (Exception e) {
+			logger.error("Error processing refund for user {}: {}", payerEmail, e.getMessage(), e);
+		}
+	}
+
+	private void processFailedPayment(String txnId, String payerEmail) {
+		try {
+
+			User user = service.findUserByEmail(payerEmail);
+			if (user == null) {
+				logger.error("Payment failed: user not found for email {}", payerEmail);
+			} else {
+				service.updateUser(user, null);
+
+				logger.info("Payment failed for user: {}, txn_id: {}", payerEmail, txnId);
+			}
+
+		} catch (Exception e) {
+			logger.error("Error processing failed payment for user {}: {}", payerEmail, e.getMessage(), e);
+		}
+	}
+
 	boolean jsonToBoolean(JsonNode parentJsonNode, String fieldName) {
 		JsonNode fieldJsonNode = parentJsonNode.get(fieldName);
 		String value = fieldJsonNode != null ? fieldJsonNode.asText() : "";
@@ -697,6 +828,76 @@ public class UIController {
         return "<input type=\"hidden\" id=\"" + fieldName + "\" name=\"" + fieldName + "\" value=\"" + StringUtil.toHTML(value) + "\" />";
     }
 	
+	private void sendEmailValidateAddress(HttpServletRequest request, String email) {
+		try {
+			String scheme = request.getScheme();
+			String serverName = request.getServerName();
+			int serverPort = request.getServerPort();
+			String urlDomain =
+				scheme
+				+ "://"
+				+ serverName
+				+ (serverPort == 80 || serverPort == 443 ? "" : ":" + serverPort);
+			String subject = "Welcome to REST API Generator";
+			String resourcePath = "templates/welcome.html";
+			ClassPathResource resource = new ClassPathResource(resourcePath);
+			int key = StringUtil.makeKey(email);
+			String htmlBody = new String(resource.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
+			htmlBody = String.format(htmlBody, urlDomain, email, key);
+			this.emailService.sendHtmlEmail(email, subject, htmlBody);
+			logger.info("Welcome email sent to {}", email);
+
+		} catch (Exception e) {
+			logger.error("Failed to send email to {}: {}", email, e.getMessage(), e);
+		}
+	}
+
+	private void sendEmailLicensePending(HttpServletRequest request, String payerEmail, String txnId) {
+		try {
+			String scheme = request.getScheme();
+			String serverName = request.getServerName();
+			int serverPort = request.getServerPort();
+			String urlDomain =
+				scheme
+				+ "://"
+				+ serverName
+				+ (serverPort == 80 || serverPort == 443 ? "" : ":" + serverPort);
+			String subject = "REST API Generator License";
+			String resourcePath = "templates/licensePending.html";
+			ClassPathResource resource = new ClassPathResource(resourcePath);
+			String htmlBody = new String(resource.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
+			htmlBody = String.format(htmlBody, urlDomain, payerEmail);
+			this.emailService.sendHtmlEmail(payerEmail, subject, htmlBody);
+			logger.info("LicensePending email sent to {}", payerEmail);
+
+		} catch (Exception e) {
+			logger.error("Failed to send email to {}: {}", payerEmail, e.getMessage(), e);
+		}
+	}
+
+	private void sendEmailLicensePurchased(HttpServletRequest request, String payerEmail, String txnId, String amount) {
+		try {
+			String scheme = request.getScheme();
+			String serverName = request.getServerName();
+			int serverPort = request.getServerPort();
+			String urlDomain =
+				scheme
+				+ "://"
+				+ serverName
+				+ (serverPort == 80 || serverPort == 443 ? "" : ":" + serverPort);
+			String subject = "REST API Generator License";
+			String resourcePath = "templates/licensePurchased.html";
+			ClassPathResource resource = new ClassPathResource(resourcePath);
+			String htmlBody = new String(resource.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
+			htmlBody = String.format(htmlBody, urlDomain, payerEmail);
+			this.emailService.sendHtmlEmail(payerEmail, subject, htmlBody);
+			logger.info("LicensePurchased email sent to {}", payerEmail);
+
+		} catch (Exception e) {
+			logger.error("Failed to send email to {}: {}", payerEmail, e.getMessage(), e);
+		}
+	}
+
 	private void generateApiSpec(
 		User user,
 		String title,
@@ -758,10 +959,18 @@ public class UIController {
 			errors.add("Specify the server port where the API will be hosted");
 		} else {
 			port = StringUtil.trim(port);
+			try {
+				int portNumber = Integer.parseInt(port);
+				if (portNumber < 1 || portNumber > 65535) {
+					errors.add("Specify a valid port number between 1 and 65535");
+				}
+			} catch (NumberFormatException e) {
+				errors.add("Specify a valid port number between 1 and 65535");
+			}
 		}
 		apiSpec.setPort(port);
 
-		if (user == null || file == null ||!errors.isEmpty()) {
+		if (file == null ||!errors.isEmpty()) {
 			return;
 		}
 
@@ -778,7 +987,7 @@ public class UIController {
 		DomainModel domainModel = new DomainModel(title, description, version, entities);
 
 		// Process the domain model to generate the API's swagger.
-		apiSpec = this.service.generateSwagger(user, domainModel, makePOST, makeGET, makePUT, makeDELETE, makeSEARCH, serverDomain, contextRoot, port, status.getIssues());
+		this.service.generateSwagger(user, domainModel, makeSEARCH, makeGET, makePOST, makePUT, makeDELETE, serverDomain, contextRoot, port, status.getIssues());
 	}
 
 }

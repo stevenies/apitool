@@ -84,20 +84,19 @@ public class Service {
 		String phone) throws ExceptionUserExists {
 	
 		// Determine if the user already exists.
-		// TODO Uncomment this when ready to prevent duplicate users.
-		// for (User aUser : this.userRepository.findAllUsers()) {
-			// String aUserEmail = aUser.getEmail();
-			// String aUserNameFirst = aUser.getNameFirst();
-			// String aUserNameLast = aUser.getNameLast();
-			// String aUserCompany = aUser.getCompany();
-			// if (aUserEmail.equalsIgnoreCase(email)) {
-			// 	throw new ExceptionUserExists();
-			// } else if (aUserNameFirst.equalsIgnoreCase(nameFirst) &&
-			// 	aUserNameLast.equalsIgnoreCase(nameLast) &&
-			// 	aUserCompany.equalsIgnoreCase(company)) {
-			// 	throw new ExceptionUserExists();
-			// }
-		// }
+		for (User aUser : this.userRepository.getAllUsers()) {
+			String aUserEmail = aUser.getEmail();
+			String aUserNameFirst = aUser.getNameFirst();
+			String aUserNameLast = aUser.getNameLast();
+			String aUserCompany = aUser.getCompany();
+			if (aUserEmail.equalsIgnoreCase(email)) {
+				throw new ExceptionUserExists();
+			} else if (aUserNameFirst.equalsIgnoreCase(nameFirst) &&
+				aUserNameLast.equalsIgnoreCase(nameLast) &&
+				aUserCompany.equalsIgnoreCase(company)) {
+				throw new ExceptionUserExists();
+			}
+		}
 
 		// Create a new user.	
 		User user = new User();
@@ -126,9 +125,9 @@ public class Service {
 		User user = this.findUserByEmail(email);
 		user.setPassword(password);
 
-		// Compute the access expiration date.
+		// Set their access expiration date to 24 hours from now for use as a trial period.
 		Calendar cal = Calendar.getInstance();
-    	cal.add(Calendar.DAY_OF_YEAR, 100000);	// TODO: Change this to a reasonable date when the Beta test ends.
+    	cal.add(Calendar.DAY_OF_YEAR, 1);
 		Date date = cal.getTime();
 		user.setAccessExpiryDate(date);
 
@@ -188,6 +187,26 @@ public class Service {
 		}
 	}
  
+	/**
+	 * Update the user's access expiry date.
+	 * @param user The user to update.
+	 * @param accessExpiry Date when the license expires.  If null then deactivate the license.
+	 */
+	public void updateUser(User user, Date accessExpiry) {
+		if (accessExpiry == null) {
+			user.setAccessExpiryDate(new Date());
+			user.setLicenseActive(false);
+		} else {
+		    user.setAccessExpiryDate(accessExpiry);
+			user.setLicenseActive(true);
+		}
+		try {
+			this.userRepository.saveToJsonFile();
+		} catch (IOException e) {
+			logger.error("Failed to save user to JSON file: {}", e.getMessage(), e);
+		}
+	}
+ 
 	public DtoReadUMLFile readUMLFile(String filename, byte[] fileContent) {
 		String fileExtension = FileUtil.getExtension(filename);
 
@@ -200,10 +219,10 @@ public class Service {
 		return new DtoReadUMLFile("Information model file has an unknown file type");
 	}
 
-	public ApiSpec generateSwagger(
+	public void generateSwagger(
 		User user,
 		DomainModel api,
-		boolean makePOST, boolean makeGET, boolean makePUT, boolean makeDELETE, boolean makeSEARCH,
+		boolean makeSEARCH, boolean makeGET, boolean makePOST, boolean makePUT, boolean makeDELETE,
 		String serverDomain,
 		String contextRoot,
 		String port,
@@ -241,7 +260,6 @@ public class Service {
 		// Indicate that the user generated a new ApiSpec.
 		user.setApiSpec(apiSpec);
 		this.userRepository.saveToJsonFile();
-		return apiSpec;
 	}
 
 	public void deleteSwagger(ApiSpec apiSpec) {

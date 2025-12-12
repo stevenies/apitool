@@ -21,6 +21,7 @@ public class User implements Comparable<User> {
     private String nameLast = "";
     private String phone = "";
     private Date accountCreationDate = new Date();
+    private boolean licenseActive = false;
     private Date accessExpiryDate;
 
     private ApiSpec apiSpec = new ApiSpec();
@@ -109,6 +110,14 @@ public class User implements Comparable<User> {
 
     public void setAccountCreationDate(Date accountCreationDate) {
         this.accountCreationDate = accountCreationDate;
+    }
+
+    public boolean isLicenseActive() {
+        return this.licenseActive;
+    }
+
+    public void setLicenseActive(boolean licenseActive) {
+        this.licenseActive = licenseActive;
     }
 
     public Date getAccessExpiryDate() {
