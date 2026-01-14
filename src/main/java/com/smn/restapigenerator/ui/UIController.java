@@ -254,6 +254,7 @@ public class UIController {
 			return "login";
 
 		} else {
+			session.setAttribute("user", user);
 
 			// Determine whether the license has expired
 			if (!user.isAdmin()) {
@@ -269,7 +270,6 @@ public class UIController {
 			ApiSpec apiSpec = user.getApiSpec();
 			ApiCode apiCode = user.getApiCode();
 
-			session.setAttribute("user", user);
 			session.setAttribute("apiSpec", apiSpec);
 			session.setAttribute("apiCode", apiCode);
 

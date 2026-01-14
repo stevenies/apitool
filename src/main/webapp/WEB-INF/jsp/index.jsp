@@ -32,11 +32,11 @@
 		<p class="sectionHeader">API Development Challenges</p>
 		<p>
 			Given today's AI-based “vibe coding” tools APIs have never been easier to implement.  However creating<br/>
-			well-structured and robust API interfaces still requires thoughtful engineering.  When designed well APIs serve<br/>
-			as your architecture's key system interfaces hiding implementation details behind well-defined
+			well-structured and robust API client <i>interfaces</i> still requires thoughtful engineering.  When APIs are designed well
+			they serve as your architecture's key system interfaces hiding implementation details behind well-defined
 			contracts.  The results are modular system architectures that can easily evolve as business requirements
 			change.  In contrast coding APIs without first defining client interface contracts can result in brittle
-			ad-hoc system architectures<br/>and API interfaces that are hard to evolve without adversely impacting API clients.
+			ad-hoc system architectures and API interfaces that are hard to evolve without adversely impacting API clients.
 		</p>
 		<p>
 			A best practice for <a onclick="return openWindow('overviewApi.html', 'API');">API</a> development

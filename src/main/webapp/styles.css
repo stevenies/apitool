@@ -255,6 +255,12 @@ B {
     float: right;
     padding: 15px 0px 20px 20px;
 }
+#licenseOptions {
+    margin: 10px 20px;
+}
+#licenseOptions BUTTON {
+    margin-top: 10px;
+}
 #toolsTable .icon {
     text-align: center;
 }
