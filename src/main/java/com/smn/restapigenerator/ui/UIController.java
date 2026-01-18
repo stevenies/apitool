@@ -9,11 +9,12 @@ import com.smn.restapigenerator.model.ApiSpec;
 import com.smn.restapigenerator.model.User;
 import com.smn.restapigenerator.model.uml.DomainModel;
 import com.smn.restapigenerator.model.uml.Entity;
+import com.smn.restapigenerator.service.EmailService;
 import com.smn.restapigenerator.service.Service;
 import com.smn.restapigenerator.service.Service.DtoReadUMLFile;
-import com.smn.restapigenerator.util.EmailService;
 import com.smn.restapigenerator.util.HTTPUtil;
 import com.smn.restapigenerator.util.StringUtil;
+import com.smn.restapigenerator.util.URLUtil;
 import com.smn.restapigenerator.util.ZipUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -56,6 +57,7 @@ import static com.smn.restapigenerator.util.StringUtil.tabs;
 @Controller
 public class UIController {
 
+	public static final int LICENSE_COST_ONE_DAY = 1;
 	public static final int LICENSE_COST_ONE_WEEK = 149;
 	public static final int LICENSE_COST_ONE_MONTH = 499;
 
@@ -222,11 +224,12 @@ public class UIController {
 		@RequestParam(required = false, defaultValue = "") String email,
 		@RequestParam(required = false, defaultValue = "") String password,
 		HttpSession session,
-		HttpServletResponse response) {
+		@Value("${application.debugging}") boolean debugging) {
 
 		List<String> errors = new ArrayList<>();
 		session.setAttribute("loginErrors", errors);
 		session.setAttribute("registrationErrors", null);
+		session.setAttribute("debugging", debugging);
 
 		// Verify that the required fields are provided.
 		if (StringUtil.isEmpty(email) || !StringUtil.isValidEmail(email)) {

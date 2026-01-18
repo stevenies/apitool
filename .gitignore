@@ -601,3 +601,7 @@ target/classes/com/smn/restapigenerator/service/PayPalAuthService.class
 target/classes/com/smn/restapigenerator/service/PayPalService.class
 target/classes/com/smn/restapigenerator/ui/PayPalController.class
 target/classes/com/smn/restapigenerator/ui/PayPalController$CreateOrderRequest.class
+target/classes/com/smn/restapigenerator/service/EmailService.class
+target/classes/com/smn/restapigenerator/util/EmailService.class
+target/classes/com/smn/restapigenerator/util/MapUtil.class
+target/classes/com/smn/restapigenerator/util/URLUtil.class

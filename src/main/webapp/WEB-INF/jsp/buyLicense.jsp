@@ -26,6 +26,12 @@
 			const licenseOptions = document.getElementById("licenseOptions");
 			const selectedOption = licenseOptions.querySelector('input[name="licenseType"]:checked').value;
 			switch (selectedOption) {
+				case "oneDay":
+					buttonBuyLicense.style.display = 'inline-block';
+					buttonContactSales.style.display = 'none';
+					itemName = "REST API Generator License - 1 Day";
+					itemId   = "RAG-LIC-1D";
+				break;
 				case "oneWeek":
 					buttonBuyLicense.style.display = 'inline-block';
 					buttonContactSales.style.display = 'none';
@@ -66,6 +72,7 @@
 		}
 
 		window.onload = function() {
+			installOnClickHandler("licenseDay", updateButtonLabel);
 			installOnClickHandler("licenseWeek", updateButtonLabel);
 			installOnClickHandler("licenseMonth", updateButtonLabel);
 			installOnClickHandler("licenseLongTerm", updateButtonLabel);
@@ -106,7 +113,7 @@
 
 				async onApprove(data) {
 					const res = await fetch(
-						`<c:url value='/api/paypal/orders'/>/${data.orderID}/capture`,
+						"<c:url value='/api/paypal/orders'/>/" + data.orderID + "/capture",
 						{ method: "POST" }
 					);
 
@@ -134,17 +141,20 @@
 <body>
 	<div id="page">
 		<p class="formHeader">License Expired</p>
-		<form>
-			Your license has expired. To continue using the REST API Generator the following licenses are available:
-			<p id="licenseOptions">
-				<input type="radio" id="licenseWeek" name="licenseType" value="oneWeek" checked="checked"/> One Week Access ($${UIController.LICENSE_COST_ONE_WEEK})<br/>
-				<input type="radio" id="licenseMonth" name="licenseType" value="oneMonth"/> One Month Access ($${UIController.LICENSE_COST_ONE_MONTH})<br/>
-				<input type="radio" id="licenseLongTerm" name="licenseType" value="longTerm"/> Long-term Access (contact our sales team for pricing and options)<br/>
-				<div id="paypal-button-container"></div>
-				<button id="buttonContactSales" style="display:none;">Contact Sales Team</button>
-			</p>
-			<p class="formHeader" id="apiTitle">Why Pay for a License?</p>
-			<img id="licenseBenefitsImage" src="images/benefits.png" />
+		Your license has expired. To continue using the REST API Generator the following licenses are available:
+		<p id="licenseOptions">
+			<c:if test="${debugging}">
+			<input type="radio" id="licenseDay" name="licenseType" value="oneDay" checked="checked"/> One Day Access ($${UIController.LICENSE_COST_ONE_DAY})<br/>
+			</c:if>
+			<input type="radio" id="licenseWeek" name="licenseType" value="oneWeek" checked="checked"/> One Week Access ($${UIController.LICENSE_COST_ONE_WEEK})<br/>
+			<input type="radio" id="licenseMonth" name="licenseType" value="oneMonth"/> One Month Access ($${UIController.LICENSE_COST_ONE_MONTH})<br/>
+			<input type="radio" id="licenseLongTerm" name="licenseType" value="longTerm"/> Long-term Access (contact our sales team for pricing and options)<br/>
+			<div id="paypal-button-container"></div>
+			<button id="buttonContactSales" style="display:none;">Contact Sales Team</button>
+		</p>
+		<p class="formHeader" id="apiTitle">Why Pay for a License?</p>
+		<img id="licenseBenefitsImage" src="images/benefits.png" />
+		<p>
 			In short - to save your project money!  By using the REST API Generator, work<br/>that used to take weeks of manual effort
 			to write the API's specification is now completed automatically in minutes — dramatically cutting costs and significantly
 			accelerating delivery.  The REST API Generator also generates solid foundational implementation code, giving developers
@@ -152,7 +162,10 @@
 			that includes built-in best practices such as domain-driven URI naming, paged list queries, standardized search
 			and error schemas, stronger decoupling between API developers and clients, and earlier client integration activities.
 			All of these benefits add up to substantial cost savings for your project.
-		</form>
+		</p>
+		<p>
+			Have questions? Contact our <a href="mailto:sales@api-excellence.com">sales team</a> for more information.
+		</p>
 	</div>
 </body>
 </html>

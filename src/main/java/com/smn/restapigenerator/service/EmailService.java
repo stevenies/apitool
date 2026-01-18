@@ -1,4 +1,4 @@
-package com.smn.restapigenerator.util;
+package com.smn.restapigenerator.service;
 
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;

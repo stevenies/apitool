@@ -1,5 +1,10 @@
+application:
+  name: REST API Generator
+  version: 1.0.0
+  debugging: true
 paypal:
-  base-url: https://api-m.sandbox.paypal.com   # production: https://api-m.paypal.com
+  base-url: https://api-m.paypal.com
+  sandbox-base-url: https://api-m.sandbox.paypal.com
   client-id: AUFWvl1244dg3mDxmJod_yS0S6wxdobzJxfvuyvYWwcAvmBNoBOy-hhEI0dMr_DdvLdgAWtn3NEQe_08
   secret: ECqlKHPDv2RkpBdDm88X_LBgvAobkwj0Bt3BlFgsBlOcqSbrkH9-44dXiKL9MFYFZyMcFledFcT2hZOX
 spring:
