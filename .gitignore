@@ -596,3 +596,8 @@ target/classes/com/smn/restapigenerator/util/EmailService.class
 target/classes/com/smn/restapigenerator/util/HTTPUtil.class
 target/classes/templates/licensePending.html
 target/classes/templates/licensePurchased.html
+target/classes/application.yml
+target/classes/com/smn/restapigenerator/service/PayPalAuthService.class
+target/classes/com/smn/restapigenerator/service/PayPalService.class
+target/classes/com/smn/restapigenerator/ui/PayPalController.class
+target/classes/com/smn/restapigenerator/ui/PayPalController$CreateOrderRequest.class

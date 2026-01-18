@@ -261,6 +261,10 @@ B {
 #licenseOptions BUTTON {
     margin-top: 10px;
 }
+#paypal-button-container {
+    width: 200px;
+    margin: 20px 0px 0px 24px;
+}
 #toolsTable .icon {
     text-align: center;
 }

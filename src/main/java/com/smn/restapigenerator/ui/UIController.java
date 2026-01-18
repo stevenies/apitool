@@ -39,6 +39,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.ResponseEntity;
@@ -69,6 +70,9 @@ public class UIController {
 
 	@Autowired
 	private EmailService emailService;
+
+	@Value("${paypal.client-id}")
+    private String paypalClientId;
 
 	@PostMapping("/register")
 	public String register(
@@ -262,6 +266,7 @@ public class UIController {
 				Date accessExpiry = user.getAccessExpiryDate();
 				if (accessExpiry != null && now.after(accessExpiry)) {
 					logger.warn("License expired for user: {}", email);
+					session.setAttribute("paypalClientId", paypalClientId);
 					return "buyLicense";
 				}
 			}

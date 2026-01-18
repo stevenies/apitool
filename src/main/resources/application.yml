@@ -1,0 +1,27 @@
+paypal:
+  base-url: https://api-m.sandbox.paypal.com   # production: https://api-m.paypal.com
+  client-id: AUFWvl1244dg3mDxmJod_yS0S6wxdobzJxfvuyvYWwcAvmBNoBOy-hhEI0dMr_DdvLdgAWtn3NEQe_08
+  secret: ECqlKHPDv2RkpBdDm88X_LBgvAobkwj0Bt3BlFgsBlOcqSbrkH9-44dXiKL9MFYFZyMcFledFcT2hZOX
+spring:
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 10MB
+      max-request-size: 10MB
+  mvc:
+    view:
+      prefix: /WEB-INF/jsp/
+      suffix: .jsp
+  mustache:
+    check-template-location: false
+  mail:
+    host: smtp.ionos.com
+    port: 587
+    username: support@api-excellence.com
+    password: 2Chron7:14!!
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
