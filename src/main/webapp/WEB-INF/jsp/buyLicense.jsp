@@ -126,7 +126,11 @@
 						throw new Error(capture.error || "Capture failed (" + res.status + ")");
 					}
 
-					console.log("Payment complete!");
+					const licenseExpirationDate = document.getElementById("licenseExpirationDate");
+					licenseExpirationDate.textContent = capture.newExpirationDate;
+
+					const renewalSuccessPanel = document.getElementById("renewalSuccessPanel");
+					renewalSuccessPanel.style.display = 'block';
 				},
 
 				onError(err) {
@@ -152,6 +156,16 @@
 		</p>
 		<div id="paypal-button-container"></div>
 		<button id="buttonContactSales" style="display:none;">Contact Sales Team</button>
+		<div id="renewalSuccessPanel" style="display:none;">
+			<p>
+				Thank you for your purchase!
+			</p>
+			<p>
+				Your license has been successfully renewed.<br/>
+				You can continue using the REST API Generator until <span id="licenseExpirationDate"></span>.<br/>
+				<button onclick="window.location.href='viewApiSpecForm'">Continue</button>
+			</p>
+		</div>
 		<p class="formHeader" id="apiTitle">Why Pay for a License?</p>
 		<img id="licenseBenefitsImage" src="images/benefits.png" />
 		<p>

@@ -10,11 +10,10 @@ import com.smn.restapigenerator.model.User;
 import com.smn.restapigenerator.model.uml.DomainModel;
 import com.smn.restapigenerator.model.uml.Entity;
 import com.smn.restapigenerator.service.EmailService;
-import com.smn.restapigenerator.service.Service;
-import com.smn.restapigenerator.service.Service.DtoReadUMLFile;
-import com.smn.restapigenerator.util.HTTPUtil;
+import com.smn.restapigenerator.service.ToolService;
+import com.smn.restapigenerator.service.UserService;
+import com.smn.restapigenerator.service.ToolService.DtoReadUMLFile;
 import com.smn.restapigenerator.util.StringUtil;
-import com.smn.restapigenerator.util.URLUtil;
 import com.smn.restapigenerator.util.ZipUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -29,11 +28,8 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 import java.util.zip.ZipOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,7 +64,10 @@ public class UIController {
 	private static final Logger logger = LoggerFactory.getLogger(UIController.class);
 
 	@Autowired
-	private Service service;
+	private UserService userService;
+
+	@Autowired
+	private ToolService toolService;
 
 	@Autowired
 	private EmailService emailService;
@@ -129,7 +128,7 @@ public class UIController {
 
 		if (errors.isEmpty()) {
 			try {
-				this.service.createUser(nameFirst, nameLast, company, email, phone);
+				this.userService.createUser(nameFirst, nameLast, company, email, phone);
 				logger.info("User created successfully: {} {} {} {} {}", nameFirst, nameLast, company, email, phone);
 
 				// Send the user an email to validate their email address.
@@ -195,7 +194,7 @@ public class UIController {
 		User user = null;
 		if (errors.isEmpty()) {
 			try {
-				user = this.service.activateUser(email, password);
+				user = this.userService.activateUser(email, password);
 				logger.info("User activated successfully: {}", email);
 			} catch (ExceptionUserDoesntExist e) {
 				errors.add("An account doesn't exist with the specified email address");
@@ -243,7 +242,7 @@ public class UIController {
 		User user = null;
 		if (errors.isEmpty()) {
 			try {
-				user = this.service.findUserByEmail(email);
+				user = this.userService.findUserByEmail(email);
 				if (user == null) {
 					errors.add("An account doesn't exist for email " + email);
 				} else if (password == null || !password.equals(user.getPassword())) {
@@ -450,7 +449,7 @@ public class UIController {
 
 			switch (action) {
 				case "generate": {
-					ApiCode apiCode = this.service.generateCode(user, errors);
+					ApiCode apiCode = this.toolService.generateCode(user, errors);
 					boolean success = errors.size() == 0;
 					if (success) {
 						logger.info("API code generated successfully for user: {}", email);
@@ -584,7 +583,7 @@ public class UIController {
 			return "login";
 		}
 
-		List<User> users = service.getAllUsers();
+		List<User> users = userService.getAllUsers();
 		ArrayList<User> sortedUsers = new ArrayList<>(users);
 		sortedUsers.sort(null);	
 
@@ -661,7 +660,7 @@ public class UIController {
 
  		User user = null;
         try {
-            user = service.findUserById(userId);
+            user = userService.findUserById(userId);
         } catch (Exception e) {
  			errors.add("User doesn't exist");
 		}
@@ -685,162 +684,12 @@ public class UIController {
 		}
 
 		if (user != null && errors.isEmpty()) {
-			service.updateUser(user, company, nameFirst, nameLast, email, phone, accessExpiryDate);
+			userService.updateUser(user, company, nameFirst, nameLast, email, phone, accessExpiryDate);
 			logger.info("User updated successfully: {} {} {} {} {}", company, nameFirst, nameLast, email, phone);
 		}
 
  		return "redirect:viewUsers";
     }
-
-	@PostMapping("/paypal-ipn")
-	public ResponseEntity<String> processPayPalIPN(HttpServletRequest request, @RequestParam Map<String, String> params) {
-		try {
-
-			// Log all IPN parameters for debugging
-			String ipnData = params.entrySet().stream()
-					.map(entry -> entry.getKey() + "=" + entry.getValue())
-					.collect(Collectors.joining("&"));
-			logger.debug("IPN Parameters: {}", ipnData);
-
-			// Verify the presence of required parameters
-			String receiverEmail = params.get("receiver_email");
-			if (receiverEmail == null || !receiverEmail.equalsIgnoreCase("sales@api-excellence.com")) {
-				logger.error("Invalid receiver_email: {}", receiverEmail);
-				return ResponseEntity.status(HttpServletResponse.SC_BAD_REQUEST).body("Invalid receiver_email");
-			}
-	
-			// Verify the IPN with PayPal
-			if (!verifyIPNWithPayPal(request, ipnData)) {
-				logger.error("IPN verification failed");
-				return ResponseEntity.status(HttpServletResponse.SC_BAD_REQUEST).body("IPN verification failed");
-			}
-
-			// Extract key parameters
-			String paymentStatus = params.get("payment_status");
-			String txnId = params.get("txn_id");
-			String payerEmail = params.get("payer_email");
-			String mcGross = params.get("mc_gross");
-			String mcCurrency = params.get("mc_currency");
-
-			logger.info("Processing IPN: txn_id={}, status={}, amount={} {}", 
-					txnId, paymentStatus, mcGross, mcCurrency);
-
-			// Process based on payment status
-			switch (paymentStatus) {
-				case "Pending":
-					processPendingPayment(request, txnId, payerEmail);
-					break;
-				case "Completed":
-					processCompletedPayment(request, txnId, payerEmail, mcGross);
-					break;
-				case "Refunded":
-					processRefundedPayment(txnId, payerEmail);
-					break;
-				case "Denied":
-				case "Failed":
-					processFailedPayment(txnId, payerEmail);
-					break;
-				default:
-					logger.warn("Unknown payment status: {}", paymentStatus);
-			}
-
-			return ResponseEntity.ok("IPN processed successfully");
-
-		} catch (Exception e) {
-			logger.error("Error processing PayPal IPN: {}", e.getMessage(), e);
-			return ResponseEntity.status(HttpServletResponse.SC_INTERNAL_SERVER_ERROR).body("Error processing IPN");
-		}
-	}
-
-	private boolean verifyIPNWithPayPal( HttpServletRequest request, String ipnData) {
-		try {
-			// Add cmd=_notify-validate to the original IPN data
-			String verificationData = "cmd=_notify-validate&" + ipnData;
-			
-			// Send verification request to PayPal (sandbox or live)
-			String host = request.getServerName().toLowerCase().contains("sandbox") ?
-				"https://ipnpb.sandbox.paypal.com/cgi-bin/webscr" :
-				"https://ipnpb.paypal.com/cgi-bin/webscr";
-			String response = HTTPUtil.makeHttpPostCall(host, verificationData);
-			boolean isVerified = "VERIFIED".equalsIgnoreCase(response.trim());
-			
-			logger.info(isVerified ? "IPN verified" : "IPN verification failed");
-			return isVerified;
-			
-		} catch (Exception e) {
-			logger.error("Error verifying IPN with PayPal: {}", e.getMessage(), e);
-			return false;
-		}
-	}
-
-	private void processPendingPayment(HttpServletRequest request, String txnId, String payerEmail) {
-		logger.info("Payment pending for user: {}, txn_id: {}", payerEmail, txnId);
-		
-		// Send confirmation email
-		sendEmailLicensePending(request, payerEmail, txnId);
-	}
-
-	private void processCompletedPayment(HttpServletRequest request, String txnId, String payerEmail, String amount) {
-		try {
-			// Find user by custom field or email
-			User user = service.findUserByEmail(payerEmail);
-			if (user != null) {
-
-				// Update user's license expiry date based on payment amount
-				Calendar cal = Calendar.getInstance();
-				double amountValue = Double.parseDouble(amount);
-				if (amountValue <= (LICENSE_COST_ONE_WEEK + 1.0D)) {
-					cal.add(Calendar.WEEK_OF_YEAR, 1); // 1 week license
-				} else {
-					cal.add(Calendar.MONTH, 1); // 1 month license
-				}
-				Date expiryDate = cal.getTime();
-				service.updateUser(user, expiryDate);
-				
-				logger.info("Payment completed for user: {}, txn_id: {}", payerEmail, txnId);
-				
-				// Send confirmation email
-				sendEmailLicensePurchased(request, payerEmail, txnId, amount);
-			}
-		} catch (Exception e) {
-			logger.error("Error processing completed payment: {}", e.getMessage(), e);
-		}
-	}
-
-	private void processRefundedPayment(String txnId, String payerEmail) {
-		try {
-			User user = service.findUserByEmail(payerEmail);
-			if (user == null) {
-				logger.error("Can't refund payment: user not found for email {}", payerEmail);
-			} else {
-
-				// Deactivate license
-				service.updateUser(user, null);
-
-				logger.info("Payment refunded for user: {}, txn_id: {}", payerEmail, txnId);
-			}
-
-		} catch (Exception e) {
-			logger.error("Error processing refund for user {}: {}", payerEmail, e.getMessage(), e);
-		}
-	}
-
-	private void processFailedPayment(String txnId, String payerEmail) {
-		try {
-
-			User user = service.findUserByEmail(payerEmail);
-			if (user == null) {
-				logger.error("Payment failed: user not found for email {}", payerEmail);
-			} else {
-				service.updateUser(user, null);
-
-				logger.info("Payment failed for user: {}, txn_id: {}", payerEmail, txnId);
-			}
-
-		} catch (Exception e) {
-			logger.error("Error processing failed payment for user {}: {}", payerEmail, e.getMessage(), e);
-		}
-	}
 
 	boolean jsonToBoolean(JsonNode parentJsonNode, String fieldName) {
 		JsonNode fieldJsonNode = parentJsonNode.get(fieldName);
@@ -886,52 +735,6 @@ public class UIController {
 		}
 	}
 
-	private void sendEmailLicensePending(HttpServletRequest request, String payerEmail, String txnId) {
-		try {
-			String scheme = request.getScheme();
-			String serverName = request.getServerName();
-			int serverPort = request.getServerPort();
-			String urlDomain =
-				scheme
-				+ "://"
-				+ serverName
-				+ (serverPort == 80 || serverPort == 443 ? "" : ":" + serverPort);
-			String subject = "REST API Generator License";
-			String resourcePath = "templates/licensePending.html";
-			ClassPathResource resource = new ClassPathResource(resourcePath);
-			String htmlBody = new String(resource.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
-			htmlBody = String.format(htmlBody, urlDomain, payerEmail);
-			this.emailService.sendHtmlEmail(payerEmail, subject, htmlBody);
-			logger.info("LicensePending email sent to {}", payerEmail);
-
-		} catch (Exception e) {
-			logger.error("Failed to send email to {}: {}", payerEmail, e.getMessage(), e);
-		}
-	}
-
-	private void sendEmailLicensePurchased(HttpServletRequest request, String payerEmail, String txnId, String amount) {
-		try {
-			String scheme = request.getScheme();
-			String serverName = request.getServerName();
-			int serverPort = request.getServerPort();
-			String urlDomain =
-				scheme
-				+ "://"
-				+ serverName
-				+ (serverPort == 80 || serverPort == 443 ? "" : ":" + serverPort);
-			String subject = "REST API Generator License";
-			String resourcePath = "templates/licensePurchased.html";
-			ClassPathResource resource = new ClassPathResource(resourcePath);
-			String htmlBody = new String(resource.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
-			htmlBody = String.format(htmlBody, urlDomain, payerEmail);
-			this.emailService.sendHtmlEmail(payerEmail, subject, htmlBody);
-			logger.info("LicensePurchased email sent to {}", payerEmail);
-
-		} catch (Exception e) {
-			logger.error("Failed to send email to {}: {}", payerEmail, e.getMessage(), e);
-		}
-	}
-
 	private void generateApiSpec(
 		User user,
 		String title,
@@ -946,7 +749,7 @@ public class UIController {
 	
 		// Delete a previously generated Swagger file, if any.
 		ApiSpec apiSpec = user.getApiSpec();
-		this.service.deleteSwagger(apiSpec);
+		this.toolService.deleteSwagger(apiSpec);
 
 		// Verify that the required fields are provided.
 		if (StringUtil.isEmpty(title)) {
@@ -1009,7 +812,7 @@ public class UIController {
 		}
 
 		// Read the information model into memory.
-		DtoReadUMLFile status = this.service.readUMLFile(filename, file.getBytes());
+		DtoReadUMLFile status = this.toolService.readUMLFile(filename, file.getBytes());
 		String error = status.getError();
 		if (error != null) {
 			errors.add(error);
@@ -1021,7 +824,7 @@ public class UIController {
 		DomainModel domainModel = new DomainModel(title, description, version, entities);
 
 		// Process the domain model to generate the API's swagger.
-		this.service.generateSwagger(user, domainModel, makeSEARCH, makeGET, makePOST, makePUT, makeDELETE, serverDomain, contextRoot, port, status.getIssues());
+		this.toolService.generateSwagger(user, domainModel, makeSEARCH, makeGET, makePOST, makePUT, makeDELETE, serverDomain, contextRoot, port, status.getIssues());
 	}
 
 }

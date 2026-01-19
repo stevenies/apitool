@@ -133,6 +133,14 @@ public class StringUtil {
         return sdf.parse(dateStr);
     }
 
+    public static synchronized String formatDate(Date date) {
+        if (date == null) {
+            return "";
+        }
+        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yy");
+        return sdf.format(date);
+    }
+
     public static String tabs(int count) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < count; i++) {

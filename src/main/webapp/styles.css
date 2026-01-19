@@ -274,3 +274,15 @@ B {
     padding: 6px 10px 6px 20px;
     cursor: pointer;
 }
+#renewalSuccessPanel {
+    width: 800px;
+    margin: 20px auto;
+    padding: 10px;
+    color: black;
+    background-color: #bffaba;
+    border-radius: 8px;
+    text-align: center;
+}
+#renewalSuccessPanel BUTTON {
+    margin: 14px 0px 0px 0px;
+}

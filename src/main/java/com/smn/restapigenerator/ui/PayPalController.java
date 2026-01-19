@@ -2,14 +2,19 @@ package com.smn.restapigenerator.ui;
 
 import com.smn.restapigenerator.model.User;
 import com.smn.restapigenerator.service.PayPalService;
+import com.smn.restapigenerator.service.UserService;
+import com.smn.restapigenerator.util.StringUtil;
 import com.smn.restapigenerator.util.URLUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
-
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,12 +29,6 @@ public class PayPalController {
 
 	private static final Logger logger = LoggerFactory.getLogger(PayPalController.class);
 
-  private final PayPalService payPalService;
-
-  public PayPalController(PayPalService payPalService) {
-    this.payPalService = payPalService;
-  }
-
   public record CreateOrderRequest(String itemName, String itemId) {}
 
   public record PurchaseDetails(
@@ -40,6 +39,15 @@ public class PayPalController {
     String paymentId,
     String paymentAmount,
     String payPalFee) {}
+
+  private final PayPalService payPalService;
+
+  @Autowired
+  private UserService service;
+
+  public PayPalController(PayPalService payPalService) {
+    this.payPalService = payPalService;
+  }
 
   @PostMapping("/orders")
   public Map<String, Object> createOrder(@RequestBody CreateOrderRequest reqBody, HttpServletRequest request) {
@@ -80,8 +88,33 @@ public class PayPalController {
 
 		User user = (User) session.getAttribute("user");
     if (user != null) {
+      String email = user.getEmail();
       PurchaseDetails purchaseDetails = PayPalController.extractPurchaseDetails(response);
-      logger.info("User {} renewed license: {}", user.getEmail(), purchaseDetails);
+      if ("COMPLETED".equalsIgnoreCase(purchaseDetails.paymentStatus())) {
+        logger.info("User {} renewed license: {}", email, purchaseDetails);
+        switch (purchaseDetails.itemId()) {
+          case "RAG-LIC-1D": {
+            Date newExpirationDate = Date.from(Instant.now().plus(1, ChronoUnit.DAYS));
+            service.updateUser(user, newExpirationDate);
+            response.put("newExpirationDate", StringUtil.formatDate(newExpirationDate));
+          } break;
+          case "RAG-LIC-1W": {
+            Date newExpirationDate = Date.from(Instant.now().plus(7, ChronoUnit.DAYS));
+            service.updateUser(user, newExpirationDate);
+            response.put("newExpirationDate", StringUtil.formatDate(newExpirationDate));
+          } break;
+          case "RAG-LIC-1M": {
+            Date newExpirationDate = Date.from(Instant.now().plus(30, ChronoUnit.DAYS));
+            service.updateUser(user, newExpirationDate);
+            response.put("newExpirationDate", StringUtil.formatDate(newExpirationDate));
+          } break;
+          default: {
+            logger.error("Unknown itemId for license renewal: {}", purchaseDetails.itemId());
+          } break;
+        }
+      } else {
+        logger.info("User {} failed to renew license.  Order status is {}", email, purchaseDetails.paymentStatus());
+      }
     }
 
     return response;
