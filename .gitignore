@@ -605,3 +605,4 @@ target/classes/com/smn/restapigenerator/service/EmailService.class
 target/classes/com/smn/restapigenerator/util/EmailService.class
 target/classes/com/smn/restapigenerator/util/MapUtil.class
 target/classes/com/smn/restapigenerator/util/URLUtil.class
+target/classes/com/smn/restapigenerator/ui/PayPalController$PurchaseDetails.class

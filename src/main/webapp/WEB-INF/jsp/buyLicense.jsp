@@ -123,7 +123,7 @@
 
 					if (!res.ok) {
 						console.error("Capture failed:", res.status, capture);
-						throw new Error(capture.error || `Capture failed (${res.status})`);
+						throw new Error(capture.error || "Capture failed (" + res.status + ")");
 					}
 
 					console.log("Payment complete!");

@@ -1,9 +1,15 @@
 package com.smn.restapigenerator.ui;
 
+import com.smn.restapigenerator.model.User;
 import com.smn.restapigenerator.service.PayPalService;
 import com.smn.restapigenerator.util.URLUtil;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
+
+import java.util.List;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -11,17 +17,29 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
+
 @RestController
 @RequestMapping("/api/paypal")
 public class PayPalController {
 
+	private static final Logger logger = LoggerFactory.getLogger(PayPalController.class);
+
   private final PayPalService payPalService;
 
   public PayPalController(PayPalService payPalService) {
-  this.payPalService = payPalService;
+    this.payPalService = payPalService;
   }
 
   public record CreateOrderRequest(String itemName, String itemId) {}
+
+  public record PurchaseDetails(
+    String orderId,
+    String itemId,
+    String buyerFullName,
+    String paymentStatus,
+    String paymentId,
+    String paymentAmount,
+    String payPalFee) {}
 
   @PostMapping("/orders")
   public Map<String, Object> createOrder(@RequestBody CreateOrderRequest reqBody, HttpServletRequest request) {
@@ -52,9 +70,113 @@ public class PayPalController {
   }
 
   @PostMapping("/orders/{orderId}/capture")
-  public Map<String, Object> capture(@PathVariable String orderId, HttpServletRequest request) {
+  public Map<String, Object> capture(
+    @PathVariable String orderId,
+    HttpServletRequest request,
+    HttpSession session) {
+
     boolean useSandbox = URLUtil.isFromLocalhost(request);
-    return payPalService.captureOrder(orderId, useSandbox);
+    Map<String, Object> response = payPalService.captureOrder(orderId, useSandbox);
+
+		User user = (User) session.getAttribute("user");
+    if (user != null) {
+      PurchaseDetails purchaseDetails = PayPalController.extractPurchaseDetails(response);
+      logger.info("User {} renewed license: {}", user.getEmail(), purchaseDetails);
+    }
+
+    return response;
+  }
+
+  /**
+   * Converts a PayPal capture response into a PurchaseDetails DTO.
+   * 
+   * @param paypalResponse The PayPal capture response as returned by the PayPal API
+   * @return PurchaseDetails DTO with extracted payment information
+   */
+  @SuppressWarnings("unchecked")
+  private static PurchaseDetails extractPurchaseDetails(Map<String, Object> paypalResponse) {
+    String orderId = null;
+    String itemId = null;
+    String buyerFullName = null;
+    String paymentStatus = null;
+    String paymentId = null;
+    String paymentAmount = null;
+    String payPalFee = null;
+
+    try {
+      // Extract order ID
+      orderId = (String) paypalResponse.get("id");
+
+      // Extract purchase units
+      List<Map<String, Object>> purchaseUnits = (List<Map<String, Object>>) paypalResponse.get("purchase_units");
+      if (purchaseUnits != null && !purchaseUnits.isEmpty()) {
+        Map<String, Object> purchaseUnit = purchaseUnits.get(0);
+        
+        // Extract capture details
+        Map<String, Object> payments = (Map<String, Object>) purchaseUnit.get("payments");
+        if (payments != null) {
+          List<Map<String, Object>> captures = (List<Map<String, Object>>) payments.get("captures");
+          if (captures != null && !captures.isEmpty()) {
+            Map<String, Object> capture = captures.get(0);
+            
+            // Extract item ID from custom_id
+            itemId = (String) capture.get("custom_id");
+
+            // Extract payment ID
+            paymentId = (String) capture.get("id");
+            
+             // Extract payment status
+            paymentStatus = (String) capture.get("status");
+            
+            // Extract payment amount
+            Map<String, Object> amount = (Map<String, Object>) capture.get("amount");
+            if (amount != null) {
+              paymentAmount = (String) amount.get("value");
+            }
+
+            // Extract seller receivable breakdown for PayPal fee
+            Map<String, Object> sellerReceivableBreakdown = (Map<String, Object>) capture.get("seller_receivable_breakdown");
+            if (sellerReceivableBreakdown != null) {
+              Map<String, Object> paypalFeeInfo = (Map<String, Object>) sellerReceivableBreakdown.get("paypal_fee");
+              if (paypalFeeInfo != null) {
+                payPalFee = (String) paypalFeeInfo.get("value");
+              }
+            }
+          }
+        }
+      }
+
+      // Extract payer information
+      Map<String, Object> payer = (Map<String, Object>) paypalResponse.get("payer");
+      if (payer != null) {
+        Map<String, Object> name = (Map<String, Object>) payer.get("name");
+        if (name != null) {
+          String givenName = (String) name.get("given_name");
+          String surname = (String) name.get("surname");
+          if (givenName != null && surname != null) {
+            buyerFullName = givenName + " " + surname;
+          } else if (givenName != null) {
+            buyerFullName = givenName;
+          } else if (surname != null) {
+            buyerFullName = surname;
+          }
+        }
+      }
+
+    } catch (Exception e) {
+      // Log the exception or handle it as needed
+      System.err.println("Error converting PayPal response to CaptureResponse: " + e.getMessage());
+    }
+
+    return new PurchaseDetails(
+      orderId,
+      itemId,
+      buyerFullName,
+      paymentStatus,
+      paymentId,
+      paymentAmount,
+      payPalFee
+    );
   }
 
 }

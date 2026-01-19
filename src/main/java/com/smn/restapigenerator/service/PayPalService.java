@@ -3,7 +3,6 @@ package com.smn.restapigenerator.service;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,9 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClient.RequestBodySpec;
 
-import com.smn.restapigenerator.ui.UIController;
-import com.smn.restapigenerator.util.MapUtil;
-
 @Service
 public class PayPalService {
 
@@ -24,7 +20,7 @@ public class PayPalService {
     private final String productionBaseUrl;
     private final String sandboxBaseUrl;
 
-	private static final Logger logger = LoggerFactory.getLogger(UIController.class);
+	private static final Logger logger = LoggerFactory.getLogger(PayPalService.class);
 
     public PayPalService(
         RestClient.Builder builder,
@@ -92,7 +88,6 @@ public class PayPalService {
                 .accept(org.springframework.http.MediaType.APPLICATION_JSON)
                 .body(Collections.emptyMap());
             Map<String, Object> response = request.retrieve().body(Map.class);
-            System.out.println(MapUtil.dumpMap(response));
             return response;
         } catch (Throwable t) {
             logger.error("Failed to capture PayPal order: " + orderId, t);
