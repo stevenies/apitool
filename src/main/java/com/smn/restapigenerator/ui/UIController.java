@@ -308,6 +308,19 @@ public class UIController {
 			return "login";
 		}
 
+		// Determine whether the license has expired
+		if (!user.isAdmin()) {
+			Date now = new Date();
+			Date accessExpiry = user.getAccessExpiryDate();
+			if (accessExpiry != null && now.after(accessExpiry)) {
+				String email = user.getEmail();
+				logger.warn("License expired for user: {}", email);
+				session.setAttribute("paypalClientId", paypalClientId);
+				return "buyLicense";
+			}
+		}
+
+		// The license is valid. Show the API Specification Form.
 		ApiSpec apiSpec = user.getApiSpec();
 
 		session.setAttribute("user", user);
@@ -389,6 +402,19 @@ public class UIController {
 			return "login";
 		}
 
+		// Determine whether the license has expired
+		if (!user.isAdmin()) {
+			Date now = new Date();
+			Date accessExpiry = user.getAccessExpiryDate();
+			if (accessExpiry != null && now.after(accessExpiry)) {
+				String email = user.getEmail();
+				logger.warn("License expired for user: {}", email);
+				session.setAttribute("paypalClientId", paypalClientId);
+				return "buyLicense";
+			}
+		}
+
+		// The license is valid. Show the API Code Form.
 		ApiSpec apiSpec = user.getApiSpec();
  		ApiCode apiCode = user.getApiCode();
 

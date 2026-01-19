@@ -148,10 +148,10 @@
 			</c:if>
 			<input type="radio" id="licenseWeek" name="licenseType" value="oneWeek" checked="checked"/> One Week Access ($${UIController.LICENSE_COST_ONE_WEEK})<br/>
 			<input type="radio" id="licenseMonth" name="licenseType" value="oneMonth"/> One Month Access ($${UIController.LICENSE_COST_ONE_MONTH})<br/>
-			<input type="radio" id="licenseLongTerm" name="licenseType" value="longTerm"/> Long-term Access (contact our sales team for pricing and options)<br/>
-			<div id="paypal-button-container"></div>
-			<button id="buttonContactSales" style="display:none;">Contact Sales Team</button>
+			<input type="radio" id="licenseLongTerm" name="licenseType" value="longTerm"/> Long-term Access (contact our sales team for pricing and options)
 		</p>
+		<div id="paypal-button-container"></div>
+		<button id="buttonContactSales" style="display:none;">Contact Sales Team</button>
 		<p class="formHeader" id="apiTitle">Why Pay for a License?</p>
 		<img id="licenseBenefitsImage" src="images/benefits.png" />
 		<p>
