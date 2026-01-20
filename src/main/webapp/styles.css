@@ -286,3 +286,12 @@ B {
 #renewalSuccessPanel BUTTON {
     margin: 14px 0px 0px 0px;
 }
+#renewalFailedPanel {
+    width: 800px;
+    margin: auto;
+    margin-top: 20px;
+    padding: 10px; 
+    color: black;
+    background-color: #ffd4d4;
+    border-radius: 8px;
+}

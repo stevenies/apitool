@@ -299,11 +299,11 @@ public class UIController {
 
 	@GetMapping("/viewApiSpecForm")
 	public String viewAPISpecForm(Model model, HttpSession session) {
+		session.setAttribute("referrer", VIEW_API_SPEC_FORM);
 
 		// Verify that the user session is valid.
 		User user = (User) session.getAttribute("user");
 		if (user == null || user.getPassword() == null || user.getPassword().isEmpty()) {
-			session.setAttribute("referrer", VIEW_API_SPEC_FORM);
 			return "login";
 		}
 
@@ -393,11 +393,11 @@ public class UIController {
 
 	@GetMapping("/viewApiCodeForm")
 	public String viewAPICodeForm(HttpSession session) {
+		session.setAttribute("referrer", VIEW_API_CODE_FORM);
 
 		// Verify that the user session is valid.
 		User user = (User) session.getAttribute("user");
 		if (user == null || user.getPassword() == null || user.getPassword().isEmpty()) {
-			session.setAttribute("referrer", VIEW_API_CODE_FORM);
 			return "login";
 		}
 

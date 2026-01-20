@@ -126,11 +126,19 @@
 						throw new Error(capture.error || "Capture failed (" + res.status + ")");
 					}
 
-					const licenseExpirationDate = document.getElementById("licenseExpirationDate");
-					licenseExpirationDate.textContent = capture.newExpirationDate;
+					if (capture.status === "COMPLETED") {
+						const licenseExpirationDate = document.getElementById("licenseExpirationDate");
+						licenseExpirationDate.textContent = capture.newExpirationDate;
 
-					const renewalSuccessPanel = document.getElementById("renewalSuccessPanel");
-					renewalSuccessPanel.style.display = 'block';
+						const renewalSuccessPanel = document.getElementById("renewalSuccessPanel");
+						renewalSuccessPanel.style.display = 'block';
+					} else {
+						const paymentStatus = document.getElementById("paymentStatus");
+						paymentStatus.textContent = capture.status;
+
+						const renewalFailedPanel = document.getElementById("renewalFailedPanel");
+						renewalFailedPanel.style.display = 'block';
+					}
 				},
 
 				onError(err) {
@@ -163,7 +171,12 @@
 			<p>
 				Your license has been successfully renewed.<br/>
 				You can continue using the REST API Generator until <span id="licenseExpirationDate"></span>.<br/>
-				<button onclick="window.location.href='viewApiSpecForm'">Continue</button>
+				<button onclick="window.location.href='${referrer}'">Continue</button>
+			</p>
+		</div>
+		<div id="renewalFailedPanel" style="display:none;">
+			<p>
+				Your payment was not successful (status: <span id="paymentStatus"></span>).
 			</p>
 		</div>
 		<p class="formHeader" id="apiTitle">Why Pay for a License?</p>

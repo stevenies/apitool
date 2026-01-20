@@ -50,7 +50,7 @@ public class PayPalController {
   }
 
   @PostMapping("/orders")
-  public Map<String, Object> createOrder(@RequestBody CreateOrderRequest reqBody, HttpServletRequest request) {
+  public Map<String, Object> createOrder(@RequestBody CreateOrderRequest reqBody, HttpServletRequest request, HttpSession session) {
     if (reqBody.itemId() == null || reqBody.itemId().isBlank() || reqBody.itemName() == null || reqBody.itemName().isBlank()) {
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "itemName and itemId are required");
     }
@@ -74,6 +74,12 @@ public class PayPalController {
 
     boolean useSandbox = URLUtil.isFromLocalhost(request);
     String orderId = payPalService.createOrder(itemName, itemId, price, "USD", useSandbox);
+
+    User user = (User) session.getAttribute("user");
+    if (user != null) {
+        logger.info("User {} created renewal order {} for item {}", user.getEmail(), orderId, itemId);
+    }
+
     return Map.of("id", orderId);
   }
 
@@ -87,11 +93,16 @@ public class PayPalController {
     Map<String, Object> response = payPalService.captureOrder(orderId, useSandbox);
 
 		User user = (User) session.getAttribute("user");
-    if (user != null) {
+    if (user == null) {
+      response.put("newExpirationDate", "INVALID");
+
+    } else {
       String email = user.getEmail();
+
       PurchaseDetails purchaseDetails = PayPalController.extractPurchaseDetails(response);
       if ("COMPLETED".equalsIgnoreCase(purchaseDetails.paymentStatus())) {
         logger.info("User {} renewed license: {}", email, purchaseDetails);
+
         switch (purchaseDetails.itemId()) {
           case "RAG-LIC-1D": {
             Date newExpirationDate = Date.from(Instant.now().plus(1, ChronoUnit.DAYS));
@@ -112,6 +123,7 @@ public class PayPalController {
             logger.error("Unknown itemId for license renewal: {}", purchaseDetails.itemId());
           } break;
         }
+
       } else {
         logger.info("User {} failed to renew license.  Order status is {}", email, purchaseDetails.paymentStatus());
       }
