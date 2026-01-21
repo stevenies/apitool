@@ -3,7 +3,9 @@ package com.smn.restapigenerator.service;
 import com.smn.restapigenerator.exception.ExceptionUserDoesntExist;
 import com.smn.restapigenerator.exception.ExceptionUserExists;
 import com.smn.restapigenerator.model.User;
+import com.smn.restapigenerator.model.User.EmailStatus;
 import com.smn.restapigenerator.persistence.UserRepository;
+import com.smn.restapigenerator.util.CryptoUtil;
 import com.smn.restapigenerator.util.StringUtil;
 import java.io.IOException;
 import java.util.Calendar;
@@ -72,9 +74,10 @@ public class UserService {
 	 */
     public User activateUser(String email, String password) throws ExceptionUserDoesntExist {
 
-		// Find the user and set their access token.
+		// Find the user and set their password.
 		User user = this.findUserByEmail(email);
-		user.setPassword(password);
+		user.setPassword(CryptoUtil.encrypt(password));
+		user.setEmailStatus(EmailStatus.VERIFIED);
 
 		// Set their access expiration date to 24 hours from now for use as a trial period.
 		Calendar cal = Calendar.getInstance();

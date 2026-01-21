@@ -13,6 +13,7 @@ import com.smn.restapigenerator.service.EmailService;
 import com.smn.restapigenerator.service.ToolService;
 import com.smn.restapigenerator.service.UserService;
 import com.smn.restapigenerator.service.ToolService.DtoReadUMLFile;
+import com.smn.restapigenerator.util.CryptoUtil;
 import com.smn.restapigenerator.util.StringUtil;
 import com.smn.restapigenerator.util.ZipUtil;
 import jakarta.servlet.http.HttpServletRequest;
@@ -247,9 +248,10 @@ public class UIController {
 		if (errors.isEmpty()) {
 			try {
 				user = this.userService.findUserByEmail(email);
+				String encryptedPassword = CryptoUtil.encrypt(password);
 				if (user == null) {
 					errors.add("An account doesn't exist for email " + email);
-				} else if (password == null || !password.equals(user.getPassword())) {
+				} else if (encryptedPassword == null || !encryptedPassword.equals(user.getPassword())) {
 					errors.add("The password is incorrect");
 				}
 			} catch (ExceptionUserDoesntExist e) {

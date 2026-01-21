@@ -7,6 +7,8 @@ import com.smn.restapigenerator.exception.ExceptionUserDoesntExist;
 import com.smn.restapigenerator.model.User;
 import com.smn.restapigenerator.model.User.EmailStatus;
 import com.smn.restapigenerator.ui.UIController;
+import com.smn.restapigenerator.util.CryptoUtil;
+
 import jakarta.annotation.PostConstruct;
 import java.io.File;
 import java.io.FileReader;
@@ -58,7 +60,7 @@ public class UserRepository {
                     admin.setCompany("Self");
                     admin.setNameFirst("Steve");
                     admin.setNameLast("Nies");
-                    admin.setPassword("smn01311959");
+                    admin.setPassword(CryptoUtil.encrypt("smn01311959"));
 
                     Calendar cal = Calendar.getInstance();
                     cal.add(Calendar.YEAR, 50);
