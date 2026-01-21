@@ -1,12 +1,15 @@
 application:
   name: REST API Generator
   version: 1.0.0
-  debugging: true
+  usePayPalSandbox: true
+  includeDebugLicense: true
 paypal:
   base-url: https://api-m.paypal.com
+  client-id: ARu8cIQ846-UuW_Iq3a82wh9RDl1a1bE3O0yYAQF1--PCUAvCFPY-2ypkxz-FfY6L5Ffd3mFtIMc9ERX
+  secret: EMGW0dY2vXx4yNfV81OPY6xfWV6-9ZpyMSTM4cVJMFxmEWQeIervTPvIuNoLQeahXDVdD95WKrYqabC7
   sandbox-base-url: https://api-m.sandbox.paypal.com
-  client-id: AUFWvl1244dg3mDxmJod_yS0S6wxdobzJxfvuyvYWwcAvmBNoBOy-hhEI0dMr_DdvLdgAWtn3NEQe_08
-  secret: ECqlKHPDv2RkpBdDm88X_LBgvAobkwj0Bt3BlFgsBlOcqSbrkH9-44dXiKL9MFYFZyMcFledFcT2hZOX
+  sandbox-client-id: AUFWvl1244dg3mDxmJod_yS0S6wxdobzJxfvuyvYWwcAvmBNoBOy-hhEI0dMr_DdvLdgAWtn3NEQe_08
+  sandbox-secret: ECqlKHPDv2RkpBdDm88X_LBgvAobkwj0Bt3BlFgsBlOcqSbrkH9-44dXiKL9MFYFZyMcFledFcT2hZOX
 spring:
   servlet:
     multipart:

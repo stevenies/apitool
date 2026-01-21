@@ -75,6 +75,9 @@ public class UIController {
 	@Value("${paypal.client-id}")
     private String paypalClientId;
 
+	@Value("${paypal.sandbox-client-id}")
+    private String paypalSandboxClientId;
+
 	@PostMapping("/register")
 	public String register(
 		@RequestParam(required = false, defaultValue = "") String nameFirst,
@@ -222,13 +225,14 @@ public class UIController {
 	public String login(
 		@RequestParam(required = false, defaultValue = "") String email,
 		@RequestParam(required = false, defaultValue = "") String password,
-		HttpSession session,
-		@Value("${application.debugging}") boolean debugging) {
+	    @Value("${application.usePayPalSandbox}") boolean usePayPalSandbox,
+	    @Value("${application.includeDebugLicense}") boolean includeDebugLicense,
+		HttpSession session) {
 
 		List<String> errors = new ArrayList<>();
 		session.setAttribute("loginErrors", errors);
 		session.setAttribute("registrationErrors", null);
-		session.setAttribute("debugging", debugging);
+		session.setAttribute("includeDebugLicense", includeDebugLicense);
 
 		// Verify that the required fields are provided.
 		if (StringUtil.isEmpty(email) || !StringUtil.isValidEmail(email)) {
@@ -268,7 +272,7 @@ public class UIController {
 				Date accessExpiry = user.getAccessExpiryDate();
 				if (accessExpiry != null && now.after(accessExpiry)) {
 					logger.warn("License expired for user: {}", email);
-					session.setAttribute("paypalClientId", paypalClientId);
+					session.setAttribute("paypalClientId", usePayPalSandbox ? paypalSandboxClientId : paypalClientId);
 					return "buyLicense";
 				}
 			}
@@ -298,7 +302,11 @@ public class UIController {
 	}
 
 	@GetMapping("/viewApiSpecForm")
-	public String viewAPISpecForm(Model model, HttpSession session) {
+	public String viewAPISpecForm(
+		Model model,
+	    @Value("${application.usePayPalSandbox}") boolean usePayPalSandbox,
+		HttpSession session) {
+
 		session.setAttribute("referrer", VIEW_API_SPEC_FORM);
 
 		// Verify that the user session is valid.
@@ -314,7 +322,7 @@ public class UIController {
 			if (accessExpiry != null && now.after(accessExpiry)) {
 				String email = user.getEmail();
 				logger.warn("License expired for user: {}", email);
-				session.setAttribute("paypalClientId", paypalClientId);
+				session.setAttribute("paypalClientId", usePayPalSandbox ? paypalSandboxClientId : paypalClientId);
 				return "buyLicense";
 			}
 		}
@@ -392,7 +400,10 @@ public class UIController {
 	}
 
 	@GetMapping("/viewApiCodeForm")
-	public String viewAPICodeForm(HttpSession session) {
+	public String viewAPICodeForm(
+		@Value("${application.usePayPalSandbox}") boolean usePayPalSandbox,
+		HttpSession session) {
+
 		session.setAttribute("referrer", VIEW_API_CODE_FORM);
 
 		// Verify that the user session is valid.
@@ -408,7 +419,7 @@ public class UIController {
 			if (accessExpiry != null && now.after(accessExpiry)) {
 				String email = user.getEmail();
 				logger.warn("License expired for user: {}", email);
-				session.setAttribute("paypalClientId", paypalClientId);
+				session.setAttribute("paypalClientId", usePayPalSandbox ? paypalSandboxClientId : paypalClientId);
 				return "buyLicense";
 			}
 		}

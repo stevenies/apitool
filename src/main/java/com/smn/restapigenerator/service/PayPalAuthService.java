@@ -16,8 +16,7 @@ import org.springframework.web.client.RestClient;
 public class PayPalAuthService {
 
   private final RestClient rest;
-  private final String productionBaseUrl;
-  private final String sandboxBaseUrl;
+  private final String baseUrl;
   private final String clientId;
   private final String secret;
 
@@ -27,18 +26,20 @@ public class PayPalAuthService {
   public PayPalAuthService(
     RestClient.Builder builder,
     @Value("${paypal.base-url}") String productionBaseUrl,
-    @Value("${paypal.sandbox-base-url}") String sandboxBaseUrl,
     @Value("${paypal.client-id}") String clientId,
-    @Value("${paypal.secret}") String secret) { 
+    @Value("${paypal.secret}") String secret, 
+    @Value("${paypal.sandbox-base-url}") String sandboxBaseUrl,
+    @Value("${paypal.sandbox-client-id}") String sandboxClientId,
+    @Value("${paypal.sandbox-secret}") String sandboxSecret,
+    @Value("${application.usePayPalSandbox}") boolean usePayPalSandbox) {
 
     this.rest = builder.build();
-    this.productionBaseUrl = productionBaseUrl;
-    this.sandboxBaseUrl = sandboxBaseUrl;
-    this.clientId = clientId;
-    this.secret = secret;
+    this.baseUrl = usePayPalSandbox ? sandboxBaseUrl : productionBaseUrl;
+    this.clientId = usePayPalSandbox ? sandboxClientId : clientId;
+    this.secret = usePayPalSandbox ? sandboxSecret : secret;
   }
 
-  public synchronized String getAccessToken(boolean useSandbox) {
+  public synchronized String getAccessToken(boolean usePayPalSandbox) {
     if (token != null && Instant.now().isBefore(expiresAt.minusSeconds(30))) {
       return token;
     }
@@ -48,7 +49,6 @@ public class PayPalAuthService {
     MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
     form.add("grant_type", "client_credentials");
 
-    String baseUrl = useSandbox ? sandboxBaseUrl : productionBaseUrl;
     Map<?, ?> resp = rest.post()
         .uri(baseUrl + "/v1/oauth2/token")
         .header(HttpHeaders.AUTHORIZATION, "Basic " + basic)

@@ -34,9 +34,9 @@ public class PayPalService {
         this.sandboxBaseUrl = sandboxBaseUrl;
     }
 
-    public String createOrder(String itemName, String itemId, String price, String currency, boolean useSandbox) {
-        String token = auth.getAccessToken(useSandbox);
-        String baseUrl = useSandbox ? sandboxBaseUrl : productionBaseUrl;
+    public String createOrder(String itemName, String itemId, String price, String currency, boolean usePayPalSandbox) {
+        String token = auth.getAccessToken(usePayPalSandbox);
+        String baseUrl = usePayPalSandbox ? sandboxBaseUrl : productionBaseUrl;
 
         Map<String, Object> payload = Map.of(
             "intent", "CAPTURE",
@@ -75,9 +75,9 @@ public class PayPalService {
     }
 
     @SuppressWarnings("unchecked")
-    public Map<String, Object> captureOrder(String orderId, boolean useSandbox) {
-        String token = auth.getAccessToken(useSandbox);
-        String baseUrl = useSandbox ? sandboxBaseUrl : productionBaseUrl;
+    public Map<String, Object> captureOrder(String orderId, boolean usePayPalSandbox) {
+        String token = auth.getAccessToken(usePayPalSandbox);
+        String baseUrl = usePayPalSandbox ? sandboxBaseUrl : productionBaseUrl;
 
         // Orders v2: capture order :contentReference[oaicite:5]{index=5}
         try {

@@ -155,7 +155,7 @@
 		<p class="formHeader">License Expired</p>
 		Your license has expired. To continue using the REST API Generator the following licenses are available:
 		<p id="licenseOptions">
-			<c:if test="${debugging}">
+			<c:if test="${includeDebugLicense}">
 			<input type="radio" id="licenseDay" name="licenseType" value="oneDay" checked="checked"/> One Day Access ($${UIController.LICENSE_COST_ONE_DAY})<br/>
 			</c:if>
 			<input type="radio" id="licenseWeek" name="licenseType" value="oneWeek" checked="checked"/> One Week Access ($${UIController.LICENSE_COST_ONE_WEEK})<br/>

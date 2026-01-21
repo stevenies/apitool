@@ -4,7 +4,6 @@ import com.smn.restapigenerator.model.User;
 import com.smn.restapigenerator.service.PayPalService;
 import com.smn.restapigenerator.service.UserService;
 import com.smn.restapigenerator.util.StringUtil;
-import com.smn.restapigenerator.util.URLUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import java.time.Instant;
@@ -15,6 +14,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -50,7 +50,11 @@ public class PayPalController {
   }
 
   @PostMapping("/orders")
-  public Map<String, Object> createOrder(@RequestBody CreateOrderRequest reqBody, HttpServletRequest request, HttpSession session) {
+  public Map<String, Object> createOrder(
+      @RequestBody CreateOrderRequest reqBody,
+      @Value("${application.usePayPalSandbox}") boolean usePayPalSandbox,
+      HttpServletRequest request,
+      HttpSession session) {
     if (reqBody.itemId() == null || reqBody.itemId().isBlank() || reqBody.itemName() == null || reqBody.itemName().isBlank()) {
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "itemName and itemId are required");
     }
@@ -72,8 +76,7 @@ public class PayPalController {
         throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unknown itemId: " + itemId);
     }
 
-    boolean useSandbox = URLUtil.isFromLocalhost(request);
-    String orderId = payPalService.createOrder(itemName, itemId, price, "USD", useSandbox);
+    String orderId = payPalService.createOrder(itemName, itemId, price, "USD", usePayPalSandbox);
 
     User user = (User) session.getAttribute("user");
     if (user != null) {
@@ -86,11 +89,11 @@ public class PayPalController {
   @PostMapping("/orders/{orderId}/capture")
   public Map<String, Object> capture(
     @PathVariable String orderId,
+    @Value("${application.usePayPalSandbox}") boolean usePayPalSandbox,
     HttpServletRequest request,
     HttpSession session) {
 
-    boolean useSandbox = URLUtil.isFromLocalhost(request);
-    Map<String, Object> response = payPalService.captureOrder(orderId, useSandbox);
+    Map<String, Object> response = payPalService.captureOrder(orderId, usePayPalSandbox);
 
 		User user = (User) session.getAttribute("user");
     if (user == null) {
