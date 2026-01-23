@@ -1,8 +1,8 @@
 application:
   name: REST API Generator
   version: 1.0.0
-  usePayPalSandbox: false
-  includeDebugLicense: false
+  usePayPalSandbox: true
+  includeDebugLicense: true
 paypal:
   base-url: https://api-m.paypal.com
   client-id: ARu8cIQ846-UuW_Iq3a82wh9RDl1a1bE3O0yYAQF1--PCUAvCFPY-2ypkxz-FfY6L5Ffd3mFtIMc9ERX

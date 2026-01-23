@@ -142,6 +142,20 @@ public class UserService {
 	}
  
 	/**
+	 * Update the user's password.
+	 * @param user The user to update.
+	 * @param password The new password for the user.
+	 */
+	public void updateUser(User user, String password) {
+		user.setPassword(CryptoUtil.encrypt(password));
+		try {
+			this.userRepository.saveToJsonFile();
+		} catch (IOException e) {
+			logger.error("Failed to save user to JSON file: {}", e.getMessage(), e);
+		}
+	}
+ 
+	/**
 	 * Update the user's access expiry date.
 	 * @param user The user to update.
 	 * @param accessExpiry Date when the license expires.  If null then deactivate the license.

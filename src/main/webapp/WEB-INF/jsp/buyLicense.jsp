@@ -130,14 +130,14 @@
 						const licenseExpirationDate = document.getElementById("licenseExpirationDate");
 						licenseExpirationDate.textContent = capture.newExpirationDate;
 
-						const renewalSuccessPanel = document.getElementById("renewalSuccessPanel");
-						renewalSuccessPanel.style.display = 'block';
+						const successPanel = document.getElementById("successPanel");
+						successPanel.style.display = 'block';
 					} else {
 						const paymentStatus = document.getElementById("paymentStatus");
 						paymentStatus.textContent = capture.status;
 
-						const renewalFailedPanel = document.getElementById("renewalFailedPanel");
-						renewalFailedPanel.style.display = 'block';
+						const errorPanel = document.getElementById("errorPanel");
+						errorPanel.style.display = 'block';
 					}
 				},
 
@@ -164,7 +164,7 @@
 		</p>
 		<div id="paypal-button-container"></div>
 		<button id="buttonContactSales" style="display:none;">Contact Sales Team</button>
-		<div id="renewalSuccessPanel" style="display:none;">
+		<div id="successPanel" style="display:none;">
 			<p>
 				Thank you for your purchase!
 			</p>
@@ -174,7 +174,7 @@
 				<button onclick="window.location.href='${referrer}'">Continue</button>
 			</p>
 		</div>
-		<div id="renewalFailedPanel" style="display:none;">
+		<div id="errorPanel" style="display:none;">
 			<p>
 				Your payment was not successful (status: <span id="paymentStatus"></span>).
 			</p>

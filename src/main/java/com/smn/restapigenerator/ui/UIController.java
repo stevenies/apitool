@@ -86,48 +86,47 @@ public class UIController {
 		@RequestParam(required = false, defaultValue = "") String company,
 		@RequestParam(required = false, defaultValue = "") String email,
 		@RequestParam(required = false, defaultValue = "") String phone,
-		HttpServletRequest request,
-		HttpSession session) {
+		HttpServletRequest request) {
 
 		List<String> errors = new ArrayList<>();
-		session.setAttribute("loginErrors", null);
-		session.setAttribute("registrationErrors", errors);
-		session.setAttribute("registrationSuccess", false);
+		request.setAttribute("loginErrors", null);
+		request.setAttribute("registrationErrors", errors);
+		request.setAttribute("registrationSuccess", false);
 
 		// Verify that the required fields are provided.
 		if (StringUtil.isEmpty(nameFirst)) {
 			errors.add("Enter your first name");
 		} else {
 			nameFirst = StringUtil.trim(nameFirst);
-			session.setAttribute("nameFirst", nameFirst);
+			request.setAttribute("nameFirst", nameFirst);
 		}
 
 		if (StringUtil.isEmpty(nameLast)) {
 			errors.add("Enter your last name");
 		} else {
 			nameLast = StringUtil.trim(nameLast);
-			session.setAttribute("nameLast", nameLast);
+			request.setAttribute("nameLast", nameLast);
 		}
 
 		if (StringUtil.isEmpty(company)) {
 			errors.add("Enter your company name or 'Self' if not employed");
 		} else {
 			company = StringUtil.trim(company);
-			session.setAttribute("company", company);
+			request.setAttribute("company", company);
 		}
 
 		if (StringUtil.isEmpty(email) || !StringUtil.isValidEmail(email)) {
 			errors.add("Enter a valid email address using the format user@example.com");
 		} else {
 			email = StringUtil.trim(email);
-			session.setAttribute("email", email);
+			request.setAttribute("email", email);
 		}
 
 		if (StringUtil.isEmpty(phone) || !StringUtil.isValidPhone(phone)) {
 			errors.add("Enter a valid phone number using the format 555-123-4567 (US) or<br/> +44 20 7946 0958 (International)");
 		} else {
 			phone = StringUtil.trim(phone);
-			session.setAttribute("phone", phone);
+			request.setAttribute("phone", phone);
 		}
 
 		if (errors.isEmpty()) {
@@ -148,7 +147,7 @@ public class UIController {
 			}
 		}
 
-		session.setAttribute("registrationSuccess", errors.isEmpty());
+		request.setAttribute("registrationSuccess", errors.isEmpty());
 		return "login";
 	}
 
@@ -156,22 +155,22 @@ public class UIController {
 	public String emailVerified(
 		@RequestParam(required = false, defaultValue = "") String email,
 		@RequestParam(required = false, defaultValue = "0") int key,
-		HttpSession session) {
+		HttpServletRequest request) {
 
 		List<String> errors = new ArrayList<>();
-		session.setAttribute("enrollmentErrors", errors);
-		session.setAttribute("emailVerified", true);
+		request.setAttribute("enrollmentErrors", errors);
+		request.setAttribute("emailVerified", true);
 
 		int masterKey = StringUtil.makeKey(email);
 		if (key != masterKey) {
 			errors.add("Email verification failed. The provided key is invalid.");
 			logger.warn("Email verification failed for email: {}", email);
-			session.setAttribute("emailVerified", false);
+			request.setAttribute("emailVerified", false);
 			return "activationForm";
 		}
 
 		email = StringUtil.trim(email);
-		session.setAttribute("email", email);
+		request.setAttribute("email", email);
 		return "activationForm";
 	}
 
@@ -179,20 +178,21 @@ public class UIController {
 	public String activate(
 		@RequestParam(required = false, defaultValue = "") String email,
 		@RequestParam(required = false, defaultValue = "") String password,
+		HttpServletRequest request,
 		HttpSession session) {
 
 		List<String> errors = new ArrayList<>();
-		session.setAttribute("enrollmentErrors", errors);
+		request.setAttribute("enrollmentErrors", errors);
 
 		email = StringUtil.trim(email);
-		session.setAttribute("email", email);
+		request.setAttribute("email", email);
 
 		// Verify that the required fields are provided.
 		if (StringUtil.isEmpty(password)) {
 			errors.add("Enter a password to secure your account");
 		} else {
 			password = StringUtil.trim(password);
-			session.setAttribute("password", password);
+			request.setAttribute("password", password);
 		}
 
 		User user = null;
@@ -222,25 +222,91 @@ public class UIController {
 		}
 	}
 
+	@GetMapping("/viewPasswordResetForm")
+	public String viewPasswordResetForm(
+		@RequestParam(required = false, defaultValue = "") String email,
+		@RequestParam(required = false, defaultValue = "0") int key,
+		HttpServletRequest request) {
+
+		List<String> errors = new ArrayList<>();
+		request.setAttribute("errors", errors);
+
+		int masterKey = StringUtil.makeKey(email);
+		if (key != masterKey) {
+			errors.add("Password reset failed. The provided key is invalid.");
+			logger.warn("Password reset key verification failed for email: {}", email);
+		}
+
+		request.setAttribute("key", key);
+		request.setAttribute("email", StringUtil.trim(email));
+		return "passwordResetForm";
+	}
+
+	@PostMapping("/resetPassword")
+	public String resetPassword(
+		@RequestParam(required = false, defaultValue = "0") int key,
+		@RequestParam(required = false, defaultValue = "") String email,
+		@RequestParam(required = false, defaultValue = "") String password,
+		@RequestParam(required = false, defaultValue = "") String confirmPassword,
+		HttpServletRequest request) {
+
+		List<String> errors = new ArrayList<>();
+		request.setAttribute("errors", errors);
+		request.setAttribute("key", key);
+		request.setAttribute("email", email);
+
+		// Verify that the required fields are provided.
+		if (StringUtil.isEmpty(password)) {
+			errors.add("Enter your new password");
+		} else if (StringUtil.isEmpty(confirmPassword)) {
+			errors.add("Confirm your new password");
+		} else if (!password.equals(confirmPassword)) {
+			errors.add("The new password and confirmation do not match");
+		}
+
+		User user = null;
+		if (errors.isEmpty()) {
+			try {
+				user = this.userService.findUserByEmail(email);
+				this.userService.updateUser(user, password);
+			} catch (ExceptionUserDoesntExist e) {
+				errors.add("An account doesn't exist for email " + email);
+			}
+		}
+
+		if (user == null || !errors.isEmpty()) {
+			for (String error : errors) {
+				logger.warn("Password reset error for user {}: {}", email, error);
+			}
+		} else {
+			request.setAttribute("success", true);
+		}
+		return "passwordResetForm";
+	}
+
 	@PostMapping("/login")
 	public String login(
 		@RequestParam(required = false, defaultValue = "") String email,
 		@RequestParam(required = false, defaultValue = "") String password,
+		@RequestParam(required = false, defaultValue = "false") boolean forgotPassword,
+		@RequestParam(required = false, defaultValue = "false") String referrer,
 	    @Value("${application.usePayPalSandbox}") boolean usePayPalSandbox,
 	    @Value("${application.includeDebugLicense}") boolean includeDebugLicense,
+		HttpServletRequest request,
 		HttpSession session) {
 
 		List<String> errors = new ArrayList<>();
-		session.setAttribute("loginErrors", errors);
-		session.setAttribute("registrationErrors", null);
-		session.setAttribute("includeDebugLicense", includeDebugLicense);
+		request.setAttribute("referrer", referrer);
+		request.setAttribute("loginErrors", errors);
+		request.setAttribute("registrationErrors", null);
+		request.setAttribute("includeDebugLicense", includeDebugLicense);
 
 		// Verify that the required fields are provided.
 		if (StringUtil.isEmpty(email) || !StringUtil.isValidEmail(email)) {
 			errors.add("Enter a valid email address");
 		}
 
-		if (StringUtil.isEmpty(password)) {
+		if (!forgotPassword && StringUtil.isEmpty(password)) {
 			errors.add("Enter the password you specified when your account was registered");
 		}
 
@@ -248,11 +314,13 @@ public class UIController {
 		if (errors.isEmpty()) {
 			try {
 				user = this.userService.findUserByEmail(email);
-				String encryptedPassword = CryptoUtil.encrypt(password);
 				if (user == null) {
 					errors.add("An account doesn't exist for email " + email);
-				} else if (encryptedPassword == null || !encryptedPassword.equals(user.getPassword())) {
-					errors.add("The password is incorrect");
+				} else if (!forgotPassword) {
+					String encryptedPassword = CryptoUtil.encrypt(password);
+					if (encryptedPassword == null || !encryptedPassword.equals(user.getPassword())) {
+						errors.add("The password is incorrect");
+					}
 				}
 			} catch (ExceptionUserDoesntExist e) {
 				errors.add("An account doesn't exist for email " + email);
@@ -266,6 +334,17 @@ public class UIController {
 			return "login";
 
 		} else {
+			if (forgotPassword) {
+				try {
+					this.sendEmailResetPassword(request, email);
+				} catch (Exception e) {
+					errors.add("An error occurred while sending the password reset email: " + e.getMessage());
+					logger.error("Error sending password reset email to {}: {}", email, e.getMessage(), e);
+				}
+				request.setAttribute("resetPasswordEmailed", true);
+				return "login";
+			}
+
 			session.setAttribute("user", user);
 
 			// Determine whether the license has expired
@@ -274,7 +353,7 @@ public class UIController {
 				Date accessExpiry = user.getAccessExpiryDate();
 				if (accessExpiry != null && now.after(accessExpiry)) {
 					logger.warn("License expired for user: {}", email);
-					session.setAttribute("paypalClientId", usePayPalSandbox ? paypalSandboxClientId : paypalClientId);
+					request.setAttribute("paypalClientId", usePayPalSandbox ? paypalSandboxClientId : paypalClientId);
 					return "buyLicense";
 				}
 			}
@@ -286,9 +365,9 @@ public class UIController {
 			session.setAttribute("apiSpec", apiSpec);
 			session.setAttribute("apiCode", apiCode);
 
-			String referrer = (String) session.getAttribute("referrer");
 			boolean viewApiSpecForm = VIEW_API_SPEC_FORM.equalsIgnoreCase(referrer);
 			boolean viewApiCodeForm = VIEW_API_CODE_FORM.equalsIgnoreCase(referrer);
+			boolean viewaAdminForm = VIEW_USER_ADMIN_FORM.equalsIgnoreCase(referrer);
 
 			if (viewApiSpecForm) {
 				logger.info("Successful login - redirecting to API Specification Form: {}", email);
@@ -296,9 +375,12 @@ public class UIController {
 			} else if (viewApiCodeForm) {
 				logger.info("Successful login - redirecting to API Code Form: {}", email);
 				return "apiCodeForm";
-			} else {
+			} else if (viewaAdminForm) {
 				logger.info("Successful login - redirecting to User Admin Form: {}", email);
 				return "redirect:viewUsers";
+			} else {
+				logger.error("Invalid referring page for user: {}", email);
+				return "login";
 			}
 		}
 	}
@@ -307,15 +389,18 @@ public class UIController {
 	public String viewAPISpecForm(
 		Model model,
 	    @Value("${application.usePayPalSandbox}") boolean usePayPalSandbox,
+		HttpServletRequest request,
 		HttpSession session) {
 
-		session.setAttribute("referrer", VIEW_API_SPEC_FORM);
+		request.setAttribute("referrer", VIEW_API_SPEC_FORM);
+		request.setAttribute("errors", new ArrayList<>());
 
 		// Verify that the user session is valid.
 		User user = (User) session.getAttribute("user");
 		if (user == null || user.getPassword() == null || user.getPassword().isEmpty()) {
 			return "login";
 		}
+		session.setAttribute("user", user);
 
 		// Determine whether the license has expired
 		if (!user.isAdmin()) {
@@ -324,89 +409,72 @@ public class UIController {
 			if (accessExpiry != null && now.after(accessExpiry)) {
 				String email = user.getEmail();
 				logger.warn("License expired for user: {}", email);
-				session.setAttribute("paypalClientId", usePayPalSandbox ? paypalSandboxClientId : paypalClientId);
+				request.setAttribute("paypalClientId", usePayPalSandbox ? paypalSandboxClientId : paypalClientId);
 				return "buyLicense";
 			}
 		}
 
 		// The license is valid. Show the API Specification Form.
 		ApiSpec apiSpec = user.getApiSpec();
-
-		session.setAttribute("user", user);
 		session.setAttribute("apiSpec", apiSpec);
 		return "apiSpecForm";
 	}
 
 	@PostMapping("/doApiSpecForm")
-	public void doApiSpecForm (
+	public String doApiSpecForm (
 		@RequestParam(required = false) MultipartFile domainModel,
-		@RequestParam String formFields,
-		HttpSession session,
-		HttpServletResponse response) {
+        @RequestParam(required = false) String title,
+        @RequestParam(required = false) String description,
+		@RequestParam(required = false) String version,
+		@RequestParam(required = false) boolean makeGET,
+		@RequestParam(required = false) boolean makePOST,
+		@RequestParam(required = false) boolean makePUT,
+		@RequestParam(required = false) boolean makeDELETE,
+		@RequestParam(required = false) boolean makeSEARCH,
+		@RequestParam(required = false) String serverDomain,
+		@RequestParam(required = false) String contextRoot,
+		@RequestParam(required = false) String port,
+		HttpServletRequest request,
+		HttpSession session) {
 
 		List<String> errors = new ArrayList<>();
-		session.setAttribute("errors", errors);
+		request.setAttribute("errors", errors);
 
 		// Verify that the user session is valid.
 		User user = (User) session.getAttribute("user");
 		if (user == null || user.getPassword() == null || user.getPassword().isEmpty()) {
-			response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-			return;
+			return "login";
 		}
 		String email = user.getEmail();
 
         try {
-            // Parse the JSON object containing the various form fields.
-            ObjectMapper mapper = new ObjectMapper();
-            JsonNode jsonNode = mapper.readTree(formFields);
-
-            String action = this.jsonToString(jsonNode, "action");
-            String title = this.jsonToString(jsonNode, "title");
-            String description = this.jsonToString(jsonNode, "description");
-			String version = this.jsonToString(jsonNode, "version");
-			boolean makeGET = this.jsonToBoolean(jsonNode, "makeGET");
-			boolean makePOST = this.jsonToBoolean(jsonNode, "makePOST");
-			boolean makePUT = this.jsonToBoolean(jsonNode, "makePUT");
-			boolean makeDELETE = this.jsonToBoolean(jsonNode, "makeDELETE");
-			boolean makeSEARCH = this.jsonToBoolean(jsonNode, "makeSEARCH");
-			String serverDomain = this.jsonToString(jsonNode, "serverDomain");
-			String contextRoot = this.jsonToString(jsonNode, "contextRoot");
-			String port = this.jsonToString(jsonNode, "port");
-
-			switch (action) {
-				case "generate": {
-					this.generateApiSpec(
-						user, title, description, version, domainModel,
-						makeSEARCH, makeGET, makePOST, makePUT, makeDELETE,
-						serverDomain, contextRoot, port, errors);
-					boolean success = errors.size() == 0;
-					if (success) {
-						logger.info("API specification generated successfully for user: {}", email);
-					} else {
-						logger.info("API specification generation FAILED for user: {}", email);
-					}
-					response.setStatus(success ? HttpServletResponse.SC_OK : HttpServletResponse.SC_BAD_REQUEST);
-					break;
-				}
-				default: {
-					errors.add("Invalid action specified");
-					response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-					break;
-				}
+			this.generateApiSpec(
+				user, title, description, version, domainModel,
+				makeSEARCH, makeGET, makePOST, makePUT, makeDELETE,
+				serverDomain, contextRoot, port, errors);
+			boolean success = errors.size() == 0;
+			if (success) {
+				logger.info("API specification generated successfully for user: {}", email);
+				ApiSpec apiSpec = user.getApiSpec();
+				session.setAttribute("apiSpec", apiSpec);
+			} else {
+				logger.info("API specification generation FAILED for user: {}", email);
 			}
 		} catch (Exception e) {
 			logger.error("Failed to process API Spec form data: {}", e.getMessage(), e);
 			errors.add(e.getMessage());
-			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 		}
+		return "apiSpecForm";
 	}
 
 	@GetMapping("/viewApiCodeForm")
 	public String viewAPICodeForm(
 		@Value("${application.usePayPalSandbox}") boolean usePayPalSandbox,
+		HttpServletRequest request,
 		HttpSession session) {
 
-		session.setAttribute("referrer", VIEW_API_CODE_FORM);
+		request.setAttribute("referrer", VIEW_API_CODE_FORM);
+		request.setAttribute("errors", new ArrayList<>());
 
 		// Verify that the user session is valid.
 		User user = (User) session.getAttribute("user");
@@ -421,7 +489,7 @@ public class UIController {
 			if (accessExpiry != null && now.after(accessExpiry)) {
 				String email = user.getEmail();
 				logger.warn("License expired for user: {}", email);
-				session.setAttribute("paypalClientId", usePayPalSandbox ? paypalSandboxClientId : paypalClientId);
+				request.setAttribute("paypalClientId", usePayPalSandbox ? paypalSandboxClientId : paypalClientId);
 				return "buyLicense";
 			}
 		}
@@ -437,56 +505,38 @@ public class UIController {
 	}
 
 	@PostMapping("/doApiCodeForm")
-	public void doApiCodeForm (
-		@RequestParam String formFields,
-		HttpSession session,
-		HttpServletResponse response) {
+	public String doApiCodeForm (
+		HttpServletRequest request,
+		HttpSession session) {
 
 		List<String> errors = new ArrayList<>();
-		session.setAttribute("errors", errors);
+		request.setAttribute("errors", errors);
 
 		// Verify that the user session is valid.
 		User user = (User) session.getAttribute("user");
 		if (user == null || user.getPassword() == null || user.getPassword().isEmpty()) {
-			response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-			return;
+			return "login";
 		}
 		String email = user.getEmail();
 
-        try {
-            // Parse the JSON object containing the various form fields.
-            ObjectMapper mapper = new ObjectMapper();
-            JsonNode jsonNode = mapper.readTree(formFields);
-
-            String action = this.jsonToString(jsonNode, "action");
-
-			switch (action) {
-				case "generate": {
-					ApiCode apiCode = this.toolService.generateCode(user, errors);
-					boolean success = errors.size() == 0;
-					if (success) {
-						logger.info("API code generated successfully for user: {}", email);
-					} else {
-						logger.info("API code generation FAILED for user: {}", email);
-					}
-					session.setAttribute("apiCode", apiCode);
-					response.setStatus(success ? HttpServletResponse.SC_OK : HttpServletResponse.SC_BAD_REQUEST);
-					break;
-				}
-				default: {
-					errors.add("Invalid action specified");
-					response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-					break;
-				}
+        ApiCode apiCode = null;
+		try {
+			apiCode = this.toolService.generateCode(user, errors);
+			boolean success = errors.size() == 0;
+			if (success) {
+				logger.info("API code generated successfully for user: {}", email);
+			} else {
+				logger.info("API code generation FAILED for user: {}", email);
 			}
-		} catch (Exception e) {
-			logger.error("Failed to process API Code form data: {}", e.getMessage(), e);
-			session.setAttribute("errors", List.of("Failed to process form data: " + e.getMessage()));
-			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+		} catch (Throwable t) {
+			logger.error("Failed to process API Code form data: {}", t.getMessage(), t);
+			request.setAttribute("errors", List.of("Failed to process form data: " + t.getMessage()));
 		}
+		session.setAttribute("apiCode", apiCode);
+		return "apiCodeForm";
 	}
 
-    @GetMapping("/apiSpecFile")
+	@GetMapping("/apiSpecFile")
     public ResponseEntity<InputStreamResource> getApiSpecFile(HttpSession session) {
 
 		User user = (User) session.getAttribute("user");
@@ -583,6 +633,7 @@ public class UIController {
 	@GetMapping("/viewUsers")
 	public String viewUsers(
 		@RequestParam(required = false, defaultValue = "0") long userId,
+		HttpServletRequest request,
 		HttpSession session) {
 	
 		// Verify that the user session is valid and user has admin privileges
@@ -641,7 +692,7 @@ public class UIController {
 			}
 		
 		}
-		session.setAttribute("userTable", htmlTable.toString());
+		request.setAttribute("userTable", htmlTable.toString());
 		return "admin";
 	}
 	
@@ -654,17 +705,16 @@ public class UIController {
         @RequestParam(required = false, defaultValue = "") String email,
         @RequestParam(required = false, defaultValue = "") String phone,
         @RequestParam(required = false, defaultValue = "") String accessExpiry,
+		HttpServletRequest request,
         HttpSession session) {
 
         // Verify that the user session is valid and user has admin privileges
         User currentUser = (User) session.getAttribute("user");
  		if (currentUser == null) {
 			logger.warn("Unauthorized attempt to update user");
-			session.setAttribute("referrer", "saveUser");
 			return "login";
 		} else if (!currentUser.isAdmin()) {
 			logger.warn("Unauthorized update attempt by non-admin user: {}", currentUser.getEmail());
-			session.setAttribute("referrer", "saveUser");
 			return "login";
 		}
 
@@ -743,8 +793,32 @@ public class UIController {
 			this.emailService.sendHtmlEmail(email, subject, htmlBody);
 			logger.info("Welcome email sent to {}", email);
 
-		} catch (Exception e) {
-			logger.error("Failed to send email to {}: {}", email, e.getMessage(), e);
+		} catch (Throwable t) {
+			logger.error("Failed to send email to {}: {}", email, t.getMessage(), t);
+		}
+	}
+
+	private void sendEmailResetPassword(HttpServletRequest request, String email) {
+		try {
+			String scheme = request.getScheme();
+			String serverName = request.getServerName();
+			int serverPort = request.getServerPort();
+			String urlDomain =
+				scheme
+				+ "://"
+				+ serverName
+				+ (serverPort == 80 || serverPort == 443 ? "" : ":" + serverPort);
+			String subject = "Password Reset Request";
+			String resourcePath = "templates/resetPassword.html";
+			ClassPathResource resource = new ClassPathResource(resourcePath);
+			int key = StringUtil.makeKey(email);
+			String htmlBody = new String(resource.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
+			htmlBody = String.format(htmlBody, urlDomain, email, key);
+			this.emailService.sendHtmlEmail(email, subject, htmlBody);
+			logger.info("Password reset email sent to {}", email);
+
+		} catch (Throwable t) {
+			logger.error("Failed to send email to {}: {}", email, t.getMessage(), t);
 		}
 	}
 

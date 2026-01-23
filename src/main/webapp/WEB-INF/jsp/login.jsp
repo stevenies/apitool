@@ -22,6 +22,16 @@
 			}
 		}
 		
+		function forgotPassword(event) {
+			event.preventDefault();
+
+			const form = document.getElementById("formLogin");
+			form.forgotPassword.value = "true";
+			form.submit();
+
+			return false;
+		}
+	
 		window.onload = function() {
 			installOnClickHandler("buttonLogin", function(event) {
 				event.preventDefault();
@@ -42,6 +52,7 @@
 <body>
 	<div id="page">
 		<p class="title">Login</p>
+
 		<form id="formLogin" action="login" enctype="multipart/form-data" method="post">
 			<table>
 				<tr>
@@ -58,6 +69,13 @@
 					<td><input id="password" name="password" type="text" /></td>
 					<td class="formNote">Security credential authorizing use of the REST API Generator.</td>
 				</tr>
+				<tr>
+					<td></td>
+					<td colspan="2">
+						<a onclick="return forgotPassword(event)">Forgot Password?</a>
+						<input type="hidden" name="forgotPassword" value="false" />
+					</td>
+				</tr>
 			</table>
 			<c:if test="${not empty loginErrors}">
 				<div class="errorPanel">
@@ -68,45 +86,30 @@
 					</ul>
 				</div>
 			</c:if>
-			<div class="actionPanel">
-				<button id="buttonLogin">Login</button>
-			</div>
+			<c:if test="${resetPasswordEmailed}">
+				<div class="successPanel">
+					<p>
+						An email was sent to your email address containing instructions for resetting your password.<br/>
+						Be sure to check your spam/junk folder if you don't see the email within a few minutes.
+					</p>
+					<p>
+						<button id="buttonClose" onclick="window.close(); return false;">OK</button>
+					</p>
+				</div>
+			</c:if>
+			<c:if test="${not resetPasswordEmailed}">
+				<div class="actionPanel">
+					<button id="buttonLogin">Login</button>
+				</div>
+			</c:if>
 			<input type="hidden" name="referrer" value="${referrer}" />
 		</form>
+
 		<form id="formRegister" action="register" enctype="multipart/form-data" method="post">
 			<table>
 				<tr>
 					<td colspan="3"><div class="formHeader">New Users</div></td>
 				</tr>
-<!--
-				<tr>
-					<td></td>
-					<td colspan="2">
-						<table id="subscriptionPlans">
-							<tr>
-								<td colspan="2" id="subscriptionPlansHeader">Subscription Plans:</td>
-							</tr>
-							<tr>
-								<td class="subscriptionPlanLabel">Trial:</td>
-								<td>Unlimited tool usage for a 24 hour period</td>
-							</tr>
-							<tr>
-								<td class="subscriptionPlanLabel">One Week Access ($99):</td>
-								<td>Unlimited tool usage for a 7 day period</td>
-							</tr>
-							<tr>
-								<td class="subscriptionPlanLabel">One Month Access ($299):</td>
-								<td>Unlimited tool usage for a 30 day period</td>
-							</tr>
-							<tr>
-								<td colspan="2" id="subscriptionPlansFooter">
-									<a href="whypay.html" target="WhyPay">Subscription Benefits</a></td>
-								</td>
-							</tr>
-						</table>
-					</td>
-				</tr>
--->
 				<tr>
 					<td><label>First Name<span class="required">*</span>:</label></td>
 					<td><input id="nameFirst" name="nameFirst" value="${nameFirst}" type="text" /></td>

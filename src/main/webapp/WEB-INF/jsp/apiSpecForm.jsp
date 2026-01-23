@@ -19,37 +19,8 @@
 		window.onload = function() {
 			installOnClickHandler("buttonGenerate", function(event) {
 				event.preventDefault(); // Prevent default form submission
-
-				const formData = new FormData();
-
-				const fileInput = document.getElementById('file');
-				if (fileInput && fileInput.files && fileInput.files.length > 0) {
-					formData.append("domainModel", fileInput.files[0]);
-				}
-
-				const jsonObject = {};
-				jsonObject['action'] = 'generate';
-
-				const apiSpecForm = document.getElementById('apiSpecForm');
-				const formFields = new FormData(apiSpecForm);
-				for (const [key, value] of formFields.entries()) {
-					jsonObject[key] = value;
-				}
-				formData.append('formFields', JSON.stringify(jsonObject));
-
-				fetch("doApiSpecForm", {
-					method: "POST",
-					body: formData
-				})
-				.then(response => {
-				})
-				.then((result) => {
-					window.location.href = "viewApiSpecForm?nocache=" + new Date().getTime();
-				})
-				.catch(error => {
-					alert("Error: " + error);
-				});
-
+				const form = document.getElementById("apiSpecForm");
+				form.submit();
 				return false;
 			});
 
@@ -72,7 +43,7 @@
 <body>
 	<div id="page">
 		<p class="title">API Specification Generator</p>
-		<form id="apiSpecForm">
+		<form id="apiSpecForm" action="/doApiSpecForm" method="POST" enctype="multipart/form-data">
 			<table>
 				<tr>
 					<td colspan="3"><div class="formHeader">API Information</div></td>
@@ -94,7 +65,7 @@
 				</tr>
 				<tr>
 					<td><label>Business Domain Model<span class="required">*</span>:</label></td>
-					<td><input id="file" name="file" type="file" /></td>
+					<td><input id="domainModel" name="domainModel" type="file" /></td>
 					<td class="formNote">StarUML '.mdj' file.</td>
 				</tr>
 				<tr>

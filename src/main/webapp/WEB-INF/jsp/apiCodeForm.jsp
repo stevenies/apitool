@@ -19,33 +19,8 @@
 		window.onload = function() {
 			installOnClickHandler("buttonGenerate", function(event) {
 				event.preventDefault(); // Prevent default form submission
-
-				const formData = new FormData();
-
-				const jsonObject = {};
-				jsonObject['action'] = 'generate';
-
-				const apiCodeForm = document.getElementById('apiCodeForm');
-				const formFields = new FormData(apiCodeForm);
-				for (const [key, value] of formFields.entries()) {
-					jsonObject[key] = value;
-				}
-				formData.append('formFields', JSON.stringify(jsonObject));
-
-				fetch("doApiCodeForm", {
-					method: "POST",
-					body: formData
-				})
-				.then(response => {
-					if (!response.ok) throw new Error("API code generation failed");
-				})
-				.then((result) => {
-					window.location.href = "viewApiCodeForm?nocache=" + new Date().getTime();
-				})
-				.catch(error => {
-					alert("Error: " + error);
-				});
-
+				const form = document.getElementById("apiCodeForm");
+				form.submit();
 				return false;
 			});
 
@@ -62,7 +37,7 @@
 <body>
 	<div id="page">
 		<p class="title">API Code Generator</p>
-		<form id="apiCodeForm">
+		<form id="apiCodeForm" action="/doApiCodeForm" method="POST" enctype="multipart/form-data">
 			<c:if test="${not empty errors}">
 				<div class="errorPanel">
 					<ul>
