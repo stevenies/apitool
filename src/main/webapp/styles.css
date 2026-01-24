@@ -17,6 +17,10 @@ A:hover {
     text-decoration: underline;
     cursor: pointer;
 }
+TABLE {
+    width: 100%;
+    border-collapse: collapse;
+}
 TD {
     padding: 4px;
     vertical-align: top;
@@ -140,6 +144,9 @@ BUTTON {
     border-radius: 8px;
     text-align: center;
 }
+.successPanel BUTTON {
+    margin-top: 10px;
+}
 #apiImage {
     width: 285px;
     float: right;
@@ -229,4 +236,21 @@ BUTTON {
 }
 #passwordResetEmail {
     white-space: nowrap;
+}
+#apiSpecForm {
+    clear: both;
+}
+#specGeneration {
+    height: 125px;
+    float: right;
+}
+#apiCodeForm {
+    clear: both
+}
+#apiCodeForm TD:nth-child(2) {
+    width: 100%;
+}
+#codeGeneration {
+    height: 125px;
+    float: right;
 }

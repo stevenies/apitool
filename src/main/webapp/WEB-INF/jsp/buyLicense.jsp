@@ -164,7 +164,7 @@
 		</p>
 		<div id="paypal-button-container"></div>
 		<button id="buttonContactSales" style="display:none;">Contact Sales Team</button>
-		<div id="successPanel" style="display:none;">
+		<div id="successPanel" class="successPanel" style="display:none;">
 			<p>
 				Thank you for your purchase!
 			</p>
@@ -174,7 +174,7 @@
 				<button onclick="window.location.href='${referrer}'">Continue</button>
 			</p>
 		</div>
-		<div id="errorPanel" style="display:none;">
+		<div id="errorPanel" class="errorPanel" style="display:none;">
 			<p>
 				Your payment was not successful (status: <span id="paymentStatus"></span>).
 			</p>

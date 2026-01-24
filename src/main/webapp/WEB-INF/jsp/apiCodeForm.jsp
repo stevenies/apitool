@@ -36,8 +36,26 @@
 </head>
 <body>
 	<div id="page">
+		<img id="codeGeneration" src="images/codeGeneration.png" alt="API Code Generation" />
 		<p class="title">API Code Generator</p>
 		<form id="apiCodeForm" action="/doApiCodeForm" method="POST" enctype="multipart/form-data">
+			<table>
+				<tr>
+					<td colspan="2"><div class="formHeader">API Information</div></td>
+				</tr>
+				<tr>
+					<td><label>API Title<span class="required">*</span>:</label></td>
+					<td>${apiSpec.title}</td>
+				</tr>
+				<tr>
+					<td><label>API Description:</label></td>
+					<td>${apiSpec.description}</td>
+				</tr>
+				<tr>
+					<td><label>API Version<span class="required">*</span>:</label></td>
+					<td>${apiSpec.version}</td>
+				</tr>
+			</table>
 			<c:if test="${not empty errors}">
 				<div class="errorPanel">
 					<ul>
@@ -53,7 +71,7 @@
 				</div>
 			</c:if>
 			<div class="actionPanel">
-				<c:if test="${not apiCode.valid}">
+				<c:if test="${not apiCode.valid and apiSpec.valid}">
 					<button id="buttonGenerate">Generate API Skeleton Code</button>
 				</c:if>
 				<c:if test="${apiCode.valid}">

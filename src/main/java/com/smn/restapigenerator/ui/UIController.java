@@ -475,7 +475,8 @@ public class UIController {
 		HttpSession session) {
 
 		request.setAttribute("referrer", VIEW_API_CODE_FORM);
-		request.setAttribute("errors", new ArrayList<>());
+		List<String> errors = new ArrayList<>();
+		request.setAttribute("errors", errors);
 
 		// Verify that the user session is valid.
 		User user = (User) session.getAttribute("user");
@@ -502,6 +503,10 @@ public class UIController {
 		session.setAttribute("user", user);
 		session.setAttribute("apiSpec", apiSpec);
 		session.setAttribute("apiCode", apiCode);
+
+		if (apiSpec == null || !apiSpec.isValid()) {
+			errors.add("You must first generate an API Specification before generating API code.");
+		}
 		return "apiCodeForm";
 	}
 
@@ -531,7 +536,7 @@ public class UIController {
 			}
 		} catch (Throwable t) {
 			logger.error("Failed to process API Code form data: {}", t.getMessage(), t);
-			request.setAttribute("errors", List.of("Failed to process form data: " + t.getMessage()));
+			errors.add("Failed to process form data: " + t.getMessage());
 		}
 		session.setAttribute("apiCode", apiCode);
 		return "apiCodeForm";
