@@ -84,6 +84,7 @@
 				</div>
 			</c:if>
 			<input type="hidden" name="email" value="${email}" />
+			<input type="hidden" name="emailVerified" value="${emailVerified}" />
 		</form>
 	</div>
 </body>

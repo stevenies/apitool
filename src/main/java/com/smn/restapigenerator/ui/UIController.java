@@ -183,6 +183,7 @@ public class UIController {
 
 		List<String> errors = new ArrayList<>();
 		request.setAttribute("enrollmentErrors", errors);
+		request.setAttribute("emailVerified", true);
 
 		email = StringUtil.trim(email);
 		request.setAttribute("email", email);
@@ -370,13 +371,13 @@ public class UIController {
 			boolean viewaAdminForm = VIEW_USER_ADMIN_FORM.equalsIgnoreCase(referrer);
 
 			if (viewApiSpecForm) {
-				logger.info("Successful login - redirecting to API Specification Form: {}", email);
+				logger.info("Successful login by {} - redirecting to API Specification Form", email);
 				return "apiSpecForm";
 			} else if (viewApiCodeForm) {
-				logger.info("Successful login - redirecting to API Code Form: {}", email);
+				logger.info("Successful login by {} - redirecting to API Code Form", email);
 				return "apiCodeForm";
 			} else if (viewaAdminForm) {
-				logger.info("Successful login - redirecting to User Admin Form: {}", email);
+				logger.info("Successful login by {} - redirecting to User Admin Form", email);
 				return "redirect:viewUsers";
 			} else {
 				logger.error("Invalid referring page for user: {}", email);
