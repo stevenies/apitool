@@ -7,8 +7,8 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>REST API Generator</title>
 	<link rel="stylesheet" type="text/css" href="styles.css">
-	<script src="../../downloadFile.js"></script>
-	<script src="../../popupPanel.js"></script>
+	<script src="downloadFile.js"></script>
+	<script src="popupPanel.js"></script>
 	<script type="text/javascript">
 		function openWindow(url, target) {
 			window.open(url, target);
