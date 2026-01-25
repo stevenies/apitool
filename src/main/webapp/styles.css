@@ -254,3 +254,15 @@ BUTTON {
     height: 125px;
     float: right;
 }
+.popup{
+    position: fixed;
+    z-index: 9999;
+    max-width: 340px;
+    min-width: 220px;
+    padding: 12px 14px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    background: #fff;
+    box-shadow: 0 12px 30px rgba(0,0,0,.75);
+    display: none;
+}

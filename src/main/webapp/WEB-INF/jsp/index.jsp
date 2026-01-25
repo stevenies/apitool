@@ -8,6 +8,7 @@
 	<title>REST API Generator</title>
 	<link rel="stylesheet" type="text/css" href="styles.css">
 	<script src="../../downloadFile.js"></script>
+	<script src="../../popupPanel.js"></script>
 	<script type="text/javascript">
 		function openWindow(url, target) {
 			window.open(url, target);
@@ -63,34 +64,19 @@
 		</p>
 		<p>
 			The following figure illustrates the main steps for quickly designing and implementing robust APIs using the REST API Generator.
-			<img id="apiBuildSteps" src="images/apiBuildSteps.png" />
+			Click each step for a description of that step's development activities.
+			<div style="display:inline-block">
+				<img id="apiBuildSteps" src="images/apiBuildSteps.png" usemap="#apiBuildStepsHotspots" />
+				<map name="apiBuildStepsHotspots" id="apiBuildStepsHotspots">
+					<area shape="rect" coords="38,19,382,460" href="#" onclick="return showPopup(event);" data-key="regionA" alt="Region A" />
+					<area shape="rect" coords="400,70,614,460" href="#" onclick="return showPopup(event);" data-key="regionB" alt="Region B" />
+					<area shape="rect" coords="626,70,771,460" href="#" onclick="return showPopup(event);" data-key="regionC" alt="Region C" />
+				</map>
+			</div>
+			<div id="popup" class="popup" role="dialog" aria-hidden="true"></div>
 		</p>
 		<p>
-			The first step in the API design process is to create a business domain model using the
-			<a href="https://staruml.io/" target="StarUML">StarUML</a> modeling tool.  A
-			<a onclick="return openWindow('overviewDomainModel.html', 'DomainModel');">business domain model</a>
-			is a conceptual blueprint of an organization's problem space identifying the key business concepts
-			(entities), their attributes, and their relationships to other entities.  It provides a shared
-			vocabulary for business stakeholders and technical teams to bridge the gap between business
-			requirements and technical implementation.  The business domain model is a key design artifact
-			for defining the API's client interface specification from a business perspective.
-		</p>
-		<p>
-			Once the business domain model has been created the second step is to import it into the REST API Generator.  The tool
-			analyzes the domain model's entities, attributes, and relationships and then automatically generates a corresponding API
-			client interface specification.  The result is a well-structured OpenAPI specification that defines the API's endpoints,
-			request/response formats, status codes, and domain model schemas.  The generated specification adheres to industry best
-			practices for API design ensuring that the API's interface is easy to understand and use by clients.
-		</p>
-		<p>
-			The next step is to import the API's client interface specification into the REST API Generator to
-			automatically generate code implementing the API's skeleton infrastructure. The skeleton implementation
-			is a fully functional API that can receive requests from the client and return default responses but contains
-			stubs for the business logic. The API skeleton code provides API developers with an initial "quick start"
-			code base, thus significantly reducing the time and effort required to develop a REST API. 
-		</p>
-		<p>
-			In short, by using the REST API Generator development activities that used to take weeks to perform manually
+			By using the REST API Generator development activities that used to take weeks to perform manually
 			can now be accomplished automatically in a matter of minutes.  Instead of developers spending time to manually
 			create API specifications and write API foundational code they can now focus on implementing the API's business
 			logic to more quickly realize the API's business value proposition and shorten time to market.
