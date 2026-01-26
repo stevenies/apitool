@@ -44,7 +44,7 @@
 			<a href="https://www.openapis.org/" target="OpenAPI">OpenAPI</a> specification manually is a laborious activity.
 			Specifications for non-trivial APIs can easily require thousands of lines of detailed JSON code for specifying
 			API endpoints, request formats, response formats, success/error status codes, and domain model schemas.
-			For example, this <a onclick="return openWindow('apiExample.html', 'APIExample');">API</a> requires 14000 lines
+			For example,<br/>this <a onclick="return openWindow('apiExample.html', 'APIExample');">API</a> requires 14000 lines
 			of JSON code to implement its OpenAPI specification!  For an API of this size experience has shown that a developer
 			typically needs three weeks to manually write the JSON code, test it, and resolve issues. Assuming that the
 			developer can finish the work in three weeks, and given an average developer rate of $60 per hour, the cost
