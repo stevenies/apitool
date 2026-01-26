@@ -35,25 +35,20 @@
 			Given today's AI-based “vibe coding” tools APIs have never been easier to implement.  However creating<br/>
 			well-structured and robust API client <i>interfaces</i> still requires thoughtful engineering.  When APIs are designed well
 			they serve as your architecture's key system interfaces hiding implementation details behind well-defined
-			contracts.  The results are modular system architectures that can easily evolve as business requirements
-			change.  In contrast coding APIs without first defining client interface contracts can result in brittle
+			contracts.  In contrast coding APIs without first defining client interface contracts can result in brittle
 			ad-hoc system architectures and API interfaces that are hard to evolve without adversely impacting API clients.
 		</p>
 		<p>
-			A best practice for <a onclick="return openWindow('overviewApi.html', 'API');">API</a> development
-			is to first define the API's interface between a business system and its clients before any API implementation
-			code is written. However creating an client interface specification<br/>using the
-			<a href="https://www.openapis.org/" target="OpenAPI">OpenAPI</a>
-			documentation standard can be a complex and time-consuming process.
-			Writing an<br/>API specification manually is a laborious activity typically taking several weeks or longer to complete.
-			Specifications for non-trivial APIs can easily require thousands of lines of detailed JSON code
-			for specifying the various API endpoints, request formats, response formats, success/error status codes,
-			and domain model schemas.  For example, this <a onclick="return openWindow('apiExample.html', 'APIExample');">API</a>
-			has a nominal number of API endpoints but requires 14000 lines of JSON code to implement its OpenAPI
-			specification!  For an API of this size experience has shown that a developer typically needs three weeks
-			to manually write the JSON code, test it, and resolve issues. Assuming that the developer can finish the
-			work in three weeks, and given an average developer rate of $60 per hour, the cost to <u>manually</u>
-			write the API's client specification is <span style="color:red;">$7,200!</span>
+			A best practice for <a onclick="return openWindow('overviewApi.html', 'API');">API</a> development is to first
+			define the API's client interface before any API implementation code is written. However writing an
+			<a href="https://www.openapis.org/" target="OpenAPI">OpenAPI</a> specification manually is a laborious activity.
+			Specifications for non-trivial APIs can easily require thousands of lines of detailed JSON code for specifying
+			API endpoints, request formats, response formats, success/error status codes, and domain model schemas.
+			For example, this <a onclick="return openWindow('apiExample.html', 'APIExample');">API</a> requires 14000 lines
+			of JSON code to implement its OpenAPI specification!  For an API of this size experience has shown that a developer
+			typically needs three weeks to manually write the JSON code, test it, and resolve issues. Assuming that the
+			developer can finish the work in three weeks, and given an average developer rate of $60 per hour, the cost
+			to <u>manually</u> write the API's client specification is <span style="color:red;">$7,200!</span>
 		</p>
 		<p class="sectionHeader">How does the REST API Generator Save Time and Money?</p>
 		<p>
