@@ -8,7 +8,6 @@ import com.smn.restapigenerator.model.User;
 import com.smn.restapigenerator.model.User.EmailStatus;
 import com.smn.restapigenerator.ui.UIController;
 import com.smn.restapigenerator.util.CryptoUtil;
-
 import jakarta.annotation.PostConstruct;
 import java.io.File;
 import java.io.FileReader;
@@ -21,16 +20,16 @@ import java.util.List;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
-@Component
+@Repository
 public class UserRepository {
 
     private static final String JAVA_USER_DIR = "JAVA_USER_DIR"; // Environment variable for Java working directory
     private static final String TOOL_DIR = "RestApiGenerator"; // Environment variable for the working directory used by the REST API Generator tool
     private static final String USERS_FILENAME = "users.json"; // Path to the persisted UserRepository JSON file
 
-    private static final Logger logger = LoggerFactory.getLogger(UIController.class);
+    private static final Logger logger = LoggerFactory.getLogger(UserRepository.class);
     private final Map<String, User> userMap = new ConcurrentHashMap<>();
 
     @PostConstruct

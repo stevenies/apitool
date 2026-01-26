@@ -20,9 +20,9 @@ import org.openapitools.codegen.DefaultGenerator;
 import org.openapitools.codegen.SpecValidationException;
 import org.openapitools.codegen.config.CodegenConfigurator;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
-@Component
+@Service
 public class ToolService {
 
 	public static class DtoReadUMLFile {
