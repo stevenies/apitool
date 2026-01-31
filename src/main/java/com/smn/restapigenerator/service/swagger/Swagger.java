@@ -255,8 +255,8 @@ public class Swagger {
 		boolean isSupertype = entity.isSupertype();
 
 		Attribute entityId = entity.getExplicitId();
-		String entityIdName = entityId == null ? "" : entityId.getNameKebabCase();
-		String entityIdType = entityId == null ? "" : entityId.getType();
+		String entityIdName = entityId == null ? "id" : entityId.getNameKebabCase();
+		String entityIdType = entityId == null ? "string" : entityId.getType();
 
 		String responseSchema = entityName + (isSupertype ? "-SubtypesArrayPaged" : "-ArrayPaged");
 		components.add(responseSchema);
@@ -288,15 +288,15 @@ public class Swagger {
 		String entityName = entity.getNamePascalCase();
 
 		Attribute entityId = entity.getExplicitId();
-		String entityIdName = entityId.getNameKebabCase();
-		String entityIdType = entityId.getType();
+		String entityIdName = entityId == null ? "id" : entityId.getNameKebabCase();
+		String entityIdType = entityId == null ? "string" : entityId.getType();
 
 		String relationName = relation.getNameKebabCase();
 		Entity targetEntity = relation.getTargetEntity();
 		String targetEntityName = targetEntity.getNamePascalCase();
 		Attribute explicitId = targetEntity.getExplicitId();
-		String targetIdName = explicitId == null ? "" : explicitId.getNameKebabCase();
-		String targetIdType = explicitId == null ? "" : explicitId.getType();
+		String targetIdName = explicitId == null ? "id" : explicitId.getNameKebabCase();
+		String targetIdType = explicitId == null ? "string" : explicitId.getType();
 
 		String resourceText = "";
 		try {

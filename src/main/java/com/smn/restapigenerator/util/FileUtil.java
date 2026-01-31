@@ -48,10 +48,19 @@ public class FileUtil {
     }
 
     public static void deleteFile(File file) {
-		if (file != null && file.exists()) {
-			if (!file.delete()) {	
-				logger.error("Failed to delete file: {}", file.getAbsolutePath());
+		if (file == null ||!file.exists()) {
+			return;
+		}
+		if (file.isDirectory()) {
+			File[] files = file.listFiles();
+			if (files != null) {
+				for (File childFile : files) {
+					deleteFile(childFile);
+				}
 			}
+		}
+		if (!file.delete()) {	
+			logger.error("Failed to delete file: {}", file.getAbsolutePath());
 		}
     }
 
