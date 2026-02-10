@@ -32,19 +32,18 @@
 		</p>
 		<p class="sectionHeader">API Development Challenges</p>
 		<p>
-			Given today's AI-based “vibe coding” tools APIs have never been easier to implement.  However creating<br/>
-			well-structured and robust API client <i>interfaces</i> still requires thoughtful engineering.  When APIs are designed well
-			they serve as your architecture's key system interfaces hiding implementation details behind well-defined
-			contracts.  In contrast coding APIs without first defining client interface contracts can result in brittle
-			ad-hoc system architectures and API interfaces that are hard to evolve without adversely impacting API clients.
+			A best practice for <a onclick="return openWindow('overviewApi.html', 'API');">API</a> development is to first
+			define the API's client interface before any API code is written (aka "Contract-first Development").
+			Benefits include early alignment of stakeholder expectations, the ability to create client interface mockups
+			facilitating early feedback and validation of the API's interface design, parallel development of API
+			client integrations and API implementation, improved developer and client collaboration, and reduced risk.
 		</p>
 		<p>
-			A best practice for <a onclick="return openWindow('overviewApi.html', 'API');">API</a> development is to first
-			define the API's client interface before any API implementation code is written. However writing an
-			<a href="https://www.openapis.org/" target="OpenAPI">OpenAPI</a> specification manually is a laborious activity.
+			However manually writing an
+			<a href="https://www.openapis.org/" target="OpenAPI">OpenAPI</a> interface specification is a laborious activity.
 			Specifications for non-trivial APIs can easily require thousands of lines of detailed JSON code for specifying
 			API endpoints, request formats, response formats, success/error status codes, and domain model schemas.
-			For example,<br/>this <a onclick="return openWindow('apiExample.html', 'APIExample');">API</a> requires 14000 lines
+			For example, this <a onclick="return openWindow('apiExample.html', 'APIExample');">API</a> requires 14000 lines
 			of JSON code to implement its OpenAPI specification!  For an API of this size experience has shown that a developer
 			typically needs three weeks to manually write the JSON code, test it, and resolve issues. Assuming that the
 			developer can finish the work in three weeks, and given an average developer rate of $60 per hour, the cost
@@ -53,8 +52,8 @@
 		<p class="sectionHeader">How does the REST API Generator Save Time and Money?</p>
 		<p>
 			The REST API Generator provides two important capabilities to greatly reduce API development effort.
-			First it automatically generates the API's OpenAPI specification from a business domain model
-			expressed as a UML class diagram. Second it reads the API's OpenAPI client interface specification to automatically
+			First it automatically generates the API's OpenAPI specification from a graphical business domain model
+			expressed as a UML class diagram. Second it reads the API's OpenAPI interface specification to automatically
 			generate code implementing the API's skeleton infrastructure.
 		</p>
 		<p>

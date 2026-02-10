@@ -44,7 +44,7 @@
 	<div id="page">
 		<img id="specGeneration" src="images/specGeneration.png" alt="API Specification Generation" />
 		<p class="title">API Specification Generator</p>
-		<form id="apiSpecForm" action="/doApiSpecForm" method="POST" enctype="multipart/form-data">
+		<form id="apiSpecForm" action="doApiSpecForm" method="POST" enctype="multipart/form-data">
 			<table>
 				<tr>
 					<td colspan="3"><div class="formHeader">API Information</div></td>

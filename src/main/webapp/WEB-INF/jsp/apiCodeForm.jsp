@@ -38,7 +38,7 @@
 	<div id="page">
 		<img id="codeGeneration" src="images/codeGeneration.png" alt="API Code Generation" />
 		<p class="title">API Code Generator</p>
-		<form id="apiCodeForm" action="/doApiCodeForm" method="POST" enctype="multipart/form-data">
+		<form id="apiCodeForm" action="doApiCodeForm" method="POST" enctype="multipart/form-data">
 			<table>
 				<tr>
 					<td colspan="2"><div class="formHeader">API Information</div></td>
