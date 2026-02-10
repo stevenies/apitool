@@ -34,8 +34,8 @@
 		<p>
 			A best practice for <a onclick="return openWindow('overviewApi.html', 'API');">API</a> development is to first
 			define the API's client interface before any API code is written (aka "Contract-first Development").
-			Benefits include early alignment of stakeholder expectations, the ability to create client interface mockups
-			facilitating early feedback and validation of the API's interface design, parallel development of API
+			Key benefits include early alignment of API stakeholder expectations, the ability to create client interface mockups
+			for early feedback and validation of the API's interface design, parallel development of API
 			client integrations and API implementation, improved developer and client collaboration, and reduced risk.
 		</p>
 		<p>
