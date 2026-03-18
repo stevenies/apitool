@@ -26,8 +26,8 @@
 		<p>
 		</p>
 		<p id="executiveSummary">
-			The REST API Generator is a toolset that automates the creation of REST API interface specifications and skeleton implementation code
-			from a business domain model. It enables a contract-first approach for API development significantly reducing the time and cost
+			The REST API Generator is a toolset that automates the creation of REST API client interface specifications and skeleton implementation code
+			from a graphical business domain model. It enables a contract-first approach for API development, significantly reducing the time and cost
 			required to create REST APIs.
 		</p>
 		<p class="sectionHeader">API Development Challenges</p>

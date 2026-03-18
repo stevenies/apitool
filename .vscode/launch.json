@@ -6,6 +6,20 @@
     "configurations": [
         {
             "type": "java",
+            "name": "Example",
+            "request": "launch",
+            "mainClass": "Example",
+            "projectName": "restapigenerator"
+        },
+        {
+            "type": "java",
+            "name": "Scratchpad",
+            "request": "launch",
+            "mainClass": "Scratchpad",
+            "projectName": "restapigenerator"
+        },
+        {
+            "type": "java",
             "name": "Application",
             "request": "launch",
             "mainClass": "com.smn.restapigenerator.Application",

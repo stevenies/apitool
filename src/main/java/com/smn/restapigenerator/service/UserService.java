@@ -37,18 +37,13 @@ public class UserService {
 		String phone) throws ExceptionUserExists {
 	
 		// Determine if the user already exists.
-		for (User aUser : this.userRepository.getAllUsers()) {
-			String aUserEmail = aUser.getEmail();
-			String aUserNameFirst = aUser.getNameFirst();
-			String aUserNameLast = aUser.getNameLast();
-			String aUserCompany = aUser.getCompany();
-			if (aUserEmail.equalsIgnoreCase(email)) {
-				throw new ExceptionUserExists();
-			} else if (aUserNameFirst.equalsIgnoreCase(nameFirst) &&
-				aUserNameLast.equalsIgnoreCase(nameLast) &&
-				aUserCompany.equalsIgnoreCase(company)) {
-				throw new ExceptionUserExists();
-			}
+		List<User> allUsers = this.userRepository.getAllUsers();
+		boolean userExists = allUsers.stream().anyMatch(aUser -> aUser.getEmail().equalsIgnoreCase(email) ||
+			(aUser.getNameFirst().equalsIgnoreCase(nameFirst) &&
+			 aUser.getNameLast().equalsIgnoreCase(nameLast) &&
+			 aUser.getCompany().equalsIgnoreCase(company)));
+		if (userExists) {
+			throw new ExceptionUserExists();
 		}
 
 		// Create a new user.	

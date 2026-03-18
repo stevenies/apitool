@@ -631,3 +631,12 @@ target/restapigenerator/WEB-INF/jsp/passwordResetForm.jsp
 target/restapigenerator/WEB-INF/templates/resetPassword.html
 target/restapigenerator/images/codeGeneration.png
 target/restapigenerator/images/specGeneration.png
+src/main/java/Scratchpad.java
+target/classes/Scratchpad.class
+target/classes/Scratchpad$1.class
+target/classes/Scratchpad$1StockPricePoint.class
+target/classes/Scratchpad$Student.class
+target/classes/com/smn/restapigenerator/exception/ExceptionUserDoesntExist.class
+target/classes/com/smn/restapigenerator/model/User$EmailStatus.class
+target/classes/com/smn/restapigenerator/model/User$EmailStatus.class
+target/classes/com/smn/restapigenerator/exception/ExceptionUserDoesntExist.class

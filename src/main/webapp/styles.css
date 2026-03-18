@@ -1,7 +1,7 @@
 BODY {
     margin: 20px;
     font-family: Verdana, sans-serif;
-    background-color: #c8c8c8;
+    background-color: #000020;
 }
 P {
     margin: 0px 0px 12px 0px;
@@ -79,7 +79,7 @@ BUTTON {
     margin: 20px 0px 12px 0px;
 }
 #logo IMG {
-    width: 560px;
+    width: 460px;
     display: block;
     margin: auto;
     margin-bottom: 15px;
