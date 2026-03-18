@@ -67,6 +67,7 @@ BUTTON {
     text-align: left;
 }
 .subtitle {
+    padding-top: 4px
     font-family: Arial, sans-serif;
     font-size: 18px;
     font-weight: bold;
@@ -186,7 +187,7 @@ BUTTON {
 }
 #executiveSummary {
     margin-top: 20px;
-    padding: 20px 30px;
+    padding: 0px 45px 20px 45px;
     text-align: left;
     font-style: italic;
 }

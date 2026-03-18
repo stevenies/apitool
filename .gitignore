@@ -640,3 +640,9 @@ target/classes/com/smn/restapigenerator/exception/ExceptionUserDoesntExist.class
 target/classes/com/smn/restapigenerator/model/User$EmailStatus.class
 target/classes/com/smn/restapigenerator/model/User$EmailStatus.class
 target/classes/com/smn/restapigenerator/exception/ExceptionUserDoesntExist.class
+target/restapigenerator/WEB-INF/classes/Scratchpad.class
+target/restapigenerator/WEB-INF/classes/Scratchpad$1.class
+target/restapigenerator/WEB-INF/classes/Scratchpad$1StockPricePoint.class
+target/restapigenerator/WEB-INF/classes/Scratchpad$Student.class
+target/classes/com/smn/restapigenerator/exception/ExceptionUserDoesntExist.class
+target/classes/com/smn/restapigenerator/model/User$EmailStatus.class

@@ -21,13 +21,13 @@
 		<div id="logo"><img src="images/logo.png" alt="API Tool Logo" /></div>
 		<p>
 			<div class="title" style="text-align: center;">REST API Generator</div>
-			<div class="subtitle" style="text-align: center;">for Rapid Creation of REST API Specifications and Code</div>
+			<div class="subtitle" style="text-align: center;">Rapid Creation of REST API Specifications and Code</div>
 		</p>
 		<p>
 		</p>
 		<p id="executiveSummary">
 			The REST API Generator is a toolset that automates the creation of REST API client interface specifications and skeleton implementation code
-			from a graphical business domain model. It enables a contract-first approach for API development, significantly reducing the time and cost
+			from a graphical business domain model.<br/>It enables a contract-first approach for API development, significantly reducing the time and<br/>cost
 			required to create REST APIs.
 		</p>
 		<p class="sectionHeader">API Development Challenges</p>
