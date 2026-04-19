@@ -1,8 +1,8 @@
 package com.smn.restapigenerator.ui;
 
 import com.smn.restapigenerator.model.User;
-import com.smn.restapigenerator.service.PayPalService;
 import com.smn.restapigenerator.service.UserService;
+import com.smn.restapigenerator.service.paypal.PayPalService;
 import com.smn.restapigenerator.util.StringUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;

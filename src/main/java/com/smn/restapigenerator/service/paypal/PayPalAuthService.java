@@ -1,4 +1,4 @@
-package com.smn.restapigenerator.service;
+package com.smn.restapigenerator.service.paypal;
 
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;

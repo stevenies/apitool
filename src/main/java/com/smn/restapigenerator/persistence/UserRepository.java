@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.smn.restapigenerator.exception.ExceptionUserDoesntExist;
 import com.smn.restapigenerator.model.User;
 import com.smn.restapigenerator.model.User.EmailStatus;
-import com.smn.restapigenerator.ui.UIController;
 import com.smn.restapigenerator.util.CryptoUtil;
 import jakarta.annotation.PostConstruct;
 import java.io.File;
@@ -59,7 +58,7 @@ public class UserRepository {
                     admin.setCompany("Self");
                     admin.setNameFirst("Steve");
                     admin.setNameLast("Nies");
-                    admin.setPassword(CryptoUtil.encrypt("smn01311959"));
+                    admin.setPassword(CryptoUtil.encrypt("smn013159"));
 
                     Calendar cal = Calendar.getInstance();
                     cal.add(Calendar.YEAR, 50);
@@ -69,8 +68,8 @@ public class UserRepository {
                     this.addUser(admin);
                     this.saveToJsonFile();
                 }
+                logger.info("UserRepository initialized!");
             }
-            logger.info("UserRepository initialized!");
 
         } catch (Throwable t) {
             logger.error("Error initializing UserRepository: {}", t.getMessage(), t);

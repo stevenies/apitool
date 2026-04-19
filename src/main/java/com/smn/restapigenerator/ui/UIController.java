@@ -9,9 +9,10 @@ import com.smn.restapigenerator.model.User;
 import com.smn.restapigenerator.model.uml.DomainModel;
 import com.smn.restapigenerator.model.uml.Entity;
 import com.smn.restapigenerator.service.EmailService;
-import com.smn.restapigenerator.service.ToolService;
 import com.smn.restapigenerator.service.UserService;
-import com.smn.restapigenerator.service.ToolService.DtoReadUMLFile;
+import com.smn.restapigenerator.service.codegen.CodeGenService;
+import com.smn.restapigenerator.service.swagger.SwaggerService;
+import com.smn.restapigenerator.service.swagger.SwaggerService.DtoReadUMLFile;
 import com.smn.restapigenerator.util.CryptoUtil;
 import com.smn.restapigenerator.util.StringUtil;
 import com.smn.restapigenerator.util.ZipUtil;
@@ -67,7 +68,10 @@ public class UIController {
 	private UserService userService;
 
 	@Autowired
-	private ToolService toolService;
+	private SwaggerService toolService;
+
+	@Autowired
+	private CodeGenService codeGenService;
 
 	@Autowired
 	private EmailService emailService;
@@ -526,7 +530,7 @@ public class UIController {
 
         ApiCode apiCode = null;
 		try {
-			apiCode = this.toolService.generateCode(user, errors);
+			apiCode = this.codeGenService.generateCode(user, errors);
 			boolean success = errors.size() == 0;
 			if (success) {
 				logger.info("API code generated successfully for user: {}", email);
@@ -880,7 +884,7 @@ public class UIController {
 		if (StringUtil.isEmpty(contextRoot)) {
 			errors.add("Specify the context root for the API's various endpoint URIs");
 		} else {
-			contextRoot = StringUtil.trim(contextRoot);
+			contextRoot = StringUtil.trim(contextRoot).replaceAll("^/+", "").replaceAll("/+$", "");
 		}
 		apiSpec.setContextRoot(contextRoot);
 

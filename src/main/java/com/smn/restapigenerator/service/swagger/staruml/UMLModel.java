@@ -1,11 +1,11 @@
-package com.smn.restapigenerator.service.adapter.staruml;
+package com.smn.restapigenerator.service.swagger.staruml;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Project {
+public class UMLModel {
 
 	@JsonProperty
 	private String _id;
@@ -14,7 +14,7 @@ public class Project {
 	private String name;
 
 	@JsonProperty
-	private List<UMLModel> ownedElements;
+	private List<OwnedElement> ownedElements;
 
 	public String get_id() {
 		return _id;
@@ -32,13 +32,12 @@ public class Project {
 		this.name = name;
 	}
 
-	public List<UMLModel> getOwnedElements() {
+	public List<OwnedElement> getOwnedElements() {
 		return ownedElements;
 	}
 
-	public void setOwnedElements(List<UMLModel> ownedElements) {
+	public void setOwnedElements(List<OwnedElement> ownedElements) {
 		this.ownedElements = ownedElements;
 	}
-	
-	
+
 }

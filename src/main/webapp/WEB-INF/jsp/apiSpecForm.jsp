@@ -90,12 +90,12 @@
 				<tr>
 					<td><label>API Server Domain<span class="required">*</span>:</label></td>
 					<td><input id="serverDomain" name="serverDomain" type="text" value="${apiSpec.serverDomain}" /></td>
-					<td class="formNote">Domain where the API will be hosted<br>(e.g., api.company.com).</td>
+					<td class="formNote">Domain where the API will be hosted<br>(e.g., mycompany.com).</td>
 				</tr>
 				<tr>
 					<td><label>API Context Root<span class="required">*</span>:</label></td>
 					<td><input id="contextRoot" name="contextRoot" type="text" value="${apiSpec.contextRoot}" /></td>
-					<td class="formNote">Context path prefix for the API's various endpoint URIs (e.g., /businessApi/...).</td>
+					<td class="formNote">Context path prefix for the API's various endpoint URIs (e.g., api).</td>
 				</tr>
 				<tr>
 					<td><label>API Port:</label></td>

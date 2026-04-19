@@ -33,3 +33,9 @@ spring:
           auth: true
           starttls:
             enable: true
+codegen:
+  config:
+    useSpringBoot3: true
+    generateAliasAsModel: false
+    dateLibrary: java8
+

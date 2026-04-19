@@ -1,4 +1,4 @@
-package com.smn.restapigenerator.service.adapter.staruml;
+package com.smn.restapigenerator.service.swagger.staruml;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;

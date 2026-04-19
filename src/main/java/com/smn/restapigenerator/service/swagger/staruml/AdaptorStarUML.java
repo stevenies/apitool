@@ -1,4 +1,4 @@
-package com.smn.restapigenerator.service.adapter.staruml;
+package com.smn.restapigenerator.service.swagger.staruml;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;

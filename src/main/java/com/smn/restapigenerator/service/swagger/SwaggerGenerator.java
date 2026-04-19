@@ -22,9 +22,9 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
 @Component
-public class Swagger {
+public class SwaggerGenerator {
 
-	private static final Logger logger = LoggerFactory.getLogger(Swagger.class);
+	private static final Logger logger = LoggerFactory.getLogger(SwaggerGenerator.class);
 
 	final static String MARKER_TITLE = ">>>title";
 	final static String MARKER_OPERATION_ID = ">>>operationId";
@@ -68,24 +68,24 @@ public class Swagger {
 
 		// Update the template with the various substitution sections.
 		String title = api.getTitle();
-		swagger = swagger.replace(Swagger.MARKER_TITLE, title);
+		swagger = swagger.replace(SwaggerGenerator.MARKER_TITLE, title);
 
 		String description = api.getDescription();
-		swagger = swagger.replace(Swagger.MARKER_DESCRIPTION, description);
+		swagger = swagger.replace(SwaggerGenerator.MARKER_DESCRIPTION, description);
 
 		String version = api.getVersion();
-		swagger = swagger.replace(Swagger.MARKER_VERSION, version);
+		swagger = swagger.replace(SwaggerGenerator.MARKER_VERSION, version);
 
 		int tabs = 2;
 		String servers = this.makeServers(tabs + 1, serverDomain, contextRoot);
-		swagger = swagger.replace(Swagger.MARKER_SERVERS, servers);
+		swagger = swagger.replace(SwaggerGenerator.MARKER_SERVERS, servers);
 
 		HashSet<String> components = new HashSet<>();
 		String paths = this.makePaths(tabs++, api, makePOST, makeGET, makePUT, makeDELETE, makeSEARCH, components, issues);
-		swagger = swagger.replace(Swagger.MARKER_PATHS, paths);
+		swagger = swagger.replace(SwaggerGenerator.MARKER_PATHS, paths);
 
 		String schemas = this.makeSchema(tabs--, api, components, issues);
-		swagger = swagger.replace(Swagger.MARKER_SCHEMAS, schemas);
+		swagger = swagger.replace(SwaggerGenerator.MARKER_SCHEMAS, schemas);
 
 		// The FOSS component used by the API code generator cannot accept tabs.  Thus convert tabs to spaces.
 		swagger = swagger.replace("\t", "  ");
@@ -265,12 +265,12 @@ public class Swagger {
 		try {
 			resourceText = FileUtil.readResource(partFileURI);
 
-			resourceText = resourceText.replace(Swagger.MARKER_OPERATION_ID, operationId);
-			resourceText = resourceText.replace(Swagger.MARKER_ENTITY_TAG, entityTag);
-			resourceText = resourceText.replace(Swagger.MARKER_ENTITY_NAME, entityName);
-			resourceText = resourceText.replace(Swagger.MARKER_ENTITY_ID, entityIdName);
-			resourceText = resourceText.replace(Swagger.MARKER_ENTITY_ID_TYPE, entityIdType);
-			resourceText = resourceText.replace(Swagger.MARKER_RESPONSE_SCHEMA, responseSchema);
+			resourceText = resourceText.replace(SwaggerGenerator.MARKER_OPERATION_ID, operationId);
+			resourceText = resourceText.replace(SwaggerGenerator.MARKER_ENTITY_TAG, entityTag);
+			resourceText = resourceText.replace(SwaggerGenerator.MARKER_ENTITY_NAME, entityName);
+			resourceText = resourceText.replace(SwaggerGenerator.MARKER_ENTITY_ID, entityIdName);
+			resourceText = resourceText.replace(SwaggerGenerator.MARKER_ENTITY_ID_TYPE, entityIdType);
+			resourceText = resourceText.replace(SwaggerGenerator.MARKER_RESPONSE_SCHEMA, responseSchema);
 
 		} catch (IOException e) {
 			// TODO Display error message in UI
@@ -302,15 +302,15 @@ public class Swagger {
 		try {
 			resourceText = FileUtil.readResource(partFileURI);
 
-			resourceText = resourceText.replace(Swagger.MARKER_OPERATION_ID, operationId);
-			resourceText = resourceText.replace(Swagger.MARKER_ENTITY_TAG, entityTag);
-			resourceText = resourceText.replace(Swagger.MARKER_ENTITY_NAME, entityName);
-			resourceText = resourceText.replace(Swagger.MARKER_ENTITY_ID, entityIdName);
-			resourceText = resourceText.replace(Swagger.MARKER_ENTITY_ID_TYPE, entityIdType);
-			resourceText = resourceText.replace(Swagger.MARKER_RELATION_NAME, relationName);
-			resourceText = resourceText.replace(Swagger.MARKER_TARGET_NAME, targetEntityName);
-			resourceText = resourceText.replace(Swagger.MARKER_TARGET_ID_NAME, targetIdName);
-			resourceText = resourceText.replace(Swagger.MARKER_TARGET_ID_TYPE, targetIdType);
+			resourceText = resourceText.replace(SwaggerGenerator.MARKER_OPERATION_ID, operationId);
+			resourceText = resourceText.replace(SwaggerGenerator.MARKER_ENTITY_TAG, entityTag);
+			resourceText = resourceText.replace(SwaggerGenerator.MARKER_ENTITY_NAME, entityName);
+			resourceText = resourceText.replace(SwaggerGenerator.MARKER_ENTITY_ID, entityIdName);
+			resourceText = resourceText.replace(SwaggerGenerator.MARKER_ENTITY_ID_TYPE, entityIdType);
+			resourceText = resourceText.replace(SwaggerGenerator.MARKER_RELATION_NAME, relationName);
+			resourceText = resourceText.replace(SwaggerGenerator.MARKER_TARGET_NAME, targetEntityName);
+			resourceText = resourceText.replace(SwaggerGenerator.MARKER_TARGET_ID_NAME, targetIdName);
+			resourceText = resourceText.replace(SwaggerGenerator.MARKER_TARGET_ID_TYPE, targetIdType);
 
 		} catch (IOException e) {
 			logger.error("Error reading resource file: {}", e.getMessage(), e);

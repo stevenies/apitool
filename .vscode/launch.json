@@ -4,33 +4,11 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
-        {
+         {
             "type": "java",
             "name": "Application",
             "request": "launch",
             "mainClass": "com.smn.restapigenerator.Application",
-            "projectName": "restapigenerator"
-        },
-        {
-            "type": "java",
-            "name": "Example",
-            "request": "launch",
-            "mainClass": "Example",
-            "projectName": "restapigenerator"
-        },
-        {
-            "type": "java",
-            "name": "Scratchpad",
-            "request": "launch",
-            "mainClass": "Scratchpad",
-            "projectName": "restapigenerator"
-        },
-        {
-            "type": "java",
-            "name": "Application",
-            "request": "launch",
-            "mainClass": "com.smn.restapigenerator.Application",
-            "projectName": "apitool",
             "env": {
                 "JAVA_USER_DIR": "C:\\Users\\steve\\JavaWorkDir"
             }
