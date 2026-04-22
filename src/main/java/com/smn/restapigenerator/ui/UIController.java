@@ -54,15 +54,32 @@ import static com.smn.restapigenerator.util.StringUtil.tabs;
 @Controller
 public class UIController {
 
-	public static final int LICENSE_COST_ONE_DAY = 1;
-	public static final int LICENSE_COST_ONE_WEEK = 149;
-	public static final int LICENSE_COST_ONE_MONTH = 499;
-
 	private static final String VIEW_API_SPEC_FORM = "viewApiSpecForm";
     private static final String VIEW_API_CODE_FORM = "viewApiCodeForm";
 	private static final String VIEW_USER_ADMIN_FORM = "viewUsers";
 
 	private static final Logger logger = LoggerFactory.getLogger(UIController.class);
+
+	public static int LICENSE_COST_ONE_DAY;
+
+	@Value("${application.license.cost.one-day}")
+	public void setLicenseCostOneDay(int cost) {
+		LICENSE_COST_ONE_DAY = cost;
+	}
+
+	public static int LICENSE_COST_ONE_WEEK;
+
+	@Value("${application.license.cost.one-week}")
+	public void setLicenseCostOneWeek(int cost) {
+		LICENSE_COST_ONE_WEEK = cost;
+	}
+
+	public static int LICENSE_COST_ONE_MONTH;
+
+	@Value("${application.license.cost.one-month}")
+	public void setLicenseCostOneMonth(int cost) {
+		LICENSE_COST_ONE_MONTH = cost;
+	}
 
 	@Autowired
 	private UserService userService;

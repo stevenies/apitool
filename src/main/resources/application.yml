@@ -3,6 +3,12 @@ application:
   version: 1.0.0
   usePayPalSandbox: false
   includeDebugLicense: false
+  license:
+    cost:
+      one-day: 1
+      one-week: 299
+      one-month: 999
+
 paypal:
   base-url: https://api-m.paypal.com
   client-id: ARu8cIQ846-UuW_Iq3a82wh9RDl1a1bE3O0yYAQF1--PCUAvCFPY-2ypkxz-FfY6L5Ffd3mFtIMc9ERX

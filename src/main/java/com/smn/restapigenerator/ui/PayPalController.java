@@ -45,6 +45,15 @@ public class PayPalController {
   @Autowired
   private UserService service;
 
+	@Value("${application.license.cost.one-day}")
+	private int licenseCostOneDay;
+
+	@Value("${application.license.cost.one-week}")
+	private int licenseCostOneWeek;
+
+	@Value("${application.license.cost.one-month}")
+	private int licenseCostOneMonth;
+
   public PayPalController(PayPalService payPalService) {
     this.payPalService = payPalService;
   }
@@ -64,13 +73,13 @@ public class PayPalController {
     String price;
     switch (itemId) {
       case "RAG-LIC-1D":
-        price = String.valueOf(UIController.LICENSE_COST_ONE_DAY);
+        price = String.valueOf(licenseCostOneDay);
         break;
       case "RAG-LIC-1W":
-        price = String.valueOf(UIController.LICENSE_COST_ONE_WEEK);
+        price = String.valueOf(licenseCostOneWeek);
         break;
       case "RAG-LIC-1M":
-        price = String.valueOf(UIController.LICENSE_COST_ONE_MONTH);
+        price = String.valueOf(licenseCostOneMonth);
         break;
       default:
         throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unknown itemId: " + itemId);
