@@ -90,9 +90,6 @@ public class AdaptorStarUML {
 							boolean isId = umlAttribute.isID();
 							boolean isReadOnly = umlAttribute.isReadOnly();
 
-							Attribute attribute = new Attribute(name, type, defaultValue, isId, isReadOnly);
-							entity.addAttribute(attribute, isId);
-
 							// Verify that the attribute's type is a type supported by OpenAPI
 							if ("string".equalsIgnoreCase(type) || "number".equalsIgnoreCase(type) || "integer".equalsIgnoreCase(type) || "boolean".equalsIgnoreCase(type)) {
 								type = type.toLowerCase();
@@ -100,6 +97,9 @@ public class AdaptorStarUML {
 								String message = "Type '" + type + "' (attribute '" + name + "') is not supported by OpenAPI";
 								this.addIssue(issues, entity, message);
 							}
+
+							Attribute attribute = new Attribute(name, type, defaultValue, isId, isReadOnly);
+							entity.addAttribute(attribute, isId);
 						}
 					}
 				}

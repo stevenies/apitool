@@ -7,6 +7,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class ApiCode {
 
+    public static final String DIRNAME = "apiCode";
+
     private String language = "java"; // Programming language for the API implementation
     private File apiCodeDir; // Directory containing the generated API code
     private Date dateGenerated;

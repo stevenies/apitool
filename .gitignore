@@ -680,3 +680,11 @@ target/restapigenerator/WEB-INF/lib/swagger-parser-core-2.1.38.jar
 target/restapigenerator/WEB-INF/lib/swagger-parser-safe-url-resolver-2.1.38.jar
 target/restapigenerator/WEB-INF/lib/swagger-parser-v2-converter-2.1.38.jar
 target/restapigenerator/WEB-INF/lib/swagger-parser-v3-2.1.38.jar
+target/classes/com/smn/restapigenerator/service/swagger/SwaggerGenerator.class
+target/classes/com/smn/restapigenerator/service/swagger/SwaggerService.class
+target/classes/com/smn/restapigenerator/service/swagger/SwaggerService$DtoReadUMLFile.class
+target/classes/com/smn/restapigenerator/service/swagger/staruml/AdaptorStarUML.class
+target/classes/com/smn/restapigenerator/service/swagger/staruml/AdaptorStarUML.class
+target/classes/com/smn/restapigenerator/service/codegen/CodeGenService.class
+target/classes/com/smn/restapigenerator/service/swagger/SwaggerService.class
+target/classes/com/smn/restapigenerator/service/swagger/staruml/AdaptorStarUML.class

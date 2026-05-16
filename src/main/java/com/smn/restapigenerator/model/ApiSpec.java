@@ -7,6 +7,8 @@ import java.util.Date;
 
 public class ApiSpec {
 
+	public static final String FILENAME = "api-spec.json";
+
     private File swaggerFile; // File where the API spec's swagger text is stored
     private Date dateGenerated;
 

@@ -8,6 +8,7 @@ import com.smn.restapigenerator.model.ApiSpec;
 import com.smn.restapigenerator.model.User;
 import com.smn.restapigenerator.model.uml.DomainModel;
 import com.smn.restapigenerator.model.uml.Entity;
+import com.smn.restapigenerator.persistence.UserRepository;
 import com.smn.restapigenerator.service.EmailService;
 import com.smn.restapigenerator.service.UserService;
 import com.smn.restapigenerator.service.codegen.CodeGenService;
@@ -26,6 +27,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -81,8 +83,17 @@ public class UIController {
 		LICENSE_COST_ONE_MONTH = cost;
 	}
 
+	@Value("${paypal.client-id}")
+    private String paypalClientId;
+
+	@Value("${paypal.sandbox-client-id}")
+    private String paypalSandboxClientId;
+
 	@Autowired
 	private UserService userService;
+
+	@Autowired
+	private UserRepository userRepository;
 
 	@Autowired
 	private SwaggerService toolService;
@@ -92,12 +103,6 @@ public class UIController {
 
 	@Autowired
 	private EmailService emailService;
-
-	@Value("${paypal.client-id}")
-    private String paypalClientId;
-
-	@Value("${paypal.sandbox-client-id}")
-    private String paypalSandboxClientId;
 
 	@PostMapping("/register")
 	public String register(
@@ -486,6 +491,55 @@ public class UIController {
 			errors.add(e.getMessage());
 		}
 		return "apiSpecForm";
+	}
+
+	@GetMapping("/viewUploadSpecForm")
+	public String viewUploadSpecForm() {
+		return "uploadSpecForm";
+	}
+	
+	@PostMapping("/doUploadSpecForm")
+	public String doUploadSpecForm(
+		@RequestParam(required = false) MultipartFile apiSpec,
+		HttpServletRequest request,
+		HttpSession session) {
+
+		List<String> errors = new ArrayList<>();
+		request.setAttribute("errors", errors);
+
+		User user = (User) session.getAttribute("user");
+		if (user == null || user.getPassword() == null || user.getPassword().isEmpty()) {
+			return "login";
+		}
+
+		String filename = apiSpec == null ? "" : apiSpec.getOriginalFilename();
+		if (apiSpec == null || StringUtil.isEmpty(filename)) {
+			errors.add("Select the file containing the OpenAPI specification");
+		} else {
+			try {
+
+				File userDir = this.userRepository.getUserStorageDir(user);
+				File swaggerFile = new File(userDir, ApiSpec.FILENAME);
+				Files.copy(apiSpec.getInputStream(), swaggerFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+
+				ApiSpec uploadedApiSpec = user.getApiSpec();
+				if (uploadedApiSpec == null) {
+					uploadedApiSpec = new ApiSpec(swaggerFile);
+					user.setApiSpec(uploadedApiSpec);
+				} else {
+					uploadedApiSpec.setSwaggerFile(swaggerFile);
+				}
+				this.userRepository.saveToJsonFile();
+				session.setAttribute("apiSpec", uploadedApiSpec);
+				request.setAttribute("uploaded", true);
+				logger.info("API specification uploaded successfully for user: {}", user.getEmail());
+
+			} catch (IOException e) {
+				errors.add("Failed to save the uploaded API specification");
+				logger.error("Failed to save uploaded API specification for user {}: {}", user.getEmail(), e.getMessage(), e);
+			}
+		}
+		return "uploadSpecForm";
 	}
 
 	@GetMapping("/viewApiCodeForm")

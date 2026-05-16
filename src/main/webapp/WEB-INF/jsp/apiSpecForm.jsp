@@ -6,7 +6,11 @@
 	<meta charset="ISO-8859-1">
 	<title>Generate API Specification</title>
 	<link rel="stylesheet" type="text/css" href="styles.css">
+	<link rel="stylesheet" href="https://code.jquery.com/ui/1.14.1/themes/base/jquery-ui.css">
+	<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+	<script src="https://code.jquery.com/ui/1.14.1/jquery-ui.min.js"></script>
 	<script src="downloadFile.js"></script>
+	<script src="uploadFile.js"></script>
 	<script type="text/javascript">
 
 		function installOnClickHandler(buttonId, handlerFunction) {
@@ -32,6 +36,17 @@
 				return false;
 			});
 
+			installOnClickHandler("buttonUpload", function(event) {
+				event.preventDefault(); // Prevent default form submission
+ 				openAjaxFormDialog({
+					loadUrl: "/viewUploadSpecForm",
+					title: "Upload API Specification",
+					width: 1000,
+					dialogId: "uploadSpecDialog"
+				});
+				return false;
+			});
+
 			installOnClickHandler("buttonTailor", function(event) {
 				event.preventDefault(); // Prevent default form submission
 				window.open("swaggerEditor.html", 'SwaggerEditor');
@@ -47,6 +62,14 @@
 		<form id="apiSpecForm" action="doApiSpecForm" method="POST" enctype="multipart/form-data">
 			<table>
 				<tr>
+					<td colspan="3"><div class="formHeader">Business Domain Model</div></td>
+				</tr>
+				<tr>
+					<td><label>Diagram<span class="required">*</span>:</label></td>
+					<td><input id="domainModel" name="domainModel" type="file" /></td>
+					<td class="formNote">StarUML '.mdj' file.</td>
+				</tr>
+				<tr>
 					<td colspan="3"><div class="formHeader">API Information</div></td>
 				</tr>
 				<tr>
@@ -55,19 +78,29 @@
 					<td class="formNote">Title developers use to refer to the API.</td>
 				</tr>
 				<tr>
-					<td><label>API Description:</label></td>
+					<td><label>Description:</label></td>
 					<td><textarea id="description" name="description" rows="4" cols="30">${apiSpec.description}</textarea></td>
 					<td class="formNote">Brief description of the API's purpose and functionality.</td>
 				</tr>
 				<tr>
-					<td><label>API Version<span class="required">*</span>:</label></td>
+					<td><label>Version<span class="required">*</span>:</label></td>
 					<td><input id="version" name="version" type="text" value="${apiSpec.version}" /></td>
 					<td class="formNote">API version (e.g., 1.0).</td>
 				</tr>
 				<tr>
-					<td><label>Business Domain Model<span class="required">*</span>:</label></td>
-					<td><input id="domainModel" name="domainModel" type="file" /></td>
-					<td class="formNote">StarUML '.mdj' file.</td>
+					<td><label>Context Root<span class="required">*</span>:</label></td>
+					<td><input id="contextRoot" name="contextRoot" type="text" value="${apiSpec.contextRoot}" /></td>
+					<td class="formNote">Context path prefix for the API's various endpoint URIs (e.g., api).</td>
+				</tr>
+				<tr>
+					<td><label>Server Domain<span class="required">*</span>:</label></td>
+					<td><input id="serverDomain" name="serverDomain" type="text" value="${apiSpec.serverDomain}" /></td>
+					<td class="formNote">Domain where the API will be hosted<br>(e.g., mycompany.com).</td>
+				</tr>
+				<tr>
+					<td><label>Server Port:</label></td>
+					<td><input id="port" name="port" type="text" value="${apiSpec.port}" /></td>
+					<td class="formNote">Port on which the API server will run<br>(e.g., 443).</td>
 				</tr>
 				<tr>
 					<td colspan="3"><div class="formHeader">API Functionality</div></td>
@@ -83,24 +116,6 @@
 							<input id="makeDELETE" name="makeDELETE" type="checkbox" value="true" <c:if test="${apiSpec.makeDELETE}">checked</c:if> /> Delete data
 						</div>
 					</td>
-				</tr>
-				<tr>
-					<td colspan="3"><div class="formHeader">API Deployment Settings</div></td>
-				</tr>
-				<tr>
-					<td><label>API Server Domain<span class="required">*</span>:</label></td>
-					<td><input id="serverDomain" name="serverDomain" type="text" value="${apiSpec.serverDomain}" /></td>
-					<td class="formNote">Domain where the API will be hosted<br>(e.g., mycompany.com).</td>
-				</tr>
-				<tr>
-					<td><label>API Context Root<span class="required">*</span>:</label></td>
-					<td><input id="contextRoot" name="contextRoot" type="text" value="${apiSpec.contextRoot}" /></td>
-					<td class="formNote">Context path prefix for the API's various endpoint URIs (e.g., api).</td>
-				</tr>
-				<tr>
-					<td><label>API Port:</label></td>
-					<td><input id="port" name="port" type="text" value="${apiSpec.port}" /></td>
-					<td class="formNote">Port on which the API server will run<br>(e.g., 443).</td>
 				</tr>
 			</table>
 			<c:if test="${not empty errors}">
@@ -122,9 +137,10 @@
 					<button id="buttonGenerate">Generate API Specification</button>
 				</c:if>
 				<c:if test="${apiSpec.valid}">
-					<button id="buttonGenerate">Regenerate API Specification</button>
-					<button id="buttonDownload">Download API Specification</button>
+					<button id="buttonGenerate">Regenerate Spec</button>
 					<button id="buttonTailor">Tailor API Endpoints</button>
+					<button id="buttonDownload">Download Spec</button>
+					<button id="buttonUpload">Upload Spec</button>
 				</c:if>
 			</div>
 		</form>

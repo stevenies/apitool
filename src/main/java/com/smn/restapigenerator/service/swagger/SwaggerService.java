@@ -81,7 +81,7 @@ public class SwaggerService {
 
 		// Create a filesystem directory for the user's API file artifacts.
 		File userDir = this.userRepository.getUserStorageDir(user);
-		File swaggerFile = new File(userDir, "api-spec.json");
+		File swaggerFile = new File(userDir, ApiSpec.FILENAME);
 
 		// Delete a previously existing apiSpecFile.
 		if (swaggerFile.exists()) {

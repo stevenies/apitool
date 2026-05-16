@@ -29,14 +29,14 @@ public class CodeGenService {
 
 		// Create a filesystem directory for the user's API code artifacts.
 		File userDir = this.userRepository.getUserStorageDir(user);
-		File tempCodeDir = new File(userDir, "apiCode");
+		File codeDir = new File(userDir, ApiCode.DIRNAME);
 
 		// Delete a previously existing code directory.
-		if (tempCodeDir.exists()) {
-			FileUtil.deleteFile(tempCodeDir);
+		if (codeDir.exists()) {
+			FileUtil.deleteFile(codeDir);
 			user.setApiCode(null);
 		}
-		tempCodeDir.mkdirs();
+		codeDir.mkdirs();
 
 		ApiSpec apiSpec = user.getApiSpec();
 		File swaggerFile = apiSpec.getSwaggerFile();
@@ -46,7 +46,7 @@ public class CodeGenService {
         configurator.setGeneratorName("spring");
 		String swaggerFileURI = swaggerFile.toString().replace("\\", "/");
 		configurator.setInputSpec(swaggerFileURI);
-		String tempCodeDirURI = tempCodeDir.toString().replace("\\", "/");
+		String tempCodeDirURI = codeDir.toString().replace("\\", "/");
 		configurator.setOutputDir(tempCodeDirURI);
 
 		Map<String, Object> additionalProperties = this.codeGenConfig.getConfig();
@@ -59,7 +59,7 @@ public class CodeGenService {
 			new DefaultGenerator().opts(clientOptInput).generate();
 
 			// Indicate that the user generated the API's skeleton implementation code.
-			apiCode = new ApiCode(tempCodeDir);
+			apiCode = new ApiCode(codeDir);
 			user.setApiCode(apiCode);
 			this.userRepository.saveToJsonFile();
 
