@@ -148,6 +148,7 @@ public class SwaggerGenerator {
 				if (makePOST) {
 					if (!entity.isSupertype()) {
 						endpointBuffer.append(this.makeEndpoint(entity, "/swagger/pathPOST.part", operationId, components));
+						components.add(entityNameFields);
 					}
 				}
 				if (makeGET) {
@@ -494,7 +495,7 @@ public class SwaggerGenerator {
 
 		Entity superType = entity.getSupertype();
 		if (superType != null) {
-			buffer.append(this.makeProperties(tabs, superType));
+			buffer.append(this.makeRelations(tabs, superType, components));
 		}
 
 		boolean firstAttribute = buffer.length() == 0;
@@ -534,23 +535,9 @@ public class SwaggerGenerator {
 		String targetIdType = targetIdAttribute == null ? "string" : targetIdAttribute.getType();
 		boolean isSingleValued = "1".equalsIgnoreCase(relation.getCardinality());
 		TRelationDepth relationDepth = relation.getRelationDepth();
-		boolean hasShallowRelations = relationDepth == TRelationDepth.LINK;
 		boolean hasDeepRelations = relationDepth == TRelationDepth.EMBED || relationDepth == TRelationDepth.EMBEDALL;
 
 		StringBuilder buffer = new StringBuilder();
-		if (hasShallowRelations) {
-			buffer.append(this.indent(tabs)).append("\"").append(relationName).append("\": {\n");
-			if (isSingleValued) {
-				buffer.append(this.indent(++tabs)).append("\"type\": \"").append(targetIdType).append("\"\n");
-				buffer.append(this.indent(--tabs)).append("}");
-			} else {
-				buffer.append(this.indent(++tabs)).append("\"type\": \"array\",\n");
-				buffer.append(this.indent(tabs)).append("\"items\": {\n");
-				buffer.append(this.indent(++tabs)).append("\"type\": \"").append(targetIdType).append("\"\n");
-				buffer.append(this.indent(--tabs)).append("}\n");
-				buffer.append(this.indent(--tabs)).append("}");
-			}
-		}
 		if (hasDeepRelations) {
 			if (isSingleValued) {
 				buffer.append(this.indent(tabs)).append("\"").append(relationName).append("\": {\n");
@@ -561,9 +548,9 @@ public class SwaggerGenerator {
 				// buffer.append(this.indent(tabs)).append("\"properties\": {\n");
 
 				// if (relationDepth == TRelationDepth.EMBED) {
-				// 	buffer.append(this.makeProperties(tabs + 1, targetEntity));
+				// 	buffer.append(this.makeRelations(tabs + 1, targetEntity, components));
 				// } else if (relationDepth == TRelationDepth.EMBEDALL) {
-				// 	buffer.append(this.makeRelations(tabs + 1, targetEntity));
+				// 	buffer.append(this.makeRelations(tabs + 1, targetEntity, components));
 				// }
 				// buffer.append("\n");
 
@@ -582,9 +569,9 @@ public class SwaggerGenerator {
 				// buffer.append(this.indent(tabs)).append("\"properties\": {\n");
 
 				// if (relationDepth == TRelationDepth.EMBED) {
-				// 	buffer.append(this.makeProperties(tabs + 1, targetEntity));
+				// 	buffer.append(this.makeRelations(tabs + 1, targetEntity, components));
 				// } else if (relationDepth == TRelationDepth.EMBEDALL) {
-				// 	buffer.append(this.makeRelations(tabs + 1, targetEntity));
+				// 	buffer.append(this.makeRelations(tabs + 1, targetEntity, components));
 				// }
 				// buffer.append("\n");
 
@@ -593,6 +580,19 @@ public class SwaggerGenerator {
 				buffer.append(this.indent(--tabs)).append("}");
 			}
 			components.add(targetEntityName);
+
+		} else {
+			buffer.append(this.indent(tabs)).append("\"").append(relationName).append("\": {\n");
+			if (isSingleValued) {
+				buffer.append(this.indent(++tabs)).append("\"type\": \"").append(targetIdType).append("\"\n");
+				buffer.append(this.indent(--tabs)).append("}");
+			} else {
+				buffer.append(this.indent(++tabs)).append("\"type\": \"array\",\n");
+				buffer.append(this.indent(tabs)).append("\"items\": {\n");
+				buffer.append(this.indent(++tabs)).append("\"type\": \"").append(targetIdType).append("\"\n");
+				buffer.append(this.indent(--tabs)).append("}\n");
+				buffer.append(this.indent(--tabs)).append("}");
+			}
 		}
 		return buffer.toString();
 	}

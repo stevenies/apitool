@@ -151,12 +151,10 @@ public class AdaptorStarUML {
 
 								TRelationDepth end1RelationDepth = StringUtil.isEmpty(end1Stereotype) ? TRelationDepth.NONE //
 									: end1Stereotype.contains(TRelationDepth.EMBEDALL.name().toLowerCase()) ? TRelationDepth.EMBEDALL //
-									: end1Stereotype.contains(TRelationDepth.EMBED.name().toLowerCase()) ? TRelationDepth.EMBED //
-									: end1Stereotype.contains(TRelationDepth.LINK.name().toLowerCase()) ? TRelationDepth.LINK : TRelationDepth.NONE;
+									: end1Stereotype.contains(TRelationDepth.EMBED.name().toLowerCase()) ? TRelationDepth.EMBED : TRelationDepth.NONE;
 								TRelationDepth end2RelationDepth = StringUtil.isEmpty(end2Stereotype) ? TRelationDepth.NONE //
 									: end2Stereotype.contains(TRelationDepth.EMBEDALL.name().toLowerCase()) ? TRelationDepth.EMBEDALL //
-									: end2Stereotype.contains(TRelationDepth.EMBED.name().toLowerCase()) ? TRelationDepth.EMBED //
-									: end2Stereotype.contains(TRelationDepth.LINK.name().toLowerCase()) ? TRelationDepth.LINK : TRelationDepth.NONE;
+									: end2Stereotype.contains(TRelationDepth.EMBED.name().toLowerCase()) ? TRelationDepth.EMBED : TRelationDepth.NONE;
 
 								if (end2Navigable) {
 									MVA mva1 = new MVA(end2Entity, end2Name, end2Multiplicity, end2RelationDepth);
@@ -191,7 +189,7 @@ public class AdaptorStarUML {
 			HashSet<Entity> embeddedEntities = new HashSet<>(targetedEntities.keySet());
 			for (MVA relation : targetedEntities.values()) {
 				TRelationDepth relationDepth = relation.getRelationDepth();
-				if (relationDepth == TRelationDepth.NONE || relationDepth == TRelationDepth.LINK || relation.isMakeEndpoint()) {
+				if (relationDepth == TRelationDepth.NONE || relation.isMakeEndpoint()) {
 					Entity targetEntity = relation.getTargetEntity();
 					embeddedEntities.remove(targetEntity);
 				}

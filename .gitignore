@@ -688,3 +688,5 @@ target/classes/com/smn/restapigenerator/service/swagger/staruml/AdaptorStarUML.c
 target/classes/com/smn/restapigenerator/service/codegen/CodeGenService.class
 target/classes/com/smn/restapigenerator/service/swagger/SwaggerService.class
 target/classes/com/smn/restapigenerator/service/swagger/staruml/AdaptorStarUML.class
+target/classes/com/smn/restapigenerator/service/swagger/SwaggerGenerator.class
+target/classes/com/smn/restapigenerator/service/swagger/staruml/AdaptorStarUML.class

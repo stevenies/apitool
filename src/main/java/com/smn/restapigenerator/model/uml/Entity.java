@@ -101,13 +101,12 @@ public class Entity implements Comparable<Entity> {
 
 	public void addRelation(MVA relation) {
 		this.relations.add(relation);
+		this.hasShallowRelations = true;
 
 		TRelationDepth relationDepth = relation.getRelationDepth();
-		if (relationDepth == TRelationDepth.LINK) {
-			this.hasShallowRelations = true;
-		}
 		if (relationDepth == TRelationDepth.EMBED || relationDepth == TRelationDepth.EMBEDALL) {
 			this.hasDeepRelations = true;
+			this.hasShallowRelations = false;
 		}
 	}
 

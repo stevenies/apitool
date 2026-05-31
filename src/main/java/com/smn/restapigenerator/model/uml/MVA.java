@@ -10,8 +10,7 @@ public class MVA {
 	// The following represent stereotypes that can be applied to a relationship in order to specify how the relationship
 	// should be represented in the Entity's schema definition
 	public enum TRelationDepth {
-		NONE, // Relation will not be included in the Entity's schema definition
-		LINK, // Relation will be represented in the Entity's schema definition as the primary ID of the target class
+		NONE, // Relation will be represented in the Entity's schema definition as the primary ID of the target class
 		EMBED, // Relation will be represented in the Entity's schema definition by embedding only the attributes from target class's schema definition
 		EMBEDALL // Relation will be represented in the Entity's schema definition by embedding the attributes and relations from target class's schema definition
 	}
