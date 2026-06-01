@@ -121,11 +121,6 @@ public class SwaggerGenerator {
 			String entityName = entity.getNameKebabCase();
 			String entityNameFields = entity.getNamePascalCase() + "-Fields";
 			Attribute entityId = entity.getExplicitId();
-			boolean isEmbedded = entity.isEmbedded();
-
-			if (isEmbedded) {
-				continue;
-			}
 
 			if (makeSEARCH) {
 				String operationId = entityName + "-search";
@@ -209,39 +204,39 @@ public class SwaggerGenerator {
 				if (makeGET || makePOST || makeDELETE) {
 					for (MVA relation : relations) {
 
-						boolean needsEndpoint = relation.isMakeEndpoint();
-						if (!needsEndpoint) {
-							continue;
-						}
 						String relationName = relation.getNameKebabCase();
-						Entity targetEntity = relation.getTargetEntity();
-						Attribute explicitId = targetEntity.getExplicitId();
-						String targetIdName = explicitId == null ? "id" : explicitId.getNameKebabCase();
+						// Entity targetEntity = relation.getTargetEntity();
+						// Attribute explicitId = targetEntity.getExplicitId();
+						// String targetIdName = explicitId == null ? "id" : explicitId.getNameKebabCase();
 
-						if (makeGET || makePOST) {
+						// if (makeGET || makePOST) {
+						boolean notEmbedded = relation.getRelationDepth() == TRelationDepth.NONE;
+						if (makeGET && notEmbedded) {
 							buffer.append(buffer.length() > 0 ? ",\n": "");
 							buffer.append(this.indent(tabs));
 							buffer.append("\"/").append(entityName).append("/{").append(entityIdName).append("}/").append(relationName).append("\" : {\n");
 							if (makeGET) {
 								buffer.append(this.makeRelationEndpoint(entity, "/swagger/pathGETRelated.part", operationId + "-" + relationName, relation, components));
 							}
-							if (makePOST) {
-								if (makeGET) {
-									buffer.append(",\n");
-								}
-								buffer.append(this.makeRelationEndpoint(entity, "/swagger/pathPOSTRelated.part", operationId + "-" + relationName, relation, components));
-							}
+							// Removed ability to create related entities.
+							// if (makePOST) {
+							// 	if (makeGET) {
+							// 		buffer.append(",\n");
+							// 	}
+							// 	buffer.append(this.makeRelationEndpoint(entity, "/swagger/pathPOSTRelated.part", operationId + "-" + relationName, relation, components));
+							// }
 							buffer.append("\n");
 							buffer.append(this.indent(tabs)).append("}");
 						}
 
-						if (makeDELETE) {
-							buffer.append(buffer.length() > 0 ? ",\n": "");
-							buffer.append(this.indent(tabs));
-							buffer.append("\"/").append(entityName).append("/{").append(entityIdName).append("}/").append(relationName).append("/{").append(relationName).append("-").append(targetIdName).append("}\" : {\n");
-							buffer.append(this.makeRelationEndpoint(entity, "/swagger/pathDELETERelated.part", operationId + "-" + relationName, relation, components)).append("\n");
-							buffer.append(this.indent(tabs)).append("}");
-						}
+						// Removed ability to delete related entities.
+						// if (makeDELETE) {
+						// 	buffer.append(buffer.length() > 0 ? ",\n": "");
+						// 	buffer.append(this.indent(tabs));
+						// 	buffer.append("\"/").append(entityName).append("/{").append(entityIdName).append("}/").append(relationName).append("/{").append(relationName).append("-").append(targetIdName).append("}\" : {\n");
+						// 	buffer.append(this.makeRelationEndpoint(entity, "/swagger/pathDELETERelated.part", operationId + "-" + relationName, relation, components)).append("\n");
+						// 	buffer.append(this.indent(tabs)).append("}");
+						// }
 					}
 				}
 			}

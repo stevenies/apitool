@@ -9,18 +9,12 @@ import com.smn.restapigenerator.model.uml.MVA.TRelationDepth;
 import com.smn.restapigenerator.util.StringUtil;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
 public class AdaptorStarUML {
-
-	private static final Logger logger = LoggerFactory.getLogger(AdaptorStarUML.class);
 	public static class DtoReadUMLFile {
 
 		private List<Entity> entities = new ArrayList<>();
@@ -139,7 +133,6 @@ public class AdaptorStarUML {
 								String end1Multiplicity = umlEnd1.getMultiplicity();
 								boolean end1Navigable = umlEnd1.isNavigable();
 								String end1Stereotype = StringUtil.isEmpty(umlEnd1.getStereotype()) ? "" : umlEnd1.getStereotype().trim().toLowerCase();
-								boolean end1MakeEndpoint = StringUtil.isEmpty(end1Stereotype)? false : end1Stereotype.contains("endpoint");
 
 								UMLAssociationEnd umlEnd2 = umlAssociation.getEnd2();
 								Entity end2Entity = classMap.get(umlEnd2.getReference().get$ref());
@@ -147,7 +140,6 @@ public class AdaptorStarUML {
 								String end2Multiplicity = umlEnd2.getMultiplicity();
 								boolean end2Navigable = umlEnd2.isNavigable();
 								String end2Stereotype = StringUtil.isEmpty(umlEnd2.getStereotype()) ? "" : umlEnd2.getStereotype().trim().toLowerCase();
-								boolean end2MakeEndpoint = StringUtil.isEmpty(end2Stereotype)? false : end2Stereotype.contains("endpoint");
 
 								TRelationDepth end1RelationDepth = StringUtil.isEmpty(end1Stereotype) ? TRelationDepth.NONE //
 									: end1Stereotype.contains(TRelationDepth.EMBEDALL.name().toLowerCase()) ? TRelationDepth.EMBEDALL //
@@ -158,13 +150,11 @@ public class AdaptorStarUML {
 
 								if (end2Navigable) {
 									MVA mva1 = new MVA(end2Entity, end2Name, end2Multiplicity, end2RelationDepth);
-									mva1.setMakeEndpoint(end2MakeEndpoint);
 									end1Entity.addRelation(mva1);
 								}
 
 								if (end1Navigable) {
 									MVA mva2 = new MVA(end1Entity, end1Name, end1Multiplicity, end1RelationDepth);
-									mva2.setMakeEndpoint(end1MakeEndpoint);
 									end2Entity.addRelation(mva2);
 								}
 							}
@@ -173,31 +163,7 @@ public class AdaptorStarUML {
 				}
 			}
 
-			// Iterate through the entities to determine which entities are only embedded within other entities
-			HashMap<Entity, MVA> targetedEntities = new HashMap<>();
-
 			List<Entity> entityList = new ArrayList<>(classMap.values());
-			for (Entity entity : entityList) {
-				logger.debug("Entity: {}", entity);
-
-				List<MVA> relations = entity.getRelations();
-				for (MVA relation : relations) {
-					Entity targetEntity = relation.getTargetEntity();
-					targetedEntities.put(targetEntity, relation);
-				}
-			}
-			HashSet<Entity> embeddedEntities = new HashSet<>(targetedEntities.keySet());
-			for (MVA relation : targetedEntities.values()) {
-				TRelationDepth relationDepth = relation.getRelationDepth();
-				if (relationDepth == TRelationDepth.NONE || relation.isMakeEndpoint()) {
-					Entity targetEntity = relation.getTargetEntity();
-					embeddedEntities.remove(targetEntity);
-				}
-			}
-			for (Entity entity : embeddedEntities) {
-				entity.setEmbedded(true);
-			}
-
 			return new DtoReadUMLFile(entityList, issues);
 
 		} catch (Throwable t) {

@@ -20,9 +20,6 @@ public class MVA {
 	private String cardinality;
 	private TRelationDepth relationDepth = TRelationDepth.NONE;
 
-	// The makeEndpoint flag is set True if an endpoint contains the "endpoint" stereotype
-	private boolean makeEndpoint;
-
 	public MVA(Entity targetEntity, String name, String cardinality, TRelationDepth relationDepth) {
 		String targetEntityName = targetEntity.getNameCamelCase();
 
@@ -69,21 +66,13 @@ public class MVA {
 		return this.relationDepth;
 	}
 
-	public boolean isMakeEndpoint() {
-		return this.makeEndpoint;
-	}
-
-	public void setMakeEndpoint(boolean makeEndpoint) {
-		this.makeEndpoint = makeEndpoint;
-	}
-
 	@Override
 	public String toString() {
 		StringBuilder buffer = new StringBuilder();
 
 		String targetEntityName = this.targetEntity.getName();
 		buffer.append(targetEntityName).append(" ").append(this.name);
-		buffer.append(" (cardinality:").append(this.cardinality).append(", relationDepth:").append(this.relationDepth).append(", makeEndpoint:").append(this.makeEndpoint).append(")\n");
+		buffer.append(" (cardinality:").append(this.cardinality).append(", relationDepth:").append(this.relationDepth).append(")\n");
 
 		return buffer.toString();
 	}

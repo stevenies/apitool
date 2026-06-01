@@ -10,7 +10,6 @@ public class Entity implements Comparable<Entity> {
 	private String name;
 	private Entity supertype;
 	private List<Entity> subtypes = new ArrayList<>();
-	private boolean isEmbedded;
 	private List<Attribute> attributes = new ArrayList<>();
 	private Attribute explicitId;
 	private List<MVA> relations = new ArrayList<>();
@@ -60,17 +59,6 @@ public class Entity implements Comparable<Entity> {
 
 	public List<Entity> getSubtypes() {
 		return this.subtypes;
-	}
-
-	/**
-	 * @return True if the Entity is completely embedded within another Entity via a "Composite" relation.
-	 */
-	public boolean isEmbedded() {
-		return this.isEmbedded;
-	}
-
-	public void setEmbedded(boolean isEmbedded) {
-		this.isEmbedded = isEmbedded;
 	}
 
 	public List<Attribute> getAttributes() {
@@ -135,7 +123,6 @@ public class Entity implements Comparable<Entity> {
 		}
 		buffer.append(" {\n");
 
-		buffer.append("  isEmbedded: " + this.isEmbedded + "\n");
 		buffer.append("  hasDeepRelations: " + this.hasDeepRelations + "\n");
 		buffer.append("  explicitId: " + (this.explicitId == null ? "none" : this.explicitId.getName()) + "\n");
 
