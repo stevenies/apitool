@@ -44,4 +44,6 @@ codegen:
     useSpringBoot3: true
     generateAliasAsModel: false
     dateLibrary: java8
+    modelNamePrefix: Api
+    hideGenerationTimestamp: true
 
